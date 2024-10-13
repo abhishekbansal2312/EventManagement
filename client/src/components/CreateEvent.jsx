@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { storage } from '../firebase'; 
+import { storage } from "../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { MdUpload, MdDelete } from "react-icons/md";
 
 const CreateEvent = () => {
   const [title, setTitle] = useState("");
@@ -17,11 +18,29 @@ const CreateEvent = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const onlinePosterInputRef = useRef(null); // Create a ref for online poster input
+  const offlinePosterInputRef = useRef(null); // Create a ref for offline poster input
 
   const validateFile = (file) => {
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    const maxSize = 5 * 1024 * 1024;
+    const validTypes = ["image/jpeg", "image/png", "image/gif"];
+    const maxSize = 5 * 1024 * 1024; // 5MB
     return validTypes.includes(file.type) && file.size <= maxSize;
+  };
+
+  const handleFileChange = (e, setFile) => {
+    const file = e.target.files[0]; // Allow only one file
+    if (file && validateFile(file)) {
+      setFile(file);
+    } else {
+      setErrorMessage(
+        "Invalid file type or size. Please select a valid image (JPEG, PNG, GIF) under 5MB."
+      );
+    }
+  };
+
+  const removeFile = (setFile, inputRef) => {
+    setFile(null);
+    inputRef.current.value = ""; // Reset the input value to trigger onChange next time
   };
 
   const handleSubmit = async (e) => {
@@ -33,13 +52,19 @@ const CreateEvent = () => {
       let offlinePosterUrl = null;
 
       if (onlinePosterFile) {
-        const onlinePosterRef = ref(storage, `posters/online/${onlinePosterFile.name}`);
+        const onlinePosterRef = ref(
+          storage,
+          `posters/online/${onlinePosterFile.name}`
+        );
         await uploadBytes(onlinePosterRef, onlinePosterFile);
         onlinePosterUrl = await getDownloadURL(onlinePosterRef);
       }
 
       if (offlinePosterFile) {
-        const offlinePosterRef = ref(storage, `posters/offline/${offlinePosterFile.name}`);
+        const offlinePosterRef = ref(
+          storage,
+          `posters/offline/${offlinePosterFile.name}`
+        );
         await uploadBytes(offlinePosterRef, offlinePosterFile);
         offlinePosterUrl = await getDownloadURL(offlinePosterRef);
       }
@@ -51,8 +76,8 @@ const CreateEvent = () => {
         time,
         location,
         link,
-        onlinePoster: onlinePosterUrl,
-        offlinePoster: offlinePosterUrl,
+        onlinePoster: onlinePosterUrl ? [onlinePosterUrl] : [],
+        offlinePoster: offlinePosterUrl ? [offlinePosterUrl] : [],
       };
 
       const response = await fetch("http://localhost:4600/api/events", {
@@ -73,6 +98,7 @@ const CreateEvent = () => {
       setSuccessMessage(data.message);
       setErrorMessage(null);
 
+      // Reset form
       setTitle("");
       setDescription("");
       setDate("");
@@ -92,108 +118,189 @@ const CreateEvent = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-semibold mb-4">Create a New Event</h1>
+    <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg text-[14px]">
+      <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+        Create a New Event
+      </h1>
 
       {successMessage && (
-        <p className="bg-green-100 text-green-700 p-2 rounded mb-4">{successMessage}</p>
+        <p className="bg-green-100 text-green-700 p-4 rounded mb-4 text-center">
+          {successMessage}
+        </p>
       )}
 
       {errorMessage && (
-        <p className="bg-red-100 text-red-700 p-2 rounded mb-4">{errorMessage}</p>
+        <p className="bg-red-100 text-red-700 p-4 rounded mb-4 text-center">
+          {errorMessage}
+        </p>
       )}
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 sm:grid-cols-2 gap-2"
+      >
         <div>
-          <label htmlFor="eventTitle" className="block text-gray-700">Event Title</label>
+          <label htmlFor="eventTitle" className="block text-gray-700">
+            Event Title
+          </label>
           <input
             id="eventTitle"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
           />
         </div>
         <div>
-          <label htmlFor="eventDate" className="block text-gray-700">Date</label>
+          <label htmlFor="eventDate" className="block text-gray-700">
+            Date
+          </label>
           <input
             id="eventDate"
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
           />
         </div>
-        <div className="sm:col-span-2">
-          <label htmlFor="eventDescription" className="block text-gray-700">Description</label>
-          <textarea
-            id="eventDescription"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
+
         <div>
-          <label htmlFor="eventTime" className="block text-gray-700">Time</label>
+          <label htmlFor="eventTime" className="block text-gray-700 ">
+            Time
+          </label>
           <input
             id="eventTime"
             type="time"
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
         <div>
-          <label htmlFor="eventLocation" className="block text-gray-700">Location</label>
+          <label htmlFor="eventLocation" className="block text-gray-700 ">
+            Location
+          </label>
           <input
             id="eventLocation"
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
           />
         </div>
+
+        <div className="">
+          <label htmlFor="eventDescription" className="block text-gray-700 ">
+            Description
+          </label>
+          <textarea
+            id="eventDescription"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full mt-1 h-10 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            required
+            rows="5"
+          />
+        </div>
         <div>
-          <label htmlFor="eventLink" className="block text-gray-700">Link (Optional)</label>
+          <label htmlFor="eventLink" className="block text-gray-700 ">
+            Link (Optional)
+          </label>
           <input
             id="eventLink"
             type="url"
             value={link}
             onChange={(e) => setLink(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
-        <div>
-          <label htmlFor="eventOnlinePoster" className="block text-gray-700">Upload Online Poster</label>
+
+        <div className="">
+          <label className="block text-gray-700 mb-2">
+            Upload Online Poster
+          </label>
           <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileChange(e, setOnlinePosterFile)}
+            className="hidden"
             id="eventOnlinePoster"
-            type="file"
-            accept="image/*"
-            onChange={(e) => setOnlinePosterFile(e.target.files[0])}
-            className="w-full p-2 border border-gray-300 rounded"
+            ref={onlinePosterInputRef} // Assign ref here
           />
+          <label
+            htmlFor="eventOnlinePoster"
+            className="flex items-center justify-center w-full h-12 border border-gray-300 rounded-lg bg-blue-50 cursor-pointer hover:bg-blue-100 transition duration-200"
+          >
+            <MdUpload className="mr-2" /> Select Online Poster
+          </label>
+          <div className="mt-2">
+            {onlinePosterFile && (
+              <div className="flex justify-between items-center">
+                {onlinePosterFile.name}
+                <button
+                  type="button"
+                  onClick={() =>
+                    removeFile(setOnlinePosterFile, onlinePosterInputRef)
+                  }
+                  className="text-red-500 hover:underline ml-2"
+                >
+                  <MdDelete />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-        <div>
-          <label htmlFor="eventOfflinePoster" className="block text-gray-700">Upload Offline Poster</label>
+
+        {/* Offline Poster Upload Section */}
+        <div className="">
+          <label className="block text-gray-700 mb-2">
+            Upload Offline Poster
+          </label>
           <input
-            id="eventOfflinePoster"
             type="file"
             accept="image/*"
-            onChange={(e) => setOfflinePosterFile(e.target.files[0])}
-            className="w-full p-2 border border-gray-300 rounded"
+            onChange={(e) => handleFileChange(e, setOfflinePosterFile)}
+            className="hidden"
+            id="eventOfflinePoster"
+            ref={offlinePosterInputRef} // Assign ref here
           />
+          <label
+            htmlFor="eventOfflinePoster"
+            className="flex items-center justify-center w-full h-12 border border-gray-300 rounded-lg bg-blue-50 cursor-pointer hover:bg-blue-100 transition duration-200"
+          >
+            <MdUpload className="mr-2" /> Select Offline Poster
+          </label>
+          <div className="mt-2">
+            {offlinePosterFile && (
+              <div className="flex justify-between items-center">
+                {offlinePosterFile.name}
+                <button
+                  type="button"
+                  onClick={() =>
+                    removeFile(setOfflinePosterFile, offlinePosterInputRef)
+                  }
+                  className="text-red-500 hover:underline ml-2"
+                >
+                  <MdDelete />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Submit button */}
         <div className="sm:col-span-2">
           <button
             type="submit"
-            className={`w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`w-full h-12 bg-blue-600 text-white rounded-lg transition duration-300 hover:bg-blue-500 ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             disabled={loading}
           >
-            {loading ? "Creating..." : "Create Event"}
+            {loading ? "Creating Event..." : "Create Event"}
           </button>
         </div>
       </form>
