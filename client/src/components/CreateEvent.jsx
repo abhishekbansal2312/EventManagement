@@ -118,7 +118,7 @@ const CreateEvent = () => {
   };
 
   return (
-    <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg text-[14px]">
+    <div className="container mx-auto p-8 px-16 bg-white shadow-lg rounded-lg text-[14px]">
       <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
         Create a New Event
       </h1>
