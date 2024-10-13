@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Cookies from 'js-cookie'; // Import js-cookie to manage cookies
+import Cookies from "js-cookie"; // Import js-cookie to manage cookies
+import { useAuth } from "../provider/AuthProvider";
 
 const Login = ({ darkMode }) => {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ const Login = ({ darkMode }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,7 +48,8 @@ const Login = ({ darkMode }) => {
       console.log(data);
 
       // Set the cookie instead of local storage
-      Cookies.set('authtoken', data.token, { expires: 7, path: '' }); // Set cookie to expire in 7 days
+      Cookies.set("authtoken", data.token, { expires: 7, path: "" }); // Set cookie to expire in 7 days
+      setIsAuthenticated(true);
 
       navigate("/"); // Redirect to home page on successful login
     } catch (err) {
