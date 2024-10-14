@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 import MemberCard from "../components/Membercard";
 import CreateMember from "../components/CreateMember";
 import UpdateMemberForm from "../components/UpdateMemberForm";
 import FacultyCard from "../components/FacultyCard";
 import CreateFaculty from "../components/CreateFaculty";
-import "../App.css"
+import "../App.css";
 
 const Members = ({ darkMode }) => {
   const [members, setMembers] = useState([]);
@@ -35,14 +35,17 @@ const Members = ({ darkMode }) => {
         setIsAdmin(decodedToken.role === "admin");
 
         // Fetch members
-        const membersResponse = await fetch("http://localhost:4600/api/members", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          credentials: "include",
-        });
+        const membersResponse = await fetch(
+          "http://localhost:4600/api/members",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            credentials: "include",
+          }
+        );
 
         if (!membersResponse.ok) {
           throw new Error("Failed to fetch members");
@@ -52,14 +55,17 @@ const Members = ({ darkMode }) => {
         setMembers(membersData);
 
         // Fetch faculty members
-        const facultyResponse = await fetch("http://localhost:4600/api/faculty", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          credentials: "include",
-        });
+        const facultyResponse = await fetch(
+          "http://localhost:4600/api/faculty",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            credentials: "include",
+          }
+        );
 
         if (!facultyResponse.ok) {
           throw new Error("Failed to fetch faculty members");
@@ -77,11 +83,12 @@ const Members = ({ darkMode }) => {
     fetchMembersAndFaculty();
   }, []);
 
-  if (loading) return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="loader"></div> {/* Add a loader animation here */}
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="loader"></div> {/* Add a loader animation here */}
+      </div>
+    );
   if (error) return <p className="text-red-500">{error}</p>;
 
   const handleEditMember = (member) => {
@@ -104,13 +111,16 @@ const Members = ({ darkMode }) => {
     if (window.confirm("Are you sure you want to delete this member?")) {
       try {
         const token = Cookies.get("authtoken");
-        const response = await fetch(`http://localhost:4600/api/members/${memberId}`, {
-          method: "DELETE",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          },
-          credentials: "include",
-        });
+        const response = await fetch(
+          `http://localhost:4600/api/members/${memberId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to delete member");
@@ -124,23 +134,32 @@ const Members = ({ darkMode }) => {
   };
 
   const handleDeleteFaculty = async (facultyId) => {
-    if (window.confirm("Are you sure you want to delete this faculty member?")) {
+    if (
+      window.confirm("Are you sure you want to delete this faculty member?")
+    ) {
       try {
         const token = Cookies.get("authtoken");
-        const response = await fetch(`http://localhost:4600/api/faculty/${facultyId}`, {
-          method: "DELETE",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          },
-          credentials: "include",
-        });
+        const response = await fetch(
+          `http://localhost:4600/api/faculty/${facultyId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) {
           const errorData = await response.json(); // Parse error response
-          throw new Error(errorData.message || "Failed to delete faculty member"); // Use error message from response
+          throw new Error(
+            errorData.message || "Failed to delete faculty member"
+          ); // Use error message from response
         }
 
-        setFaculty((prev) => prev.filter((faculty) => faculty?._id !== facultyId)); // Optional chaining
+        setFaculty((prev) =>
+          prev.filter((faculty) => faculty?._id !== facultyId)
+        ); // Optional chaining
       } catch (err) {
         setError(err.message);
       }
@@ -149,7 +168,11 @@ const Members = ({ darkMode }) => {
 
   return (
     <div className={`${darkMode ? "dark" : ""}`}>
-      <div className={`min-h-screen transition duration-500 ${darkMode ? "bg-gray-900" : "bg-white"} p-6`}>
+      <div
+        className={`min-h-screen transition duration-500 ${
+          darkMode ? "bg-gray-900" : "bg-white"
+        } p-6`}
+      >
         {isAdmin && (
           <button
             className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:scale-105 transition-transform duration-300"
@@ -160,7 +183,11 @@ const Members = ({ darkMode }) => {
         )}
 
         {showCreateFaculty && (
-          <CreateFaculty setFaculty={setFaculty} setError={setError} darkMode={darkMode} />
+          <CreateFaculty
+            setFaculty={setFaculty}
+            setError={setError}
+            darkMode={darkMode}
+          />
         )}
 
         <h2 className="text-2xl font-semibold mb-4">Faculty Members</h2>
@@ -173,14 +200,16 @@ const Members = ({ darkMode }) => {
               setFaculty={setFaculty}
               isAdmin={isAdmin}
               onEdit={isAdmin ? () => handleEditFaculty(facultyMember) : null}
-              onDelete={isAdmin ? () => handleDeleteFaculty(facultyMember._id) : null}
+              onDelete={
+                isAdmin ? () => handleDeleteFaculty(facultyMember._id) : null
+              }
             />
           ))}
         </div>
 
         {isAdmin && (
           <button
-            className="mt-8 mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:scale-105 transition-transform duration-300"
+            className="mt-8 mb-4 bg-blue-500 text-white px-4 py-2 rounded"
             onClick={() => setShowCreateMember(!showCreateMember)}
           >
             {showCreateMember ? "Cancel" : "Add Member"}
@@ -188,17 +217,23 @@ const Members = ({ darkMode }) => {
         )}
 
         {showCreateMember && (
-          <CreateMember setMembers={setMembers} setError={setError} darkMode={darkMode} />
+          <CreateMember
+            setMembers={setMembers}
+            setError={setError}
+            darkMode={darkMode}
+          />
         )}
 
         {editingMember && (
-          <div className="my-4 p-4 border rounded bg-gray-100 transition duration-300">
+          <div className="my-4 p-4 border rounded bg-gray-100">
             <h2 className="text-xl font-semibold mb-2">Edit Member</h2>
             <UpdateMemberForm
               member={editingMember}
               onUpdate={(updatedMember) => {
                 setMembers((prev) =>
-                  prev.map((m) => (m?._id === updatedMember._id ? updatedMember : m))
+                  prev.map((m) =>
+                    m?._id === updatedMember._id ? updatedMember : m
+                  )
                 );
                 handleCancelEdit();
               }}

@@ -7,12 +7,6 @@
     -ms-overflow-style: none;  /* Hide scrollbar for Internet Explorer and Edge */
     scrollbar-width: none;  /* Hide scrollbar for Firefox */
 }
-
-/* styles.css or your main CSS file */
-.main-content {
-    margin-top: 64px; /* Adjust based on your navbar height */
-    padding: 20px; /* Optional: add padding for spacing */
-  }
   
 
   .loader {
