@@ -23,11 +23,7 @@ const AppRouter = () => {
   const location = useLocation();
   return (
     <div>
-      <div
-        className={`flex flex-col min-h-screen ${
-          darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-        }`}
-      >
+      <div className={`flex flex-col min-h-screen`}>
         {/* Conditionally render the Header */}
         {isAuthenticated && (
           <Header

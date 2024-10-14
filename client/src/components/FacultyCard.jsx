@@ -3,45 +3,64 @@ import PropTypes from "prop-types"; // Import PropTypes for prop validation
 
 const FacultyCard = ({ faculty, darkMode, onEdit, onDelete, isAdmin }) => {
   // Ensure faculty is defined and is an object
-  if (!faculty || typeof faculty !== 'object') {
-    return <div className="p-4 text-red-500">Faculty data is not available.</div>;
+  if (!faculty || typeof faculty !== "object") {
+    return (
+      <div className="p-4 text-red-500">Faculty data is not available.</div>
+    );
   }
 
   return (
     <div
-      className={`p-6 border border-gray-300 rounded-lg shadow-lg transition-transform transform hover:scale-105 ${
-        darkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white text-gray-900"
+      className={`p-6 border border-gray-300 rounded-lg shadow-lg ${
+        darkMode
+          ? "bg-gray-800 text-white border-gray-700"
+          : "bg-white text-gray-900"
       }`}
     >
       <div className="flex items-center mb-4">
         {faculty.pictureURL && (
           <img
             src={faculty.pictureURL}
-            alt={`${faculty.name}'s picture`}
-            className="w-24 h-24 rounded-full shadow-lg border-2 border-indigo-500 transition-transform transform hover:scale-110"
+            alt={`${faculty.name}'s`}
+            className="w-24 h-24 rounded-full shadow-lg border-2 border-indigo-500"
           />
         )}
         <div className="ml-4">
-          <h2 className="text-xl font-bold mb-1">{faculty.name || "No Name Provided"}</h2>
-          <p className="text-sm text-gray-500 mb-2">{faculty.email || "No Email Provided"}</p>
-          <p className="text-sm mb-2">Faculty ID: {faculty.facultyId || "N/A"}</p>
+          <h2 className="text-xl font-bold mb-1">
+            {faculty.name || "No Name Provided"}
+          </h2>
+          <p className="text-sm text-gray-500 mb-2">
+            {faculty.email || "No Email Provided"}
+          </p>
+          <p className="text-sm mb-2">
+            Faculty ID: {faculty.facultyId || "N/A"}
+          </p>
         </div>
       </div>
 
       <p className="mb-2">
-        <span className="font-semibold">Specialization:</span> {faculty.specializations && faculty.specializations.length > 0 ? faculty.specializations.join(", ") : "N/A"}
+        <span className="font-semibold">Specialization:</span>{" "}
+        {faculty.specializations && faculty.specializations.length > 0
+          ? faculty.specializations.join(", ")
+          : "N/A"}
       </p>
       <p className="mb-2">
-        <span className="font-semibold">Bio:</span> {faculty.description || "No Bio Provided"}
+        <span className="font-semibold">Bio:</span>{" "}
+        {faculty.description || "No Bio Provided"}
       </p>
       <p className="mb-2">
-        <span className="font-semibold">Phone Number:</span> {faculty.phoneNumber || "N/A"}
+        <span className="font-semibold">Phone Number:</span>{" "}
+        {faculty.phoneNumber || "N/A"}
       </p>
       <p className="mb-2">
-        <span className="font-semibold">Status:</span> {faculty.isActive ? "Active" : "Inactive"}
+        <span className="font-semibold">Status:</span>{" "}
+        {faculty.isActive ? "Active" : "Inactive"}
       </p>
       <p className="mb-2">
-        <span className="font-semibold">Join Date:</span> {faculty.joinDate ? new Date(faculty.joinDate).toLocaleDateString() : "N/A"}
+        <span className="font-semibold">Join Date:</span>{" "}
+        {faculty.joinDate
+          ? new Date(faculty.joinDate).toLocaleDateString()
+          : "N/A"}
       </p>
 
       {isAdmin && (

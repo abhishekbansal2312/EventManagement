@@ -47,7 +47,7 @@ const Navbar = ({ darkMode }) => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 ${
+      className={`sticky top-0 left-0 right-0 z-50 ${
         darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
       } shadow-lg transition-all duration-300 backdrop-blur-md`}
     >
