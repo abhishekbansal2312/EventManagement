@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
 
 const Gallery = ({ darkMode }) => {
     const [events, setEvents] = useState([]);
@@ -13,9 +13,9 @@ const Gallery = ({ darkMode }) => {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,  // Example: JWT token for authorization
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
-                    credentials: 'include',  // Include credentials like cookies
+                    credentials: 'include',
                 });
 
                 if (!response.ok) throw new Error(response.statusText);
@@ -33,8 +33,10 @@ const Gallery = ({ darkMode }) => {
     }, []);
 
     return (
-        <div className={`min-h-screen p-8 ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
-            <h1 className="text-3xl font-bold mb-6">Event Gallery</h1>
+        <div className={`relative flex min-h-screen flex-col overflow-hidden ${darkMode ? 'bg-black' : 'bg-gray-50'}`}>
+            <h1 className="text-4xl font-bold mb-8 text-center text-gray-800 dark:text-white">
+                Event Gallery
+            </h1>
 
             {loading ? (
                 <div className="flex justify-center items-center">
@@ -45,7 +47,7 @@ const Gallery = ({ darkMode }) => {
                     </div>
                 </div>
             ) : error ? (
-                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg shadow-lg">
                     <p className="font-bold">Error:</p>
                     <p>{error}</p>
                 </div>
@@ -53,25 +55,26 @@ const Gallery = ({ darkMode }) => {
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {events.length ? (
                         events.map((event) => (
-                            <Link 
+                            <Link
                                 key={event._id}
-                                to={`/gallery/${event._id}`} 
-                                className={`p-4 rounded-lg shadow-md transition-all ${
-                                    darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-                                }`}
+                                to={`/gallery/${event._id}`}
+                                className="relative flex h-72 w-full max-w-xs rounded-xl shadow-xl ring-gray-900/5 overflow-hidden group"
                             >
-                                <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
-                                {event.offlinePoster && (
+                                <div className="z-10 h-full w-full overflow-hidden rounded-xl border border-gray-200 opacity-80 transition duration-300 ease-in-out group-hover:opacity-100 dark:border-gray-700 dark:opacity-70">
                                     <img
-                                        src={event.offlinePoster}
+                                        src={event.offlinePoster || "https://via.placeholder.com/3149"} // Placeholder if no poster is available
+                                        className="animate-fade-in block h-full w-full scale-100 transform object-cover object-center opacity-100 transition duration-300 group-hover:scale-110"
                                         alt={event.title}
-                                        className="w-full h-auto rounded-md mb-2"
                                     />
-                                )}
+                                </div>
+                                <div className="absolute bottom-0 z-20 m-0 pb-4 ps-4 bg-black  rounded-xl transition duration-300 ease-in-out group-hover:-translate-y-1 group-hover:translate-x-3 group-hover:scale-110">
+                                    <h1 className="font-serif text-2xl font-bold text-white">{event.title}</h1>
+                                    <h2 className="text-sm font-light text-gray-200">{event.description || "Description not available"}</h2>
+                                </div>
                             </Link>
                         ))
                     ) : (
-                        <p className="text-center">No events available.</p>
+                        <p className="text-center text-lg font-medium">No events available.</p>
                     )}
                 </div>
             )}
