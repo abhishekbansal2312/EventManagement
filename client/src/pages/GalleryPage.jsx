@@ -11,6 +11,7 @@ const GalleryPage = ({ darkMode }) => {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [images, setImages] = useState([]);
+  const [imageNames, setImageNames] = useState([]); // State to store names of selected images
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -65,6 +66,7 @@ const GalleryPage = ({ darkMode }) => {
     }
 
     setImages(validFiles);
+    setImageNames(validFiles.map(file => file.name)); // Store the names of valid files
   };
 
   const handleUpload = async (e) => {
@@ -93,6 +95,7 @@ const GalleryPage = ({ darkMode }) => {
       const data = await response.json();
       setSuccessMessage(data.message);
       setImages([]);
+      setImageNames([]); // Clear image names after upload
     } catch (error) {
       setErrorMessage(error.message);
     } finally {
@@ -155,14 +158,19 @@ const GalleryPage = ({ darkMode }) => {
             {isAdmin && (
               <form onSubmit={handleUpload} className="mb-4">
                 <label htmlFor="imageUpload" className="block text-gray-700">Upload Images</label>
-                <input
-                  id="imageUpload"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleFileChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
+                <div className="relative flex items-center">
+                  <input
+                    id="imageUpload"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileChange}
+                    className="opacity-0 absolute w-full h-full cursor-pointer z-10"
+                  />
+                  <div className="flex justify-center items-center w-full h-12 bg-gray-200 border border-gray-300 rounded transition duration-300 ease-in-out hover:bg-gray-300 focus:outline-none">
+                    <span className="text-gray-700">Drag and drop your files here or click to upload</span>
+                  </div>
+                </div>
                 <button
                   type="submit"
                   className={`mt-4 w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -173,6 +181,18 @@ const GalleryPage = ({ darkMode }) => {
               </form>
             )}
             
+            {/* Display names of selected images */}
+            {imageNames.length > 0 && (
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold">Selected Images:</h2>
+                <ul className="list-disc pl-5">
+                  {imageNames.map((name, index) => (
+                    <li key={index} className="text-gray-700">{name}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {event?.gallery && event.gallery.length > 0 ? (
                 event.gallery.map((imageUrl, index) => (
