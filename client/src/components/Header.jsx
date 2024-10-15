@@ -41,18 +41,17 @@ const Navbar = ({ darkMode }) => {
         setIsAuthenticated(false);
         setIsAdmin(false); // Reset admin state on logout
         navigate("/login");
-        setIsAuthenticated(false);
       })
       .catch((error) => console.error("Logout error:", error));
   };
 
   return (
     <nav
-      className={`${
+      className={`fixed top-0 left-0 right-0 z-50 ${
         darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
-      } shadow-lg transition-colors duration-300`}
+      } shadow-lg transition-all duration-300 backdrop-blur-md`}
     >
-      <div className="container mx-auto flex justify-between items-center py-4 px-16">
+      <div className="container mx-auto flex justify-between items-center py-4 px-6 md:px-16">
         {/* Logo */}
         <div className="font-bold text-2xl">
           <Link
@@ -71,19 +70,20 @@ const Navbar = ({ darkMode }) => {
         <div className="hidden md:flex space-x-8 items-center">
           <Link
             to="/"
-            className={`transition-all duration-300 ${
+            className={`transition-all duration-300 relative group ${
               darkMode
                 ? "text-gray-300 hover:text-gray-400"
                 : "text-gray-900 hover:text-blue-500"
             }`}
           >
             Home
+            <span className="absolute h-0.5 w-full bg-gradient-to-r from-blue-500 to-purple-500 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
           </Link>
           {isAuthenticated ? (
             <>
               <Link
                 to="/live"
-                className={`relative transition-all duration-300 ${
+                className={`relative transition-all duration-300 group ${
                   darkMode
                     ? "text-gray-300 hover:text-gray-400"
                     : "text-gray-900 hover:text-blue-500"
@@ -91,70 +91,77 @@ const Navbar = ({ darkMode }) => {
               >
                 Live{" "}
                 <span className="absolute top-0 left-0 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
+                <span className="absolute h-0.5 w-full bg-gradient-to-r from-blue-500 to-purple-500 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
               </Link>
               <Link
                 to="/members"
-                className={`transition-all duration-300 ${
+                className={`transition-all duration-300 relative group ${
                   darkMode
                     ? "text-gray-300 hover:text-gray-400"
                     : "text-gray-900 hover:text-blue-500"
                 }`}
               >
                 Members
+                <span className="absolute h-0.5 w-full bg-gradient-to-r from-blue-500 to-purple-500 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
               </Link>
               {isAdmin && (
                 <Link
                   to="/users"
-                  className={`transition-all duration-300 ${
+                  className={`transition-all duration-300 relative group ${
                     darkMode
                       ? "text-gray-300 hover:text-gray-400"
                       : "text-gray-900 hover:text-blue-500"
                   }`}
                 >
                   Users
+                  <span className="absolute h-0.5 w-full bg-gradient-to-r from-blue-500 to-purple-500 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
                 </Link>
               )}
               <Link
                 to="/events"
-                className={`transition-all duration-300 ${
+                className={`transition-all duration-300 relative group ${
                   darkMode
                     ? "text-gray-300 hover:text-gray-400"
                     : "text-gray-900 hover:text-blue-500"
                 }`}
               >
                 Events
+                <span className="absolute h-0.5 w-full bg-gradient-to-r from-blue-500 to-purple-500 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
               </Link>
               <Link
                 to="/gallery"
-                className={`transition-all duration-300 ${
+                className={`transition-all duration-300 relative group ${
                   darkMode
                     ? "text-gray-300 hover:text-gray-400"
                     : "text-gray-900 hover:text-blue-500"
                 }`}
               >
                 Gallery
+                <span className="absolute h-0.5 w-full bg-gradient-to-r from-blue-500 to-purple-500 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
               </Link>
               <button
                 onClick={handleLogout}
-                className={`transition-all duration-300 ${
+                className={`transition-all duration-300 relative group ${
                   darkMode
                     ? "text-gray-300 hover:text-red-400"
                     : "text-gray-900 hover:text-red-500"
                 }`}
               >
                 Logout
+                <span className="absolute h-0.5 w-full bg-gradient-to-r from-blue-500 to-purple-500 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
               </button>
             </>
           ) : (
             <Link
               to="/login"
-              className={`transition-all duration-300 ${
+              className={`transition-all duration-300 relative group ${
                 darkMode
                   ? "text-gray-300 hover:text-gray-400"
                   : "text-gray-900 hover:text-blue-500"
               }`}
             >
               Login
+              <span className="absolute h-0.5 w-full bg-gradient-to-r from-blue-500 to-purple-500 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
             </Link>
           )}
         </div>
@@ -249,10 +256,10 @@ const Navbar = ({ darkMode }) => {
             </Link>
             <button
               onClick={handleLogout}
-              className={`block w-full text-left px-4 py-2 transition-all duration-300 ${
+              className={`block px-4 py-2 transition-all duration-300 ${
                 darkMode
-                  ? "text-gray-300 hover:bg-gray-700"
-                  : "text-gray-900 hover:bg-gray-100"
+                  ? "text-gray-300 hover:bg-red-400"
+                  : "text-gray-900 hover:bg-red-200"
               }`}
             >
               Logout

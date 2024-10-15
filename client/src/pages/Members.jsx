@@ -1,49 +1,72 @@
 import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie"; // Import js-cookie to handle cookies
-import {jwtDecode }from 'jwt-decode'; // Import jwtDecode to decode JWT tokens
-import MemberCard from "../components/Membercard"; // Import MemberCard component
-import CreateMember from "../components/CreateMember"; // Import CreateMember component
-import UpdateMemberForm from "../components/UpdateMemberForm"; // Import UpdateMemberForm component
+import Cookies from "js-cookie";
+import { jwtDecode } from 'jwt-decode';
+import MemberCard from "../components/Membercard";
+import CreateMember from "../components/CreateMember";
+import UpdateMemberForm from "../components/UpdateMemberForm";
+import FacultyCard from "../components/FacultyCard";
+import CreateFaculty from "../components/CreateFaculty";
+import "../App.css"
 
 const Members = ({ darkMode }) => {
   const [members, setMembers] = useState([]);
+  const [faculty, setFaculty] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreateMember, setShowCreateMember] = useState(false);
-  const [editingMember, setEditingMember] = useState(null); // State to track the member being edited
-  const [isAdmin, setIsAdmin] = useState(false); // State to track if the user is an admin
+  const [showCreateFaculty, setShowCreateFaculty] = useState(false);
+  const [editingMember, setEditingMember] = useState(null);
+  const [editingFaculty, setEditingFaculty] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const fetchMembers = async () => {
+    const fetchMembersAndFaculty = async () => {
       try {
-        const token = Cookies.get("authtoken"); // Fetch token from cookies
+        const token = Cookies.get("authtoken");
 
         if (!token) {
           console.error("No token found. Redirecting to login page...");
           setError("No token found. Redirecting to login page...");
-          window.location.href = "/login"; // Redirect to login page
+          window.location.href = "/login";
           return;
         }
 
-        // Decode the token to get user role
         const decodedToken = jwtDecode(token);
-        setIsAdmin(decodedToken.role === "admin"); // Set admin status based on role
+        setIsAdmin(decodedToken.role === "admin");
 
-        const response = await fetch("http://localhost:4600/api/members", {
+        // Fetch members
+        const membersResponse = await fetch("http://localhost:4600/api/members", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`, // Include token in headers
+            "Authorization": `Bearer ${token}`,
           },
           credentials: "include",
         });
 
-        if (!response.ok) {
+        if (!membersResponse.ok) {
           throw new Error("Failed to fetch members");
         }
 
-        const data = await response.json();
-        setMembers(data);
+        const membersData = await membersResponse.json();
+        setMembers(membersData);
+
+        // Fetch faculty members
+        const facultyResponse = await fetch("http://localhost:4600/api/faculty", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          credentials: "include",
+        });
+
+        if (!facultyResponse.ok) {
+          throw new Error("Failed to fetch faculty members");
+        }
+
+        const facultyData = await facultyResponse.json();
+        setFaculty(facultyData);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -51,37 +74,73 @@ const Members = ({ darkMode }) => {
       }
     };
 
-    fetchMembers();
-  }, []); // Empty dependency array ensures this runs only once
+    fetchMembersAndFaculty();
+  }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="loader"></div> {/* Add a loader animation here */}
+    </div>
+  );
+  if (error) return <p className="text-red-500">{error}</p>;
 
   const handleEditMember = (member) => {
-    setEditingMember(member); // Set the member to be edited
+    setEditingMember(member);
   };
 
   const handleCancelEdit = () => {
-    setEditingMember(null); // Reset the editing member
+    setEditingMember(null);
+  };
+
+  const handleEditFaculty = (faculty) => {
+    setEditingFaculty(faculty);
+  };
+
+  const handleCancelEditFaculty = () => {
+    setEditingFaculty(null);
   };
 
   const handleDeleteMember = async (memberId) => {
     if (window.confirm("Are you sure you want to delete this member?")) {
       try {
-        const token = Cookies.get("authtoken"); // Fetch token from cookies
+        const token = Cookies.get("authtoken");
         const response = await fetch(`http://localhost:4600/api/members/${memberId}`, {
           method: "DELETE",
           headers: {
-            "Authorization": `Bearer ${token}`, // Include token in headers
+            "Authorization": `Bearer ${token}`,
           },
+          credentials: "include",
         });
 
         if (!response.ok) {
           throw new Error("Failed to delete member");
         }
 
-        // Remove the deleted member from the state
-        setMembers((prev) => prev.filter((member) => member._id !== memberId));
+        setMembers((prev) => prev.filter((member) => member?._id !== memberId));
+      } catch (err) {
+        setError(err.message);
+      }
+    }
+  };
+
+  const handleDeleteFaculty = async (facultyId) => {
+    if (window.confirm("Are you sure you want to delete this faculty member?")) {
+      try {
+        const token = Cookies.get("authtoken");
+        const response = await fetch(`http://localhost:4600/api/faculty/${facultyId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json(); // Parse error response
+          throw new Error(errorData.message || "Failed to delete faculty member"); // Use error message from response
+        }
+
+        setFaculty((prev) => prev.filter((faculty) => faculty?._id !== facultyId)); // Optional chaining
       } catch (err) {
         setError(err.message);
       }
@@ -90,18 +149,38 @@ const Members = ({ darkMode }) => {
 
   return (
     <div className={`${darkMode ? "dark" : ""}`}>
-      <div
-        className={`min-h-screen ${
-          darkMode ? "bg-gray-900" : "bg-white"
-        } text-gray-700 ${
-          darkMode ? "dark:text-gray-300" : "text-gray-900"
-        } p-6`}
-      >
-       
-        
+      <div className={`min-h-screen transition duration-500 ${darkMode ? "bg-gray-900" : "bg-white"} p-6`}>
         {isAdmin && (
           <button
-            className="mb-4 bg-blue-500 text-white px-4 py-2 rounded"
+            className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:scale-105 transition-transform duration-300"
+            onClick={() => setShowCreateFaculty(!showCreateFaculty)}
+          >
+            {showCreateFaculty ? "Cancel" : "Add Faculty"}
+          </button>
+        )}
+
+        {showCreateFaculty && (
+          <CreateFaculty setFaculty={setFaculty} setError={setError} darkMode={darkMode} />
+        )}
+
+        <h2 className="text-2xl font-semibold mb-4">Faculty Members</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          {faculty.map((facultyMember) => (
+            <FacultyCard
+              key={facultyMember?._id}
+              faculty={facultyMember}
+              darkMode={darkMode}
+              setFaculty={setFaculty}
+              isAdmin={isAdmin}
+              onEdit={isAdmin ? () => handleEditFaculty(facultyMember) : null}
+              onDelete={isAdmin ? () => handleDeleteFaculty(facultyMember._id) : null}
+            />
+          ))}
+        </div>
+
+        {isAdmin && (
+          <button
+            className="mt-8 mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:scale-105 transition-transform duration-300"
             onClick={() => setShowCreateMember(!showCreateMember)}
           >
             {showCreateMember ? "Cancel" : "Add Member"}
@@ -112,35 +191,34 @@ const Members = ({ darkMode }) => {
           <CreateMember setMembers={setMembers} setError={setError} darkMode={darkMode} />
         )}
 
-        {/* Update Member Section */}
         {editingMember && (
-          <div className="my-4 p-4 border rounded bg-gray-100">
+          <div className="my-4 p-4 border rounded bg-gray-100 transition duration-300">
             <h2 className="text-xl font-semibold mb-2">Edit Member</h2>
             <UpdateMemberForm
               member={editingMember}
               onUpdate={(updatedMember) => {
                 setMembers((prev) =>
-                  prev.map((m) => (m._id === updatedMember._id ? updatedMember : m))
+                  prev.map((m) => (m?._id === updatedMember._id ? updatedMember : m))
                 );
-                handleCancelEdit(); // Clear the editing member after update
+                handleCancelEdit();
               }}
-              onCancel={handleCancelEdit} // Cancel edit
+              onCancel={handleCancelEdit}
               darkMode={darkMode}
             />
           </div>
         )}
 
-        {/* Members Section */}
+        <h2 className="text-2xl font-semibold mb-4">Members</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {members.map((member) => (
             <MemberCard
-              key={member._id}
+              key={member?._id}
               member={member}
               darkMode={darkMode}
               setMembers={setMembers}
-              isAdmin={isAdmin} 
-              onEdit={isAdmin ? () => handleEditMember(member) : null} // Allow editing only if admin
-              onDelete={isAdmin ? () => handleDeleteMember(member._id) : null} // Allow deleting only if admin
+              isAdmin={isAdmin}
+              onEdit={isAdmin ? () => handleEditMember(member) : null}
+              onDelete={isAdmin ? () => handleDeleteMember(member._id) : null}
             />
           ))}
         </div>

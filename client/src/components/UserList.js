@@ -1,7 +1,7 @@
 import React from 'react';
 import UserItem from './UserItem';
 
-const UserList = ({ users, handleEdit, handleDelete, handleParticipatedEvents, events }) => {
+const UserList = ({ users, handleEdit, handleDelete, handleParticipatedEvents,darkMode, events }) => {
   return (
     <ul>
       {users.map(user => (
@@ -12,6 +12,7 @@ const UserList = ({ users, handleEdit, handleDelete, handleParticipatedEvents, e
           handleDelete={handleDelete} 
           handleParticipatedEvents={handleParticipatedEvents} 
           events={events} 
+          darkMode={darkMode}
         />
       ))}
     </ul>

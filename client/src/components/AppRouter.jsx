@@ -38,7 +38,7 @@ const AppRouter = () => {
         )}
 
         {/* Main content with routes */}
-        <main className="flex-grow">
+        <main className="flex-grow main-content">
           <Routes>
             {/* Home page (public) */}
             <Route

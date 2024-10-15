@@ -52,32 +52,31 @@ const MemberCard = ({ member, darkMode, setMembers, isAdmin }) => {
 
   return (
     <div
-      className={`p-6 rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105 ${
-        darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+      className={`p-6 rounded-2xl shadow-lg transition-transform duration-300 transform hover:scale-105 ${
+        darkMode ? "bg-gradient-to-br from-gray-800 to-gray-700 text-white" : "bg-gradient-to-br from-white to-gray-200 text-gray-900"
       } hover:shadow-2xl`}
-      style={{ border: `1px solid ${darkMode ? "#333" : "#ddd"}` }}
+      style={{ border: `1px solid ${darkMode ? "#444" : "#ddd"}`, backdropFilter: "blur(10px)" }}
     >
-      <div className="flex items-center"> {/* Flex container for profile picture and info */}
+      <div className="flex items-center mb-4">
         {member.pictureURL ? (
           <img
             src={member.pictureURL}
             alt={member.name}
-            className={`w-24 h-24 object-cover rounded-full border-4 mr-6 ${
+            className={`w-24 h-24 object-cover rounded-full border-4 mr-6 shadow-lg transition-transform duration-300 hover:scale-110 ${
               darkMode ? "border-gray-700" : "border-gray-300"
             }`}
           />
         ) : (
-          <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mr-6">
+          <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mr-6 shadow-lg">
             <span className="text-gray-400">No Image</span>
           </div>
         )}
 
-        {/* Member information */}
         <div>
-          <h3 className={`text-2xl font-semibold mb-2 ${darkMode ? "text-blue-400" : "text-blue-600"}`}>
+          <h3 className={`text-2xl font-bold mb-1 transition-all duration-200 ${darkMode ? "text-blue-400" : "text-blue-600"}`}>
             {member.name}
           </h3>
-          <p className={`text-sm mb-4 ${darkMode ? "text-gray-400" : "text-gray-700"}`}>
+          <p className={`text-sm mb-2 ${darkMode ? "text-gray-400" : "text-gray-700"}`}>
             {member.description}
           </p>
           <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
@@ -99,8 +98,8 @@ const MemberCard = ({ member, darkMode, setMembers, isAdmin }) => {
             onClick={handleEdit}
             className={`py-2 px-4 rounded-lg font-semibold transition-all duration-200 focus:outline-none ${
               darkMode
-                ? "bg-blue-500 hover:bg-blue-600 text-white"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
+                ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+                : "bg-blue-500 hover:bg-blue-600 text-white shadow-md"
             }`}
           >
             {isUpdating ? "Cancel" : "Update"}
@@ -109,8 +108,8 @@ const MemberCard = ({ member, darkMode, setMembers, isAdmin }) => {
             onClick={handleDelete}
             className={`py-2 px-4 rounded-lg font-semibold transition-all duration-200 focus:outline-none ${
               darkMode
-                ? "bg-red-500 hover:bg-red-600 text-white"
-                : "bg-red-600 hover:bg-red-700 text-white"
+                ? "bg-red-600 hover:bg-red-700 text-white shadow-md"
+                : "bg-red-500 hover:bg-red-600 text-white shadow-md"
             }`}
           >
             Delete

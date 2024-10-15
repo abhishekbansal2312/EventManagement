@@ -42,9 +42,9 @@ const Live = ({ darkMode }) => {
     const liveEvents = events.filter(event => event.isLive);
 
     return (
-        <div className={`min-h-screen flex flex-col items-center justify-start ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
+        <div className={`min-h-screen flex flex-col items-center justify-start ${darkMode ? "bg-gradient-to-b from-gray-900 to-black text-white" : "bg-gradient-to-b from-gray-100 to-gray-200 text-gray-900"}`}>
             <div className="container mx-auto px-4 md:px-8 lg:px-12 py-8">
-                <h1 className="text-5xl font-bold text-center mb-10">Live Events</h1>
+                <h1 className="text-5xl font-bold text-center mb-10 animate-pulse">Live Events</h1>
 
                 {loading && (
                     <div className="flex justify-center items-center mb-4">
@@ -68,22 +68,22 @@ const Live = ({ darkMode }) => {
                         {liveEvents.length > 0 ? (
                             <div className="grid gap-6 grid-cols-1 mt-4">
                                 {liveEvents.map((event) => (
-                                    <div key={event._id} className="grid grid-cols-1 md:grid-cols-3 border rounded-lg shadow-md p-6 bg-white dark:bg-gray-800">
+                                    <div key={event._id} className="border rounded-lg shadow-md p-6 bg-white dark:bg-gray-800 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                                         {/* Online Poster Column */}
                                         {event.onlinePoster && (
                                             <div className="flex justify-center mb-4">
-                                                <img src={event.onlinePoster} alt="Online Poster" className="w-full h-auto rounded-md shadow mb-4" />
+                                                <img src={event.onlinePoster} alt="Online Poster" className="w-48 h-72 object-cover rounded-md shadow-lg transform transition-transform duration-300 hover:scale-105" />
                                             </div>
                                         )}
                                         {/* Offline Poster Column */}
                                         {event.offlinePoster && (
                                             <div className="flex justify-center mb-4">
-                                                <img src={event.offlinePoster} alt="Offline Poster" className="w-full h-auto rounded-md shadow" />
+                                                <img src={event.offlinePoster} alt="Offline Poster" className="w-48 h-72 object-cover rounded-md shadow-lg transform transition-transform duration-300 hover:scale-105" />
                                             </div>
                                         )}
                                         {/* Event Details Column */}
-                                        <div className="col-span-1 flex flex-col justify-between">
-                                            <h2 className="text-3xl font-semibold mb-2">{event.title}</h2>
+                                        <div className="flex flex-col justify-between">
+                                            <h2 className="text-3xl font-semibold mb-2 hover:text-blue-500 transition-colors duration-200">{event.title}</h2>
                                             <p className="text-gray-700 dark:text-gray-300 mb-4 text-lg">{event.description}</p>
                                             <div className="space-y-2">
                                                 <p className="text-gray-600 dark:text-gray-400 text-sm"><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
@@ -91,13 +91,13 @@ const Live = ({ darkMode }) => {
                                                 <p className="text-gray-600 dark:text-gray-400 text-sm"><strong>Location:</strong> {event.location}</p>
                                             </div>
                                             {event.link && (
-                                                <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline mt-2">
+                                                <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline mt-2 hover:text-blue-700 transition-colors duration-200">
                                                     More Details
                                                 </a>
                                             )}
                                             {event.isLive ? (
                                                 <div className="mt-2">
-                                                    <a href="/register" className="text-blue-500 underline">
+                                                    <a href="/register" className="text-blue-500 underline hover:text-blue-700 transition-colors duration-200">
                                                         Register Here
                                                     </a>
                                                 </div>

@@ -7,3 +7,25 @@
     -ms-overflow-style: none;  /* Hide scrollbar for Internet Explorer and Edge */
     scrollbar-width: none;  /* Hide scrollbar for Firefox */
 }
+
+/* styles.css or your main CSS file */
+.main-content {
+    margin-top: 64px; /* Adjust based on your navbar height */
+    padding: 20px; /* Optional: add padding for spacing */
+  }
+  
+
+  .loader {
+    border: 8px solid rgba(255, 255, 255, 0.1);
+    border-left-color: #4c51bf; /* Change to your theme color */
+    border-radius: 50%;
+    width: 64px;
+    height: 64px;
+    animation: spin 1s ease infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  

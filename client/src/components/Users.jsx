@@ -8,11 +8,12 @@ import UserList from './UserList'; // Import the UserList component
 const Users = ({ darkMode }) => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [formData, setFormData] = useState({ studentId: '', name: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ studentId: '', name: '', email: '', password: '', role: '' });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
+  const [showForm, setShowForm] = useState(false); // New state for showing the form
 
   useEffect(() => {
     fetchUsers();
@@ -82,8 +83,9 @@ const Users = ({ darkMode }) => {
 
   const handleEdit = (user) => {
     setSelectedUser(user._id);
-    setFormData({ studentId: user.studentId, name: user.name, email: user.email, password: '' });
+    setFormData({ studentId: user.studentId, name: user.name, email: user.email, password: '', role: user.role });
     setIsEditing(true);
+    setShowForm(true); // Show the form when editing
     window.scrollTo(0, 0); // Scroll to the top of the page
   };
 
@@ -138,9 +140,10 @@ const Users = ({ darkMode }) => {
   };
 
   const resetForm = () => {
-    setFormData({ studentId: '', name: '', email: '', password: '' });
+    setFormData({ studentId: '', name: '', email: '', password: '', role: '' });
     setSelectedUser(null);
     setIsEditing(false);
+    setShowForm(false); // Hide the form on reset
   };
 
   const filteredUsers = users.filter(user =>
@@ -152,30 +155,57 @@ const Users = ({ darkMode }) => {
     return <p>Loading users...</p>;
   }
 
+  const commonButtonClass = `mb-4 p-2 rounded ${darkMode ? 'bg-green-600 text-white' : 'bg-green-500 text-white'} hover:bg-green-700`;
+
   return (
     <div className={`p-4 ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
       <ToastContainer />
       <h1 className="text-2xl font-bold mb-4">User Management</h1>
+
+      <button 
+        onClick={() => {
+          resetForm(); // Reset form data
+          setShowForm(true); // Show the form
+        }} 
+        className={commonButtonClass}
+      >
+        Add User
+      </button>
+
+      {showForm && (
+        <>
+          <button
+            onClick={resetForm}
+            className={`w-auto mt-2 ml-4 p-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition duration-200 ease-in-out shadow-md`}
+          >
+            Cancel
+          </button>
+          <UserForm 
+            formData={formData} 
+            isEditing={isEditing} 
+            handleChange={handleChange} 
+            handleSubmit={handleSubmit} 
+            resetForm={resetForm} 
+            darkMode={darkMode}
+          />
+        </>
+      )}
+      <br />
       <input
         type="text"
-        placeholder="Search by Name or Student ID"
+        placeholder="🔍 Search by Name or Student ID"
         value={searchQuery}
         onChange={handleSearchChange}
-        className="p-2 border mb-4"
+        className={`p-4 mb-4 border border-gray-300 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 ease-in-out w-full max-w-md`}
       />
-      <UserForm 
-        formData={formData} 
-        isEditing={isEditing} 
-        handleChange={handleChange} 
-        handleSubmit={handleSubmit} 
-        resetForm={resetForm} 
-      />
+
       <UserList 
         users={filteredUsers} 
         handleEdit={handleEdit} 
         handleDelete={handleDelete} 
         handleParticipatedEvents={handleParticipatedEvents} 
         events={events} 
+        darkMode={darkMode}
       />
     </div>
   );
