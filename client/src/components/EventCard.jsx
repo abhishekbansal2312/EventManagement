@@ -28,10 +28,13 @@ const EventCard = ({ event, darkMode, onDelete }) => {
     e.stopPropagation(); // Prevent card click
     console.log("Delete button clicked for event:", event._id); // Debug log
     try {
-      const response = await fetch(`http://localhost:4600/api/events/${event._id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `http://localhost:4600/api/events/${event._id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
 
       console.log("Response Status:", response.status); // Debug log
 
@@ -53,83 +56,94 @@ const EventCard = ({ event, darkMode, onDelete }) => {
   return (
     <div
       onClick={handleEventClick}
-      className={`flex p-4 rounded-lg shadow-lg transition-transform transform duration-300 ${
+      className={`flex shadow-md rounded-md ${
         darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-      } hover:scale-105 relative overflow-hidden`}
+      } relative overflow-hidden`}
     >
       {/* Event Poster */}
       {event.offlinePoster && (
         <img
           src={event.offlinePoster}
           alt={event.title}
-          className="w-48 h-72 object-cover rounded-md mr-4 transition-transform duration-300 transform hover:scale-110"
+          className="w-48 h-72 object-cover"
           onClick={(e) => e.stopPropagation()} // Prevent card click on image click
         />
       )}
 
       {/* Event Information */}
-      <div className="flex-1">
-        {/* Event Title */}
-        <h2 className="text-xl font-semibold mb-1 transition duration-300 hover:underline">
-          {event.title}
-        </h2>
+      <div className="flex-1 flex flex-col justify-between p-2">
+        <div>
+          {/* Event Title */}
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg text-gray-700 font-semibold transition duration-300">
+              {event.title}
+            </h2>
+            {event.isLive ? (
+              <span className="text-green-500 rounded-md text-[12px] font-bold">
+                Live Now
+              </span>
+            ) : (
+              <span className="text-gray-500 rounded-md text-[12px] font-bold">
+                Not Live
+              </span>
+            )}
+          </div>
 
-        {/* Event Date */}
-        <div className="text-sm mb-1">
-          <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
+          <div className="text-[12px] mt-2">
+            {/* Event Date */}
+            <div className=" mb-1">
+              <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
+            </div>
+
+            {/* Event Time */}
+            {event.time && (
+              <div className=" mb-1">
+                <strong>Time:</strong> {event.time}
+              </div>
+            )}
+
+            {/* Event Location */}
+            {event.location && (
+              <div className=" mb-2">
+                <strong>Location:</strong> {event.location}
+              </div>
+            )}
+            <hr />
+            {/* Event Description */}
+            <div className="mt-2">
+              <strong className="text-gray-700">Description</strong>
+              <p className=" text-gray-500 dark:text-gray-300 mb-4">
+                {event.description}
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Event Time */}
-        {event.time && (
-          <div className="text-sm mb-1">
-            <strong>Time:</strong> {event.time}
-          </div>
-        )}
-
-        {/* Event Location */}
-        {event.location && (
-          <div className="text-sm mb-2">
-            <strong>Location:</strong> {event.location}
-          </div>
-        )}
-
-        {/* Event Description */}
-        <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 transition duration-300">
-          {event.description}
-        </p>
-
         {/* Registration Link or Status */}
-        <div className="mb-4">
+        <div className="flex justify-between items-center">
           {event.isLive ? (
             <a
               href={event.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105"
+              className="text-blue-600 font-normal text-[12px]"
               onClick={(e) => e.stopPropagation()} // Prevent card click on link click
             >
               Register Here
             </a>
           ) : (
-            <span className="text-red-500 font-semibold">Registration Closed</span>
+            <span className="text-red-500 font-normal text-[12px]">
+              Registrations Closed
+            </span>
           )}
-        </div>
-
-        {/* Live Status */}
-        <div className="mt-2">
-          {event.isLive ? (
-            <span className="px-3 py-1 bg-green-500 text-white rounded-md">Live Now</span>
-          ) : (
-            <span className="px-3 py-1 bg-gray-500 text-white rounded-md">Not Live</span>
+          {/* Delete Event Icon (only shown for admins) */}
+          {isAdmin && (
+            <div className="cursor-pointer" onClick={handleDeleteEvent}>
+              <FaTrash size={12} className="text-red-500 hover:text-red-700 " />
+            </div>
           )}
+          {/* Live Status */}
         </div>
-
-        {/* Delete Event Icon (only shown for admins) */}
-        {isAdmin && (
-          <div className="mt-4 cursor-pointer" onClick={handleDeleteEvent}>
-            <FaTrash size={20} className="text-red-500 hover:text-red-700 transition-transform duration-300 transform hover:scale-110" />
-          </div>
-        )}
       </div>
     </div>
   );

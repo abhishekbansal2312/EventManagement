@@ -95,27 +95,26 @@ const Events = ({ darkMode }) => {
   ];
 
   return (
-    <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "text-gray-900"}`}>
-      <div className="container mx-auto p-4 md:p-6 lg:p-8">
-        {isAdmin && (
-          <button>
-            <Link
-              to="create-event"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Create Event
-            </Link>
-          </button>
-        )}
-      </div>
-
-      <div className="container mx-auto px-4 md:px-8 lg:px-12">
+    <div
+      className={`min-h-screen px-16 ${
+        darkMode ? "bg-gray-900 text-white" : "text-gray-900"
+      }`}
+    >
+      <div className="container mt-8 flex justify-between">
         <Radio
           options={radioOptions}
           selectedValue={filter}
           handleChange={(value) => setFilter(value)}
         />
-
+        {isAdmin && (
+          <Link to="create-event" className="">
+            <button className="bg-blue-500 hover:bg-blue-700 text-sm text-white font-normal py-2 px-4 rounded">
+              Create Event
+            </button>
+          </Link>
+        )}
+      </div>
+      <div className="container mt-2">
         {loading && (
           <div className="flex justify-center items-center">
             <div className="animate-pulse">
