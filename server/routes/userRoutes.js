@@ -14,10 +14,10 @@ const authenticateAdmin = require("../middlewares/authenticateAdmin");
 // Define routes
 router.get("/",authenticateAdmin, allUsers);
 router.post("/", authenticateAdmin, createUser);
-router.get("/:id", authenticateAdmin, singleUser);
+router.get("/:id",authenticateToken, singleUser);
 
 // Apply both token and admin verification
-router.put("/:id", authenticateToken,updateUser);
+router.put("/:id", authenticateAdmin,updateUser);
 router.delete("/:id",authenticateAdmin, deleteUser);
 router.get("/:id/participated-events", authenticateToken, getParticipatedEvents);
 

@@ -208,7 +208,7 @@ const Members = ({ darkMode }) => {
           </div>
         )}
 
-        <h2 className="text-2xl font-semibold mb-4">Members</h2>
+        <h2 className="text-2xl font-semibold my-6 ">Members</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {members.map((member) => (
             <MemberCard

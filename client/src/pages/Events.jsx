@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import EventCard from "../components/EventCard";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
-import {jwtDecode} from "jwt-decode"; // Correct import
+import { jwtDecode } from "jwt-decode"; // Correct import
 import Radio from "../components/Radio"; // Import Radio component
 
 const Events = ({ darkMode }) => {
