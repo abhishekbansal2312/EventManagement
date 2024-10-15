@@ -33,16 +33,14 @@ const Gallery = ({ darkMode }) => {
     }, []);
 
     return (
-        <div className={`relative flex min-h-screen flex-col overflow-hidden ${darkMode ? 'bg-black' : 'bg-gray-50'}`}>
-            <h1 className="text-4xl font-bold mb-8 text-center text-gray-800 dark:text-white">
-                Event Gallery
-            </h1>
+        <div className={`min-h-screen flex flex-col items-center p-8 ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+            <h1 className="text-5xl font-bold mb-12 text-center text-gray-800 dark:text-white">Event Gallery</h1>
 
             {loading ? (
-                <div className="flex justify-center items-center">
-                    <div className="animate-pulse">
-                        <div className="h-5 bg-gray-400 rounded w-3/4 mb-4"></div>
-                        <div className="h-5 bg-gray-400 rounded w-2/4 mb-4"></div>
+                <div className="flex justify-center items-center h-72">
+                    <div className="animate-pulse flex flex-col space-y-4">
+                        <div className="h-5 bg-gray-400 rounded w-3/4"></div>
+                        <div className="h-5 bg-gray-400 rounded w-1/2"></div>
                         <div className="h-5 bg-gray-400 rounded w-1/4"></div>
                     </div>
                 </div>
@@ -52,29 +50,29 @@ const Gallery = ({ darkMode }) => {
                     <p>{error}</p>
                 </div>
             ) : (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {events.length ? (
                         events.map((event) => (
                             <Link
                                 key={event._id}
                                 to={`/gallery/${event._id}`}
-                                className="relative flex h-72 w-full max-w-xs rounded-xl shadow-xl ring-gray-900/5 overflow-hidden group"
+                                className="flex flex-col rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:shadow-2xl hover:scale-105"
                             >
-                                <div className="z-10 h-full w-full overflow-hidden rounded-xl border border-gray-200 opacity-80 transition duration-300 ease-in-out group-hover:opacity-100 dark:border-gray-700 dark:opacity-70">
+                                <div className="h-72 w-full overflow-hidden rounded-t-2xl transition duration-300 ease-in-out">
                                     <img
                                         src={event.offlinePoster || "https://via.placeholder.com/3149"} // Placeholder if no poster is available
-                                        className="animate-fade-in block h-full w-full scale-100 transform object-cover object-center opacity-100 transition duration-300 group-hover:scale-110"
+                                        className="animate-fade-in block h-full w-full object-cover object-center transition duration-300"
                                         alt={event.title}
                                     />
                                 </div>
-                                <div className="absolute bottom-0 z-20 m-0 pb-4 ps-4 bg-black  rounded-xl transition duration-300 ease-in-out group-hover:-translate-y-1 group-hover:translate-x-3 group-hover:scale-110">
-                                    <h1 className="font-serif text-2xl font-bold text-white">{event.title}</h1>
-                                    <h2 className="text-sm font-light text-gray-200">{event.description || "Description not available"}</h2>
+                                <div className="flex-1 p-4 bg-white dark:bg-gray-800 rounded-b-2xl">
+                                    <h1 className="font-serif text-xl font-bold text-gray-800 dark:text-white">{event.title}</h1>
+                                    <h2 className="text-sm font-light text-gray-600 dark:text-gray-400">{event.description || "Description not available"}</h2>
                                 </div>
                             </Link>
                         ))
                     ) : (
-                        <p className="text-center text-lg font-medium">No events available.</p>
+                        <p className="text-center text-lg font-medium text-gray-600 dark:text-gray-400">No events available.</p>
                     )}
                 </div>
             )}
