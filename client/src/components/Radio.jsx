@@ -1,66 +1,33 @@
 import React from "react";
-import styled from "styled-components";
 
 const Radio = ({ options, selectedValue, handleChange }) => {
   return (
-    <StyledWrapper>
-      <div className="radio-inputs">
-        {options.map((option, index) => (
-          <label key={index} className="radio">
-            <input
-              type="radio"
-              name="radio"
-              value={option.value}
-              checked={selectedValue === option.value}
-              onChange={() => handleChange(option.value)}
-            />
-            <span className="name">{option.label}</span>
-          </label>
-        ))}
-      </div>
-    </StyledWrapper>
+    <div className="radio-inputs bg-gray-200 dark:bg-gray-700 p-2 rounded-lg shadow-sm flex text-[12px]">
+      {options.map((option, index) => (
+        <label key={index} className="radio flex-1 text-center">
+          <input
+            type="radio"
+            name="radio"
+            value={option.value}
+            checked={selectedValue === option.value}
+            onChange={() => handleChange(option.value)}
+            className="hidden"
+          />
+          <span
+            className={`name block py-1 px-2 rounded-md cursor-pointer text-nowrap transition-colors ease-in-out duration-500 
+            ${
+              selectedValue === option.value
+                ? "bg-white dark:bg-gray-900 font-semibold"
+                : ""
+            }
+            text-gray-800 dark:text-gray-200`}
+          >
+            {option.label}
+          </span>
+        </label>
+      ))}
+    </div>
   );
 };
-
-const StyledWrapper = styled.div`
-  .radio-inputs {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    border-radius: 0.5rem;
-    background-color: #eee;
-    box-sizing: border-box;
-    box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
-    padding: 0.25rem;
-    width: 300px;
-    font-size: 14px;
-  }
-
-  .radio-inputs .radio {
-    flex: 1 1 auto;
-    text-align: center;
-  }
-
-  .radio-inputs .radio input {
-    display: none;
-  }
-
-  .radio-inputs .radio .name {
-    display: flex;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-    border: none;
-    padding: 0.5rem 0;
-    color: rgba(51, 65, 85, 1);
-    transition: all 0.15s ease-in-out;
-  }
-
-  .radio-inputs .radio input:checked + .name {
-    background-color: #fff;
-    font-weight: 600;
-  }
-`;
 
 export default Radio;
