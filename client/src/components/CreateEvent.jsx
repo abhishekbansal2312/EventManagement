@@ -18,8 +18,8 @@ const CreateEvent = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const onlinePosterInputRef = useRef(null); // Create a ref for online poster input
-  const offlinePosterInputRef = useRef(null); // Create a ref for offline poster input
+  const onlinePosterInputRef = useRef(null); 
+  const offlinePosterInputRef = useRef(null); 
 
   const validateFile = (file) => {
     const validTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -31,6 +31,7 @@ const CreateEvent = () => {
     const file = e.target.files[0]; // Allow only one file
     if (file && validateFile(file)) {
       setFile(file);
+      setErrorMessage(null); // Clear any previous error messages
     } else {
       setErrorMessage(
         "Invalid file type or size. Please select a valid image (JPEG, PNG, GIF) under 5MB."
@@ -76,8 +77,8 @@ const CreateEvent = () => {
         time,
         location,
         link,
-        onlinePoster: onlinePosterUrl ? [onlinePosterUrl] : [],
-        offlinePoster: offlinePosterUrl ? [offlinePosterUrl] : [],
+        onlinePoster: onlinePosterUrl || "", // Only a single online poster
+        offlinePoster: offlinePosterUrl || "", // Only a single offline poster
       };
 
       const response = await fetch("http://localhost:4600/api/events", {
@@ -228,7 +229,7 @@ const CreateEvent = () => {
             onChange={(e) => handleFileChange(e, setOnlinePosterFile)}
             className="hidden"
             id="eventOnlinePoster"
-            ref={onlinePosterInputRef} // Assign ref here
+            ref={onlinePosterInputRef} 
           />
           <label
             htmlFor="eventOnlinePoster"
@@ -254,7 +255,6 @@ const CreateEvent = () => {
           </div>
         </div>
 
-        {/* Offline Poster Upload Section */}
         <div className="">
           <label className="block text-gray-700 mb-2">
             Upload Offline Poster
@@ -265,7 +265,7 @@ const CreateEvent = () => {
             onChange={(e) => handleFileChange(e, setOfflinePosterFile)}
             className="hidden"
             id="eventOfflinePoster"
-            ref={offlinePosterInputRef} // Assign ref here
+            ref={offlinePosterInputRef} 
           />
           <label
             htmlFor="eventOfflinePoster"
@@ -291,16 +291,13 @@ const CreateEvent = () => {
           </div>
         </div>
 
-        {/* Submit button */}
-        <div className="sm:col-span-2">
+        <div className="col-span-2 flex justify-center mt-4">
           <button
             type="submit"
-            className={`w-full h-12 bg-blue-600 text-white rounded-lg transition duration-300 hover:bg-blue-500 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
             disabled={loading}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
           >
-            {loading ? "Creating Event..." : "Create Event"}
+            {loading ? "Creating..." : "Create Event"}
           </button>
         </div>
       </form>
