@@ -75,7 +75,7 @@ const EventCard = ({ event, darkMode, onDelete }) => {
         <div>
           {/* Event Title */}
           <div className="flex justify-between items-center">
-            <h2 className="text-lg text-gray-700 font-semibold transition duration-300">
+            <h2 className="text-lg text-gray-700 dark:text-gray-400 font-semibold">
               {event.title}
             </h2>
             {event.isLive ? (
@@ -111,7 +111,9 @@ const EventCard = ({ event, darkMode, onDelete }) => {
             <hr />
             {/* Event Description */}
             <div className="mt-2">
-              <strong className="text-gray-700">Description</strong>
+              <strong className="text-gray-700 dark:text-gray-400">
+                Description
+              </strong>
               <p className=" text-gray-500 dark:text-gray-300 mb-4">
                 {event.description}
               </p>
@@ -126,20 +128,23 @@ const EventCard = ({ event, darkMode, onDelete }) => {
               href={event.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 font-normal text-[12px]"
+              className="text-blue-600 dark:text-blue-400 font-normal text-[12px]"
               onClick={(e) => e.stopPropagation()} // Prevent card click on link click
             >
               Register Here
             </a>
           ) : (
-            <span className="text-red-500 font-normal text-[12px]">
+            <span className="text-yellow-800 dark:text-yellow-400 font-normal text-[12px]">
               Registrations Closed
             </span>
           )}
           {/* Delete Event Icon (only shown for admins) */}
           {isAdmin && (
             <div className="cursor-pointer" onClick={handleDeleteEvent}>
-              <FaTrash size={12} className="text-red-500 hover:text-red-700 " />
+              <FaTrash
+                size={12}
+                className="text-red-500 dark:text-red-700 hover:text-red-700 "
+              />
             </div>
           )}
           {/* Live Status */}

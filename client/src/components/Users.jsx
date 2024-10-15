@@ -17,7 +17,7 @@ const Users = ({ darkMode }) => {
     role: "",
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [events, setEvents] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -28,6 +28,7 @@ const Users = ({ darkMode }) => {
 
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       const token = Cookies.get("authtoken");
       const response = await fetch("http://localhost:4600/api/users", {
         method: "GET",
@@ -175,19 +176,17 @@ const Users = ({ darkMode }) => {
   );
 
   if (loading) {
-    return <p>Loading users...</p>;
+    return (
+      <p className="min-h-screen flex justify-center items-center dark:bg-gray-900 dark:text-white">
+        Loading users...
+      </p>
+    );
   }
 
-  const commonButtonClass = `mb-4 p-2 text-sm rounded ${
-    darkMode ? "bg-green-600 text-white" : "bg-green-500 text-white"
-  } hover:bg-green-700`;
+  const commonButtonClass = `mb-4 p-2 text-sm rounded dark:bg-green-600 dark:text-white bg-green-500 text-white hover:bg-green-700`;
 
   return (
-    <div
-      className={`px-16 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-white text-black"
-      }`}
-    >
+    <div className="px-16 dark:bg-gray-900 dark:text-white bg-white text-black">
       <ToastContainer />
       <h1 className="text-xl font-bold pb-4 pt-8">User Management</h1>
 
@@ -229,11 +228,7 @@ const Users = ({ darkMode }) => {
           value={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Search by Name or Student ID"
-          className={`w-full p-2 rounded-lg shadow border ${
-            darkMode
-              ? "bg-gray-800 border-gray-600 text-white"
-              : "bg-white border-gray-300"
-          } outline-none`}
+          className="w-full p-2 rounded-lg shadow border dark:bg-gray-800 dark:border-gray-600 dark:text-white bg-white border-gray-300 outline-none"
         />
       </div>
       <UserList

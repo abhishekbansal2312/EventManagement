@@ -83,6 +83,8 @@ const Events = ({ darkMode }) => {
       }
       // Return an empty array if there's no participated data
       return [];
+    } else if (filter === "live") {
+      return events.filter((event) => event.isLive);
     }
     // Return all events if "all" is selected
     return events;
@@ -92,6 +94,7 @@ const Events = ({ darkMode }) => {
   const radioOptions = [
     { value: "all", label: "All Events" },
     { value: "participated", label: "Participated Events" },
+    { value: "live", label: "Live Events" },
   ];
 
   return (
@@ -100,7 +103,7 @@ const Events = ({ darkMode }) => {
         darkMode ? "bg-gray-900 text-white" : "text-gray-900"
       }`}
     >
-      <div className="container mt-8 flex justify-between">
+      <div className="container pt-8 flex justify-between">
         <Radio
           options={radioOptions}
           selectedValue={filter}

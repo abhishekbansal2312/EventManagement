@@ -68,12 +68,12 @@ const UserItem = ({
         {events[user._id] && (
           <div
             className={`mt-2 p-4 rounded-lg ${
-              darkMode ? "bg-gray-700" : "bg-gray-100"
+              darkMode ? "dark:bg-gray-700" : "bg-gray-100"
             } shadow-md`}
           >
             <h2
               className={`text-[12px] font-bold ${
-                darkMode ? "text-white" : "text-gray-800"
+                darkMode ? "dark:text-white" : "text-gray-800"
               }`}
             >
               Participated Events
