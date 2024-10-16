@@ -63,9 +63,15 @@ exports.getMember = async (req, res) => {
   }
 };
 
-// Update a member by ID
 exports.updateMember = async (req, res) => {
   const { id } = req.params;
+
+  // Validate that the ID is a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid member ID." });
+  }
+
+  // Destructure the request body
   const {
     name,
     email,
@@ -99,7 +105,7 @@ exports.updateMember = async (req, res) => {
         hobbies,
         isActive,
         phoneNumber,
-        joinDate, // Update joinDate if provided
+        joinDate,
       },
       { new: true, runValidators: true }
     );
@@ -110,9 +116,11 @@ exports.updateMember = async (req, res) => {
 
     res.status(200).json(updatedMember);
   } catch (error) {
-    res.status(500).json({ message: "Error updating member", error: error.message });
+    console.error("Error updating faculty convener:", error); // Log the error for debugging
+    res.status(500).json({ message: "Error updating faculty convener", error: error.message });
   }
 };
+
 
 // Delete a member by ID
 exports.deleteMember = async (req, res) => {
