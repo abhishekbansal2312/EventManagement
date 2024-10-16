@@ -55,7 +55,9 @@ const Events = ({ darkMode }) => {
 
         if (!response.ok) throw new Error("Failed to fetch events");
         const data = await response.json();
-        const sortedEvents = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const sortedEvents = data.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
         setEvents(sortedEvents);
         setError(null);
       } catch (err) {
@@ -97,8 +99,8 @@ const Events = ({ darkMode }) => {
 
   return (
     <div
-      className={`min-h-screen px-16 ${
-        darkMode ? "bg-gray-900 text-white" : "text-gray-900"
+      className={`min-h-screen px-16 pb-4 ${
+        darkMode ? "bg-gray-700 text-white" : "text-gray-900"
       }`}
     >
       <div className="container pt-8 flex justify-between">

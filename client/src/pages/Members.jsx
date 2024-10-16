@@ -6,7 +6,7 @@ import CreateMember from "../components/CreateMember";
 import UpdateMemberForm from "../components/UpdateMemberForm";
 import FacultyCard from "../components/FacultyCard";
 import CreateFaculty from "../components/CreateFaculty";
-import Modal from "../components/Modal"; // Import the modal component
+import Modal from "../components/Modal";
 import "../App.css";
 
 const Members = ({ darkMode }) => {
@@ -35,44 +35,35 @@ const Members = ({ darkMode }) => {
         const decodedToken = jwtDecode(token);
         setIsAdmin(decodedToken.role === "admin");
 
-        // Fetch members
-        const membersResponse = await fetch(
-          "http://localhost:4600/api/members",
-          {
+        // Fetch members and faculty concurrently
+        const [membersResponse, facultyResponse] = await Promise.all([
+          fetch("http://localhost:4600/api/members", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
             credentials: "include",
-          }
-        );
+          }),
+          fetch("http://localhost:4600/api/faculty", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            credentials: "include",
+          }),
+        ]);
 
-        if (!membersResponse.ok) {
-          throw new Error("Failed to fetch members");
-        }
+        if (!membersResponse.ok) throw new Error("Failed to fetch members");
+        if (!facultyResponse.ok) throw new Error("Failed to fetch faculty");
 
-        const membersData = await membersResponse.json();
+        const [membersData, facultyData] = await Promise.all([
+          membersResponse.json(),
+          facultyResponse.json(),
+        ]);
+
         setMembers(membersData);
-
-        // Fetch faculty members
-        const facultyResponse = await fetch(
-          "http://localhost:4600/api/faculty",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: "include",
-          }
-        );
-
-        if (!facultyResponse.ok) {
-          throw new Error("Failed to fetch faculty members");
-        }
-
-        const facultyData = await facultyResponse.json();
         setFaculty(facultyData);
       } catch (err) {
         setError(err.message);
@@ -84,90 +75,40 @@ const Members = ({ darkMode }) => {
     fetchMembersAndFaculty();
   }, []);
 
-  if (loading)
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="loader"></div> {/* Add a loader animation here */}
+        <div className="loader"></div> {/* Add loader animation */}
       </div>
     );
-  if (error) return <p className="text-red-500">{error}</p>;
+  }
 
-  const handleEditMember = (member) => {
-    setEditingMember(member);
-  };
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
 
-  const handleCancelEdit = () => {
-    setEditingMember(null);
-  };
-
-  const handleEditFaculty = (faculty) => {
-    setEditingFaculty(faculty);
-  };
-
-  const handleCancelEditFaculty = () => {
-    setEditingFaculty(null);
-  };
-
-  const handleDeleteMember = async (memberId) => {
-    if (window.confirm("Are you sure you want to delete this member?")) {
+  const handleDelete = async (url, id, setState) => {
+    if (window.confirm("Are you sure you want to delete this item?")) {
       try {
         const token = Cookies.get("authtoken");
-        const response = await fetch(
-          `http://localhost:4600/api/members/${memberId}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${url}/${id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
+        });
 
         if (!response.ok) {
-          throw new Error("Failed to delete member");
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Failed to delete item");
         }
 
-        setMembers((prev) => prev.filter((member) => member?._id !== memberId));
+        setState((prev) => prev.filter((item) => item._id !== id));
       } catch (err) {
         setError(err.message);
       }
     }
   };
 
-  const handleDeleteFaculty = async (facultyId) => {
-    if (
-      window.confirm("Are you sure you want to delete this faculty member?")
-    ) {
-      try {
-        const token = Cookies.get("authtoken");
-        const response = await fetch(
-          `http://localhost:4600/api/faculty/${facultyId}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: "include",
-          }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json(); // Parse error response
-          throw new Error(
-            errorData.message || "Failed to delete faculty member"
-          ); // Use error message from response
-        }
-
-        setFaculty((prev) =>
-          prev.filter((faculty) => faculty?._id !== facultyId)
-        ); // Optional chaining
-      } catch (err) {
-        setError(err.message);
-      }
-    }
-  };
-
-  // NEW: Function to handle member updates
   const handleUpdateMember = (updatedMember) => {
     setMembers((prevMembers) =>
       prevMembers.map((member) =>
@@ -177,7 +118,7 @@ const Members = ({ darkMode }) => {
   };
 
   return (
-    <div className={`${darkMode ? "dark" : ""}`}>
+    <div className={darkMode ? "dark" : ""}>
       <div
         className={`min-h-screen transition duration-500 ${
           darkMode ? "bg-gray-900" : "bg-white"
@@ -186,7 +127,7 @@ const Members = ({ darkMode }) => {
         {isAdmin && (
           <button
             className="mb-4 bg-blue-500 text-white px-4 py-2 rounded"
-            onClick={() => setShowCreateFaculty(true)} // Open the modal
+            onClick={() => setShowCreateFaculty(true)}
           >
             Add Faculty
           </button>
@@ -194,7 +135,7 @@ const Members = ({ darkMode }) => {
 
         <Modal
           isOpen={showCreateFaculty}
-          onClose={() => setShowCreateFaculty(false)} // Close the modal
+          onClose={() => setShowCreateFaculty(false)}
         >
           <CreateFaculty
             setFaculty={setFaculty}
@@ -207,14 +148,21 @@ const Members = ({ darkMode }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {faculty.map((facultyMember) => (
             <FacultyCard
-              key={facultyMember?._id}
+              key={facultyMember._id}
               faculty={facultyMember}
               darkMode={darkMode}
               setFaculty={setFaculty}
               isAdmin={isAdmin}
-              onEdit={isAdmin ? () => handleEditFaculty(facultyMember) : null}
+              onEdit={isAdmin ? () => setEditingFaculty(facultyMember) : null}
               onDelete={
-                isAdmin ? () => handleDeleteFaculty(facultyMember._id) : null
+                isAdmin
+                  ? () =>
+                      handleDelete(
+                        "http://localhost:4600/api/faculty",
+                        facultyMember._id,
+                        setFaculty
+                      )
+                  : null
               }
             />
           ))}
@@ -223,7 +171,7 @@ const Members = ({ darkMode }) => {
         {isAdmin && (
           <button
             className="mt-8 mb-4 bg-blue-500 text-white px-4 py-2 rounded"
-            onClick={() => setShowCreateMember(true)} // Open the modal
+            onClick={() => setShowCreateMember(true)}
           >
             Add Member
           </button>
@@ -231,7 +179,7 @@ const Members = ({ darkMode }) => {
 
         <Modal
           isOpen={showCreateMember}
-          onClose={() => setShowCreateMember(false)} // Close the modal
+          onClose={() => setShowCreateMember(false)}
         >
           <CreateMember
             setMembers={setMembers}
@@ -244,29 +192,35 @@ const Members = ({ darkMode }) => {
           <div className="my-4 p-4 border rounded bg-gray-100">
             <h2 className="text-xl font-semibold mb-2">Edit Member</h2>
             <UpdateMemberForm
-            setError={setError} 
+              setError={setError}
               member={editingMember}
               onUpdate={(updatedMember) => {
                 handleUpdateMember(updatedMember);
-                handleCancelEdit();
+                setEditingMember(null);
               }}
-              onCancel={handleCancelEdit}
+              onCancel={() => setEditingMember(null)}
               darkMode={darkMode}
             />
           </div>
         )}
 
-        <h2 className="text-2xl font-semibold my-6 ">Members</h2>
+        <h2 className="text-2xl font-semibold my-6">Members</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {members.map((member) => (
             <MemberCard
-              key={member?._id}
+              key={member._id}
               isAdmin={isAdmin}
               member={member}
               darkMode={darkMode}
-              onUpdate={handleUpdateMember} // Pass the update handler
-              onDelete={() => handleDeleteMember(member._id)}
-              onEdit={() => handleEditMember(member)}
+              onUpdate={handleUpdateMember}
+              onDelete={() =>
+                handleDelete(
+                  "http://localhost:4600/api/members",
+                  member._id,
+                  setMembers
+                )
+              }
+              onEdit={() => setEditingMember(member)}
             />
           ))}
         </div>
