@@ -6,10 +6,10 @@ import { jwtDecode } from "jwt-decode";
 import Modal from "./Modal";
 import EditMember from "./UpdateMemberForm";
 
-const MemberCard = ({ member, onDelete, setError }) => {
+const MemberCard = ({ member, onDelete, setError, setMembers }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [bgColor, setBgColor] = useState("#ffffff");
 
   useEffect(() => {
     const token = Cookies.get("authtoken");
@@ -17,39 +17,38 @@ const MemberCard = ({ member, onDelete, setError }) => {
       const decodedToken = jwtDecode(token);
       setIsAdmin(decodedToken.role === "admin");
     }
+
+    const colors = [
+      "#C70039", // Red
+      "#900C3F", // Dark Red
+      "#581845", // Dark Purple
+      "#FFC300", // Yellow
+      "#33C4FF", // Light Blue
+      "#337BFF", // Blue
+      "#581845", // Dark Purple (duplicate, can be removed if needed)
+      "#FFDA44", // Light Gold
+      "#FFC0CB", // Pink
+      "#6A1B9A", // Purple
+      "#1E90FF", // Dodger Blue
+      "#0056b3", // Dark Blue
+      "#4CAF50", // Medium Green
+      "#FFC107", // Amber
+      "#FF1744", // Red Accent
+    ];
+    
+    // Function to get a random color from the array
+    const getRandomColor = () => {
+      return colors[Math.floor(Math.random() * colors.length)];
+    };
+    
+    // Set random background color
+    setBgColor(getRandomColor());
   }, []);
 
-  const handleDeleteMember = async (e) => {
-    e.stopPropagation();
-
-    try {
-      const response = await fetch(
-        `http://localhost:4600/api/member/${member._id}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
-
-      if (response.ok) {
-        onDelete(member._id);
-        alert("Member deleted successfully.");
-      } else {
-        const errorText = await response.text();
-        setErrorMessage("Failed to delete member. Please try again.");
-      }
-    } catch (error) {
-      setErrorMessage("An error occurred while deleting the member.");
-    }
-  };
 
   const handleEditClick = (e) => {
     e.stopPropagation();
     setIsEditModalOpen(true);
-  };
-
-  const handleSaveMember = async (updatedMember) => {
-    setIsEditModalOpen(false);
   };
 
   const handleCloseModal = () => {
@@ -59,7 +58,7 @@ const MemberCard = ({ member, onDelete, setError }) => {
   return (
     <div className="overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 dark:text-white profile-card flex flex-col">
       {/* Member Picture */}
-      <div className="flex justify-center relative bg-[#5046e5] h-32 top-section">
+      <div className="flex justify-center relative h-32 top-section" style={{ backgroundColor: bgColor }}>
         {member.pictureURL ? (
           <img
             src={member.pictureURL}
@@ -98,7 +97,6 @@ const MemberCard = ({ member, onDelete, setError }) => {
             {member.email || "Not Available"}
           </p>
           {/* Member Phone */}
-
           {member.phoneNumber && (
             <p className="text-xs font-semibold text-gray-400 dark:text-gray-300 mb-2">
               2018 - 2022
@@ -115,9 +113,9 @@ const MemberCard = ({ member, onDelete, setError }) => {
             )}
 
             {/* Member Hobbies */}
-            {member.hobbies && (
+            {member.hobbies && member.hobbies.length > 0 && (
               <p className=" text-gray-600 dark:text-gray-300 mb-2">
-                <strong>Hobbies:</strong> {member.hobbies || "Not Available"}
+                <strong>Hobbies:</strong> {member.hobbies.join(", ") || "Not Available"}
               </p>
             )}
 
@@ -151,7 +149,10 @@ const MemberCard = ({ member, onDelete, setError }) => {
               <FaEdit className="mr-2" /> Edit
             </button>
             <button
-              onClick={handleDeleteMember}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(member._id); // Directly call onDelete
+              }}
               className="flex justify-center items-center bg-yellow-400 text-black px-4 py-2 rounded-md shadow hover:bg-yellow-300"
             >
               <FaTrash className="mr-2" /> Delete
@@ -169,17 +170,13 @@ const MemberCard = ({ member, onDelete, setError }) => {
         >
           <EditMember
             member={member}
-            onUpdate={handleSaveMember}
+            setMembers={setMembers}
+            onUpdate={() => setIsEditModalOpen(false)} // You can adjust this if needed
             onCancel={handleCloseModal}
-            setError={setError}
+            setError={setError} // Ensure this is passed correctly
           />
         </Modal>
       )}
-
-      {/* Error Message */}
-      {/* {errorMessage && (
-        <p className="text-red-500 text-center mt-4">{errorMessage}</p>
-      )} */}
     </div>
   );
 };
@@ -196,10 +193,10 @@ MemberCard.propTypes = {
     isActive: PropTypes.bool.isRequired,
     joinDate: PropTypes.string,
     pictureURL: PropTypes.string,
-    hobbies: PropTypes.string,
+    hobbies: PropTypes.arrayOf(PropTypes.string), // Change this to an array
   }).isRequired,
   onDelete: PropTypes.func.isRequired,
-  setError: PropTypes.func.isRequired,
+  setError: PropTypes.func.isRequired, // Ensure setError is marked as required
 };
 
 export default MemberCard;

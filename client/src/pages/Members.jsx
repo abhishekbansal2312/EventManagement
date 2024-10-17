@@ -206,23 +206,31 @@ const Members = ({ darkMode }) => {
 
         <h2 className="text-2xl font-semibold my-6">Members</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {members.map((member) => (
-            <MemberCard
-              key={member._id}
-              isAdmin={isAdmin}
-              member={member}
-              darkMode={darkMode}
-              onUpdate={handleUpdateMember}
-              onDelete={() =>
-                handleDelete(
-                  "http://localhost:4600/api/members",
-                  member._id,
-                  setMembers
-                )
-              }
-              onEdit={() => setEditingMember(member)}
-            />
-          ))}
+          {members.length === 0 ? (
+            <p>No members found.</p> // Display message if no members
+          ) : (
+            members.map((member) => (
+              member ? ( // Check if member exists
+                <MemberCard
+                  key={member._id}
+                  setMembers={setMembers}
+                  setError={setError}
+                  isAdmin={isAdmin}
+                  member={member}
+                  darkMode={darkMode}
+                  onUpdate={handleUpdateMember}
+                  onDelete={() =>
+                    handleDelete(
+                      "http://localhost:4600/api/members",
+                      member._id,
+                      setMembers
+                    )
+                  }
+                  onEdit={() => setEditingMember(member)}
+                />
+              ) : null 
+            ))
+          )}
         </div>
       </div>
     </div>

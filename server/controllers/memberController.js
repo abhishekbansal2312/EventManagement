@@ -122,9 +122,14 @@ exports.updateMember = async (req, res) => {
 };
 
 
-// Delete a member by ID
+
 exports.deleteMember = async (req, res) => {
   const { id } = req.params;
+
+  // Validate the ID format
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid member ID format" });
+  }
 
   try {
     const deletedMember = await Member.findByIdAndDelete(id);

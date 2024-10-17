@@ -16,25 +16,46 @@ const UpdateMember = ({ member, setMembers, setError, darkMode }) => {
   });
 
   const [uploading, setUploading] = useState(false);
+  const [dragging, setDragging] = useState(false);
 
-  // Handle the file input change
   const handleFileChange = (e) => {
-    setUpdatedMember({ ...updatedMember, pictureURL: e.target.files[0] });
+    e.preventDefault();
+    const file = e.target.files[0];
+    if (file) {
+      setUpdatedMember({ ...updatedMember, pictureURL: file });
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      setUpdatedMember({ ...updatedMember, pictureURL: file });
+    }
+    setDragging(false);
   };
 
   const handleUpdateMember = async (event) => {
     event.preventDefault(); // Prevent the default form submission
 
     try {
-      // Check if a new picture is uploaded
       const pictureURL = updatedMember.pictureURL
         ? await uploadPicture(updatedMember.pictureURL)
-        : member.pictureURL; // Keep the existing picture URL if no new picture is uploaded
+        : member.pictureURL;
 
       await updateMemberData(pictureURL);
     } catch (err) {
       console.error("Error updating member: ", err);
-      
+      setError(err.message); // Set error message
     }
   };
 
@@ -74,27 +95,27 @@ const UpdateMember = ({ member, setMembers, setError, darkMode }) => {
       },
       body: JSON.stringify({
         ...updatedMember,
-        pictureURL, // Save the picture URL
-        joinDate: updatedMember.joinDate || new Date().toISOString(), // Set join date if not provided
+        pictureURL,
+        joinDate: updatedMember.joinDate || new Date().toISOString(),
       }),
-      credentials: "include", // Include credentials
+      credentials: "include",
     });
-
+  
     if (!response.ok) {
       const errorData = await response.json();
       console.log("Error response from server: ", errorData);
       throw new Error(errorData.message || "Failed to update member");
     }
-
+  
     const data = await response.json();
-    console.log("Member updated successfully: ", data);
-
-    // Update the members state with the updated member
+    console.log("Response from server: ", data); // This should show the updated member data
+  
     setMembers((prevMembers) =>
-      prevMembers.map((m) => (m._id === member._id ? data.member : m))
+      prevMembers.map((m) => (m._id === member._id ? data : m)) // Use the whole data object
     );
-
-    // Reset the input fields
+  
+    console.log("Updated member data: ", data); // Now this should log the updated member object
+  
     setUpdatedMember({
       name: "",
       email: "",
@@ -109,8 +130,8 @@ const UpdateMember = ({ member, setMembers, setError, darkMode }) => {
   };
 
   return (
-    <form onSubmit={handleUpdateMember} className="mb-6 p-4 border rounded-lg shadow-md">
-      <div>
+    <form onSubmit={handleUpdateMember} className="mb-6 p-4 border rounded-lg shadow-md grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="flex flex-col">
         <label htmlFor="name">Name</label>
         <input
           type="text"
@@ -121,7 +142,7 @@ const UpdateMember = ({ member, setMembers, setError, darkMode }) => {
           className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
         />
       </div>
-      <div>
+      <div className="flex flex-col">
         <label htmlFor="email">Email</label>
         <input
           type="email"
@@ -132,7 +153,7 @@ const UpdateMember = ({ member, setMembers, setError, darkMode }) => {
           className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
         />
       </div>
-      <div>
+      <div className="flex flex-col">
         <label htmlFor="studentId">Student ID</label>
         <input
           type="text"
@@ -143,15 +164,31 @@ const UpdateMember = ({ member, setMembers, setError, darkMode }) => {
           className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
         />
       </div>
-      <div>
-        <label htmlFor="pictureURL">Picture</label>
+      <div
+        className={`flex flex-col border-2 border-dashed rounded-lg p-4 transition ${
+          dragging ? "border-blue-500" : darkMode ? "border-gray-600" : "border-gray-300"
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={() => document.getElementById("fileInput").click()} // Click to select file
+      >
+        <label htmlFor="pictureURL" className="mb-2">Picture</label>
         <input
           type="file"
+          id="fileInput"
           onChange={handleFileChange}
-          className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
+          className="hidden" // Hide the default input
         />
+        <div className="flex items-center justify-center h-8">
+          {updatedMember.pictureURL ? (
+            <p>{updatedMember.pictureURL.name}</p>
+          ) : (
+            <p className="text-gray-400">Drag and drop a file here, or click to select a file</p>
+          )}
+        </div>
       </div>
-      <div>
+      <div className="flex flex-col">
         <label htmlFor="description">Description</label>
         <textarea
           placeholder="Enter a brief description"
@@ -160,7 +197,7 @@ const UpdateMember = ({ member, setMembers, setError, darkMode }) => {
           className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
         />
       </div>
-      <div>
+      <div className="flex flex-col">
         <label htmlFor="hobbies">Hobbies</label>
         <input
           type="text"
@@ -170,7 +207,7 @@ const UpdateMember = ({ member, setMembers, setError, darkMode }) => {
           className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
         />
       </div>
-      <div>
+      <div className="flex flex-col">
         <label htmlFor="phoneNumber">Phone Number</label>
         <input
           type="text"
@@ -180,7 +217,7 @@ const UpdateMember = ({ member, setMembers, setError, darkMode }) => {
           className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
         />
       </div>
-      <div>
+      <div className="flex items-center col-span-2">
         <label htmlFor="isActive" className="inline-flex items-center">
           <input
             type="checkbox"
@@ -191,7 +228,7 @@ const UpdateMember = ({ member, setMembers, setError, darkMode }) => {
           Is Active
         </label>
       </div>
-      <button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+      <button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded col-span-2">
         {uploading ? "Updating..." : "Update Member"}
       </button>
     </form>
