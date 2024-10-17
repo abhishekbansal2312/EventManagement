@@ -67,7 +67,6 @@ exports.getFacultyConvener = async (req, res) => {
   }
 };
 
-// Update a faculty convener by ID
 exports.updateFacultyConvener = async (req, res) => {
   const { id } = req.params;
   const {
@@ -86,17 +85,25 @@ exports.updateFacultyConvener = async (req, res) => {
   } = req.body;
 
   try {
+    // Check if the ID is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid ID format" });
+    }
+
+    // Convert the id to ObjectId
+    const objectId = new mongoose.Types.ObjectId(id); // Use 'new' keyword here
+
     // Check if the email or facultyId already exists (excluding the current convener)
     const existingFacultyConvener = await FacultyConvener.findOne({
       $or: [{ email }, { facultyId }],
-      _id: { $ne: id },
+      _id: { $ne: objectId }, // Use the converted ObjectId
     });
     if (existingFacultyConvener) {
       return res.status(400).json({ message: "Email or Faculty ID already in use" });
     }
 
     const updatedFacultyConvener = await FacultyConvener.findByIdAndUpdate(
-      id,
+      objectId, // Use the converted ObjectId here
       {
         name,
         email,
@@ -123,6 +130,7 @@ exports.updateFacultyConvener = async (req, res) => {
     res.status(500).json({ message: "Error updating faculty convener", error: error.message });
   }
 };
+
 
 // Delete a faculty convener by ID
 exports.deleteFacultyConvener = async (req, res) => {

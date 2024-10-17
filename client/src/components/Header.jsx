@@ -81,18 +81,7 @@ const Navbar = ({ darkMode }) => {
           </Link>
           {isAuthenticated ? (
             <>
-              <Link
-                to="/live"
-                className={`relative transition-all duration-300 group ${
-                  darkMode
-                    ? "text-gray-300 hover:text-gray-400"
-                    : "text-gray-900 hover:text-blue-500"
-                }`}
-              >
-                Live{" "}
-                <span className="absolute top-0 left-0 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
-                <span className="absolute h-0.5 w-full bg-gradient-to-r from-blue-500 to-purple-500 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
-              </Link>
+           
               <Link
                 to="/members"
                 className={`transition-all duration-300 relative group ${
@@ -201,17 +190,6 @@ const Navbar = ({ darkMode }) => {
         </Link>
         {isAuthenticated ? (
           <>
-            <Link
-              to="/live"
-              className={`relative block px-4 py-2 transition-all duration-300 ${
-                darkMode
-                  ? "text-gray-300 hover:bg-gray-700"
-                  : "text-gray-900 hover:bg-gray-100"
-              }`}
-            >
-              Live{" "}
-              <span className="absolute top-2 left-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
-            </Link>
             <Link
               to="/members"
               className={`block px-4 py-2 transition-all duration-300 ${

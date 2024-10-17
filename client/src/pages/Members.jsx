@@ -6,6 +6,7 @@ import CreateMember from "../components/CreateMember";
 import UpdateMemberForm from "../components/UpdateMemberForm";
 import FacultyCard from "../components/FacultyCard";
 import CreateFaculty from "../components/CreateFaculty";
+import Modal from "../components/Modal"; // Import the modal component
 import "../App.css";
 
 const Members = ({ darkMode }) => {
@@ -166,6 +167,15 @@ const Members = ({ darkMode }) => {
     }
   };
 
+  // NEW: Function to handle member updates
+  const handleUpdateMember = (updatedMember) => {
+    setMembers((prevMembers) =>
+      prevMembers.map((member) =>
+        member._id === updatedMember._id ? updatedMember : member
+      )
+    );
+  };
+
   return (
     <div className={`${darkMode ? "dark" : ""}`}>
       <div
@@ -175,20 +185,23 @@ const Members = ({ darkMode }) => {
       >
         {isAdmin && (
           <button
-            className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:scale-105 transition-transform duration-300"
-            onClick={() => setShowCreateFaculty(!showCreateFaculty)}
+            className="mb-4 bg-blue-500 text-white px-4 py-2 rounded"
+            onClick={() => setShowCreateFaculty(true)} // Open the modal
           >
-            {showCreateFaculty ? "Cancel" : "Add Faculty"}
+            Add Faculty
           </button>
         )}
 
-        {showCreateFaculty && (
+        <Modal
+          isOpen={showCreateFaculty}
+          onClose={() => setShowCreateFaculty(false)} // Close the modal
+        >
           <CreateFaculty
             setFaculty={setFaculty}
             setError={setError}
             darkMode={darkMode}
           />
-        )}
+        </Modal>
 
         <h2 className="text-2xl font-semibold mb-4">Faculty Members</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
@@ -210,31 +223,31 @@ const Members = ({ darkMode }) => {
         {isAdmin && (
           <button
             className="mt-8 mb-4 bg-blue-500 text-white px-4 py-2 rounded"
-            onClick={() => setShowCreateMember(!showCreateMember)}
+            onClick={() => setShowCreateMember(true)} // Open the modal
           >
-            {showCreateMember ? "Cancel" : "Add Member"}
+            Add Member
           </button>
         )}
 
-        {showCreateMember && (
+        <Modal
+          isOpen={showCreateMember}
+          onClose={() => setShowCreateMember(false)} // Close the modal
+        >
           <CreateMember
             setMembers={setMembers}
             setError={setError}
             darkMode={darkMode}
           />
-        )}
+        </Modal>
 
         {editingMember && (
           <div className="my-4 p-4 border rounded bg-gray-100">
             <h2 className="text-xl font-semibold mb-2">Edit Member</h2>
             <UpdateMemberForm
+            setError={setError} 
               member={editingMember}
               onUpdate={(updatedMember) => {
-                setMembers((prev) =>
-                  prev.map((m) =>
-                    m?._id === updatedMember._id ? updatedMember : m
-                  )
-                );
+                handleUpdateMember(updatedMember);
                 handleCancelEdit();
               }}
               onCancel={handleCancelEdit}
@@ -244,16 +257,16 @@ const Members = ({ darkMode }) => {
         )}
 
         <h2 className="text-2xl font-semibold my-6 ">Members</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {members.map((member) => (
             <MemberCard
               key={member?._id}
+              isAdmin={isAdmin}
               member={member}
               darkMode={darkMode}
-              setMembers={setMembers}
-              isAdmin={isAdmin}
-              onEdit={isAdmin ? () => handleEditMember(member) : null}
-              onDelete={isAdmin ? () => handleDeleteMember(member._id) : null}
+              onUpdate={handleUpdateMember} // Pass the update handler
+              onDelete={() => handleDeleteMember(member._id)}
+              onEdit={() => handleEditMember(member)}
             />
           ))}
         </div>

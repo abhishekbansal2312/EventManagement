@@ -15,13 +15,13 @@ const authenticateAdmin = require("../middlewares/authenticateAdmin");
 router.get("/", authenticateToken, getAllFacultyConveners);
 
 // Route to add a new faculty convener, requires admin authentication
-router.post("/", authenticateAdmin, addFacultyConvener);
+router.post("/", addFacultyConvener);
 
 // Route to get details of a specific faculty convener by ID, requires user authentication and admin access
 router.get("/:id", authenticateToken, authenticateAdmin, getFacultyConvener);
 
 // Route to update a specific faculty convener by ID, requires admin authentication
-router.put("/:id", authenticateAdmin, updateFacultyConvener);
+router.put("/:id",authenticateAdmin, updateFacultyConvener);
 
 // Route to delete a specific faculty convener by ID, requires admin authentication
 router.delete("/:id", authenticateAdmin, deleteFacultyConvener);

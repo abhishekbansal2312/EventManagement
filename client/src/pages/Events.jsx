@@ -55,9 +55,7 @@ const Events = ({ darkMode }) => {
 
         if (!response.ok) throw new Error("Failed to fetch events");
         const data = await response.json();
-        const sortedEvents = data.sort(
-          (a, b) => new Date(b.date) - new Date(a.date)
-        );
+        const sortedEvents = data.sort((a, b) => new Date(b.date) - new Date(a.date));
         setEvents(sortedEvents);
         setError(null);
       } catch (err) {

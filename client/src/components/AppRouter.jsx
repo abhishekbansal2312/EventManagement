@@ -120,14 +120,6 @@ const AppRouter = () => {
               }
             />
             <Route
-              path="/live"
-              element={
-                <ProtectedRoute>
-                  <Live darkMode={darkMode} />
-                </ProtectedRoute>
-              }
-            />
-            <Route
               path="/users"
               element={
                 <ProtectedRouteAdminOnly>
