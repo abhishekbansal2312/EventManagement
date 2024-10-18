@@ -21,7 +21,6 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
     }
   }, []);
 
-
   // Handle faculty deletion
   const handleDeleteFaculty = async (e) => {
     e.stopPropagation(); // Prevent card click
@@ -102,7 +101,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
       } relative overflow-hidden`}
     >
       {/* Faculty Picture */}
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center mt-4 bg-gray-100 p-2">
         {faculty.pictureURL && (
           <img
             src={faculty.pictureURL}
@@ -153,12 +152,12 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
 
             {/* Faculty Join Date */}
             {faculty.joinDate && (
-              <div className="mb-1">
+              <div className="mb-2">
                 <strong>Join Date:</strong>{" "}
                 {new Date(faculty.joinDate).toLocaleDateString() || "N/A"}
               </div>
             )}
-
+            <hr />
             {/* Faculty Bio */}
             <div className="mt-2">
               <strong className="text-gray-700 dark:text-gray-400">Bio</strong>
@@ -190,7 +189,11 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <Modal isOpen={isEditModalOpen} onClose={handleCloseModal} title="Edit Faculty">
+        <Modal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseModal}
+          title="Edit Faculty"
+        >
           <EditFaculty
             faculty={faculty}
             onSave={handleSaveFaculty}
