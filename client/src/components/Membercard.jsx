@@ -11,6 +11,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [bgColor, setBgColor] = useState("#ffffff");
   const [hoverActive, setHoverActive] = useState(false);
+  const [activateSection, setActivateSection] = useState(false);
 
   useEffect(() => {
     const token = Cookies.get("authtoken");
@@ -52,11 +53,26 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
     setIsEditModalOpen(false);
   };
 
+  useEffect(() => {
+    if (!hoverActive) {
+      takeTime();
+    }
+  }, [hoverActive]);
+
+  const takeTime = () => {
+    setTimeout(() => {
+      if (!hoverActive) {
+        setActivateSection(true);
+      }
+    }, 800);
+  };
+
   return (
     <div
-      className="overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 dark:text-white profile-card flex flex-col min-h-[400px] group transition-all duration-1000 cursor-pointer border"
+      className="overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 dark:text-white profile-card flex flex-col group transition-all duration-1000 cursor-pointer border"
       onMouseEnter={() => {
         setHoverActive(true);
+        setActivateSection(false);
       }}
       onMouseLeave={() => {
         console.log("called here");
@@ -69,7 +85,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
       >
         <>
           <div
-            className={`flex justify-center relative h-32 top-section transition-opacity duration-500 ${
+            className={`flex justify-center relative h-24 top-section transition-opacity duration-500 ${
               !hoverActive ? "opacity-100" : "opacity-0"
             } ${!hoverActive ? "" : ""}`}
             style={{ backgroundColor: bgColor }}
@@ -78,15 +94,21 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
               <img
                 src={member.pictureURL}
                 alt={member.name}
-                className="w-28 h-28 object-cover rounded-full absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-0%] border-4 border-[#5046e5]"
+                className={`w-24 h-24 object-cover rounded-full absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-0%]`}
               />
             ) : (
-              <span className="absolute text-gray-500 w-28 h-28 rounded-full bg-gray-300 left-[50%] top-[50%] translate-x-[-50%] translate-y-[-0%] flex justify-center items-center border-4 border-[#5046e5]">
+              <span
+                className={`absolute text-gray-500 w-28 h-28 rounded-full bg-gray-300 left-[50%] top-[50%] translate-x-[-50%] translate-y-[-0%] flex justify-center items-center border-4`}
+              >
                 No Image
               </span>
             )}
           </div>
-          <div className="text-center pt-14 flex flex-col justify-between">
+          <div
+            className={`text-center pt-14 flex flex-col justify-between transition-opacity duration-500 ${
+              !hoverActive ? "opacity-100" : "opacity-0"
+            } ${!hoverActive ? "" : ""}`}
+          >
             <div className="flex-grow-1">
               <h2 className="text-xl font-semibold mb-1">
                 {member.name || "Unknown"}
@@ -106,7 +128,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
                 {member.email || "Not Available"}
               </p>
               {member.phoneNumber && (
-                <p className="text-xs font-semibold text-gray-400 dark:text-gray-300 mb-2">
+                <p className="text-xs font-semibold text-gray-400 dark:text-gray-300 mb-4">
                   2018 - 2022
                 </p>
               )}
@@ -149,7 +171,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
       </div>
 
       {/* Admin Controls */}
-      <hr />
+      {isAdmin && <hr className="" />}
 
       {isAdmin && (
         <div className="grid grid-cols-2 gap-2 p-2 text-[12px] flex-grow-0">
