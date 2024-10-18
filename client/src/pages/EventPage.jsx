@@ -4,6 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import EventTask from "../components/EventTask.jsx";
 
 const EventPage = ({ darkMode }) => {
   const { id } = useParams();
@@ -12,6 +13,33 @@ const EventPage = ({ darkMode }) => {
   const [error, setError] = useState(null);
   const [participantIds, setParticipantIds] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch(`http://localhost:4600/api/tasks/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        if (!response.ok) throw new Error("Error fetching tasks");
+
+        const data = await response.json();
+        setTasks(data);
+        setError(null);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, [id]);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -67,7 +95,7 @@ const EventPage = ({ darkMode }) => {
       if (!response.ok) throw new Error("Error adding participants");
 
       const updatedEvent = await response.json();
-      setEvent(updatedEvent.event);
+      setEvent(updatedEvent.event); // Ensure updated participants are included
       toast.success("Participants added successfully!");
       setParticipantIds("");
     } catch (error) {
@@ -104,7 +132,7 @@ const EventPage = ({ darkMode }) => {
 
   // Sort participants in ascending order by studentId (numerically)
   const sortedParticipants = [...(event.participants || [])].sort((a, b) => {
-    return parseInt(a.studentId, 10) - parseInt(b.studentId, 10); // Numeric sorting
+    return (parseInt(a.studentId, 10) || 0) - (parseInt(b.studentId, 10) || 0); // Numeric sorting
   });
 
   return (
@@ -156,7 +184,7 @@ const EventPage = ({ darkMode }) => {
               <img src={event.onlinePoster} alt="Online Poster" className="w-full h-auto rounded" />
             </div>
           )}
-          
+
           {event.offlinePoster && (
             <div className="bg-white border border-gray-300 p-4 rounded mb-4">
               <strong>Offline Poster:</strong>
@@ -173,34 +201,36 @@ const EventPage = ({ darkMode }) => {
 
         {/* Right Side: Participants */}
         <div className="flex-1 pl-0 md:pl-4">
+          <div>
+            <EventTask tasks={tasks} darkMode={darkMode} eventId={id}/>
+          </div>
           <h2 className="text-2xl font-bold mb-4">Participants</h2>
 
           {/* Table for participants */}
-<table className={`min-w-full border border-gray-300 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
-  <thead>
-    <tr className={`${darkMode ? "bg-gray-700" : "bg-gray-200"}`}>
-      <th className="border px-4 py-2">Name</th>
-      <th className="border px-4 py-2">Student ID</th>
-      <th className="border px-4 py-2">Email</th>
-    </tr>
-  </thead>
-  <tbody>
-    {sortedParticipants.length > 0 ? (
-      sortedParticipants.map((participant, index) => (
-        <tr key={index} className={`hover:bg-gray-600 ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`}>
-          <td className="border px-4 py-2">{participant.name}</td>
-          <td className="border px-4 py-2">{participant.studentId}</td>
-          <td className="border px-4 py-2">{participant.email}</td>
-        </tr>
-      ))
-    ) : (
-      <tr>
-        <td colSpan="3" className="border px-4 py-2 text-center">No participants yet.</td>
-      </tr>
-    )}
-  </tbody>
-</table>
-
+          <table className={`min-w-full border border-gray-300 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
+            <thead>
+              <tr className={`${darkMode ? "bg-gray-700" : "bg-gray-200"}`}>
+                <th className="border px-4 py-2">Name</th>
+                <th className="border px-4 py-2">Student ID</th>
+                <th className="border px-4 py-2">Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedParticipants.length > 0 ? (
+                sortedParticipants.map((participant, index) => (
+                  <tr key={index} className={`hover:bg-gray-600 ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`}>
+                    <td className="border px-4 py-2">{participant.name}</td>
+                    <td className="border px-4 py-2">{participant.studentId}</td>
+                    <td className="border px-4 py-2">{participant.email}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="border px-4 py-2 text-center">No participants yet.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
 
           {isAdmin && (
             <form onSubmit={handleAddParticipants} className="mt-4">
@@ -208,11 +238,14 @@ const EventPage = ({ darkMode }) => {
                 type="text"
                 value={participantIds}
                 onChange={handleParticipantChange}
-                placeholder="Enter Student IDs (comma separated)"
-                className="block w-full p-2 mb-4 border rounded"
+                placeholder="Enter participant IDs (comma separated)"
+                className="border rounded py-2 px-4 w-full"
                 required
               />
-              <button type="submit" className="bg-green-500 text-white py-2 px-4 rounded">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white py-2 px-4 rounded mt-2"
+              >
                 Add Participants
               </button>
             </form>
