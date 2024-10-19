@@ -34,6 +34,7 @@ app.use(express.static("public"));
 app.use(morgan("dev"));
 app.use(cookieParser());
 
+
 // Root endpoint
 app.get("/", (req, res) => {
   res.send("Welcome to the API");
@@ -46,6 +47,7 @@ const membersRoute = require("./routes/membersRoute");
 const contactRoute = require("./routes/contactRoute");
 const eventsRoute = require("./routes/eventsRoutes");
 const facultyRoutes =  require("./routes/facultyRoutes");
+const taskRoutes =  require("./routes/taskRoutes");
 
 // Use routes
 app.use("/api/auth", authRoutes);
@@ -54,6 +56,7 @@ app.use("/api/members", membersRoute);
 app.use("/api/contact", contactRoute);
 app.use("/api/events", eventsRoute);
 app.use("/api/faculty", facultyRoutes);
+app.use("/api/tasks/", taskRoutes)
 
 
 // Error handling middleware
