@@ -26,79 +26,115 @@ const EditTask = ({ eventId, taskId, onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const response = await fetch("http://localhost:4600/api/members", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch members');
-        }
-
-        const data = await response.json();
-        console.log('Fetched Members:', data); // Log fetched members
-        setMembers(data);
-      } catch (error) {
-        toast.error('Error fetching members: ' + error.message);
-      }
+    const fetchData = async () => {
+      await fetchMembers();
+      await fetchTaskDetails();
     };
 
-    const fetchTaskDetails = async () => {
-      try {
-        const response = await fetch(`http://localhost:4600/api/tasks/${eventId}/${taskId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch task details');
-        }
-
-        const taskData = await response.json();
-        setFormData(taskData);
-      } catch (error) {
-        toast.error('Error fetching task details: ' + error.message);
-      }
-    };
-
-    fetchMembers();
-    fetchTaskDetails();
+    fetchData();
   }, [eventId, taskId]);
 
-  const handleChange = (e, taskType) => {
-    const { value, checked } = e.target;
+  const fetchMembers = async () => {
+    try {
+      const response = await fetch("http://localhost:4600/api/members", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
 
-    setFormData((prevState) => {
-      const updatedTask = { ...prevState[taskType] };
+      if (!response.ok) throw new Error('Failed to fetch members');
 
-      if (checked) {
-        if (!updatedTask.assignedTo.includes(value)) {
-          updatedTask.assignedTo.push(value);
-        }
-      } else {
-        updatedTask.assignedTo = updatedTask.assignedTo.filter((id) => id !== value);
-      }
-
-      return { ...prevState, [taskType]: updatedTask };
-    });
+      const data = await response.json();
+      setMembers(data);
+    } catch (error) {
+      toast.error('Error fetching members: ' + error.message);
+    }
   };
+
+  const fetchTaskDetails = async () => {
+    try {
+      const response = await fetch(`http://localhost:4600/api/tasks/${eventId}/${taskId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch task details');
+
+      const taskData = await response.json();
+      const updatedTaskData = {
+        deadline: taskData.deadline || '',
+        status: taskData.status || '',
+        OnlinePoster: { assignedTo: taskData.OnlinePoster?.assignedTo || [] },
+        OfflinePoster: { assignedTo: taskData.OfflinePoster?.assignedTo || [] },
+        CaptionToBeShared: { assignedTo: taskData.CaptionToBeShared?.assignedTo || [] },
+        WhatsAppGroupHandling: { assignedTo: taskData.WhatsAppGroupHandling?.assignedTo || [] },
+        Announcements: { assignedTo: taskData.Announcements?.assignedTo || [] },
+        EventReport: { assignedTo: taskData.EventReport?.assignedTo || [] },
+        StageHandling: { assignedTo: taskData.StageHandling?.assignedTo || [] },
+        ApplicationToBeSigned: { assignedTo: taskData.ApplicationToBeSigned?.assignedTo || [] },
+        PhotographyDuringEvent: { assignedTo: taskData.PhotographyDuringEvent?.assignedTo || [] },
+        Anchoring: { assignedTo: taskData.Anchoring?.assignedTo || [] },
+        BudgetManagement: { assignedTo: taskData.BudgetManagement?.assignedTo || [] },
+        Decoration: { assignedTo: taskData.Decoration?.assignedTo || [] },
+        TechnicalSupport: { assignedTo: taskData.TechnicalSupport?.assignedTo || [] },
+        Coordinators: { assignedTo: taskData.Coordinators?.assignedTo || [] },
+        CoCoordinators: { assignedTo: taskData.CoCoordinators?.assignedTo || [] },
+      };
+      setFormData(updatedTaskData);
+    } catch (error) {
+      toast.error('Error fetching task details: ' + error.message);
+    }
+  };
+
+  const handleChange = (e, taskType) => {
+    const memberId = e.target.value;
+    const isChecked = e.target.checked;
+  
+    // Get the current assigned members for this taskType
+    const currentAssigned = formData[taskType]?.assignedTo || [];
+  
+    if (isChecked) {
+      // If the member is already assigned, prevent re-assigning
+      if (currentAssigned.includes(memberId)) {
+        return; // Exit if member is already assigned
+      }
+  
+      // Assign the member if not already assigned
+      const updatedAssigned = [...currentAssigned, memberId];
+      setFormData((prev) => ({
+        ...prev,
+        [taskType]: {
+          ...prev[taskType],
+          assignedTo: updatedAssigned,
+        },
+      }));
+    } else {
+      // Unassign the member
+      const updatedAssigned = currentAssigned.filter((id) => id !== memberId);
+      setFormData((prev) => ({
+        ...prev,
+        [taskType]: {
+          ...prev[taskType],
+          assignedTo: updatedAssigned,
+        },
+      }));
+    }
+  };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!eventId || !taskId) {
       toast.error('Event ID and Task ID are required. Please ensure they are provided.');
       return;
     }
 
-    // Validate assigned members
     const invalidAssignments = Object.entries(formData).some(([key, task]) =>
       key !== 'deadline' && key !== 'status' && task.assignedTo.length === 0
     );
@@ -129,10 +165,7 @@ const EditTask = ({ eventId, taskId, onClose }) => {
     }
   };
 
-  // Sort members by date joined (newest first)
   const sortedMembers = members.sort((a, b) => new Date(b.dateJoined) - new Date(a.dateJoined));
-
-  // Filter members based on search query
   const filteredMembers = sortedMembers.filter(member =>
     member.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -178,45 +211,41 @@ const EditTask = ({ eventId, taskId, onClose }) => {
       </div>
 
       {Object.keys(formData).map((taskType) => {
-        if (taskType === 'deadline' || taskType === 'status') return null; // Skip the deadline and status fields
-        return (
-          <div key={taskType}>
-            <label className="block text-sm font-medium text-gray-700">{taskType}:</label>
-            <ul className="mt-2 border border-gray-300 rounded-md">
-              {filteredMembers.map((member) => {
-                if (!member._id) {
-                  console.warn('Member does not have an ID:', member);
-                  return null;
-                }
-                return (
-                  <li key={`${member._id}-${taskType}`} className="flex items-center p-1 hover:bg-gray-200 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      id={`member-${member._id}-${taskType}`}
-                      value={member._id}
-                      checked={formData[taskType]?.assignedTo?.includes(member._id) || false}
-                      onChange={(e) => handleChange(e, taskType)}
-                      className="mr-2"
-                    />
-                    <label htmlFor={`member-${member._id}-${taskType}`} className="cursor-pointer">
-                      {member.name} (ID: {member._id})
-                    </label>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="mt-2 text-sm text-gray-500">
-              {formData[taskType].assignedTo.length > 0
-                ? `Assigned Members: ${formData[taskType].assignedTo.join(', ')}`
-                : 'No members assigned'}
-            </div>
-          </div>
-        );
-      })}
+  if (taskType === 'deadline' || taskType === 'status') return null; // Skip the deadline and status fields
+  return (
+    <div key={taskType}>
+      <label className="block text-sm font-medium text-gray-700">{taskType}:</label>
+      <ul className="mt-2 border border-gray-300 rounded-md">
+        {filteredMembers.map((member) => (
+          <li key={`${member._id}-${taskType}`} className="flex items-center p-1 hover:bg-gray-200 cursor-pointer">
+            <input
+              type="checkbox"
+              id={`member-${member._id}-${taskType}`}
+              value={member._id}
+              checked={formData[taskType]?.assignedTo?.includes(member._id) || false} // Show previously checked members
+              onChange={(e) => handleChange(e, taskType)}
+              className="mr-2"
+            />
+            <label htmlFor={`member-${member._id}-${taskType}`} className="cursor-pointer">
+              {member.name} (ID: {member._id})
+            </label>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+})}
 
-      <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
-        Update Task
-      </button>
+
+
+      <div className="flex justify-between">
+        <button type="button" onClick={onClose} className="text-sm text-gray-600 hover:text-gray-800">
+          Cancel
+        </button>
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">
+          Update Task
+        </button>
+      </div>
     </form>
   );
 };

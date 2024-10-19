@@ -121,17 +121,21 @@ const Members = ({ darkMode }) => {
     <div className={darkMode ? "dark" : ""}>
       <div
         className={`min-h-screen transition duration-500 ${
-          darkMode ? "bg-gray-900" : "bg-white"
+          darkMode ? "bg-gray-900 text-white" : "bg-white text-black"
         } p-6`}
       >
-        {isAdmin && (
-          <button
-            className="mb-4 bg-blue-500 text-white px-4 py-2 rounded"
-            onClick={() => setShowCreateFaculty(true)}
-          >
-            Add Faculty
-          </button>
-        )}
+        {/* Faculty Section */}
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold">Faculty Members</h2>
+          {isAdmin && (
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+              onClick={() => setShowCreateFaculty(true)}
+            >
+              Add Faculty
+            </button>
+          )}
+        </div>
 
         <Modal
           isOpen={showCreateFaculty}
@@ -144,7 +148,6 @@ const Members = ({ darkMode }) => {
           />
         </Modal>
 
-        <h2 className="text-2xl font-semibold mb-4">Faculty Members</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {faculty.map((facultyMember) => (
             <FacultyCard
@@ -168,14 +171,18 @@ const Members = ({ darkMode }) => {
           ))}
         </div>
 
-        {isAdmin && (
-          <button
-            className="mt-8 mb-4 bg-blue-500 text-white px-4 py-2 rounded"
-            onClick={() => setShowCreateMember(true)}
-          >
-            Add Member
-          </button>
-        )}
+        {/* Members Section */}
+        <div className="flex justify-between items-center mt-8 mb-4">
+          <h2 className="text-2xl font-semibold">Members</h2>
+          {isAdmin && (
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+              onClick={() => setShowCreateMember(true)}
+            >
+              Add Member
+            </button>
+          )}
+        </div>
 
         <Modal
           isOpen={showCreateMember}
@@ -204,13 +211,12 @@ const Members = ({ darkMode }) => {
           </div>
         )}
 
-        <h2 className="text-2xl font-semibold my-6">Members</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {members.length === 0 ? (
-            <p>No members found.</p> // Display message if no members
+            <p>No members found.</p>
           ) : (
-            members.map((member) => (
-              member ? ( // Check if member exists
+            members.map((member) =>
+              member ? (
                 <MemberCard
                   key={member._id}
                   setMembers={setMembers}
@@ -228,8 +234,8 @@ const Members = ({ darkMode }) => {
                   }
                   onEdit={() => setEditingMember(member)}
                 />
-              ) : null 
-            ))
+              ) : null
+            )
           )}
         </div>
       </div>
