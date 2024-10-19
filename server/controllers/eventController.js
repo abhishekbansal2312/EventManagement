@@ -270,3 +270,57 @@ exports.deleteImageFromGallery = async (req, res) => {
 
 
 
+exports.removeParticipants = async (req, res) => {
+  const { id: eventId } = req.params; 
+  const { studentIds } = req.body;
+
+  console.log("Received request parameters:", req.params, "Student IDs:", studentIds);
+
+  if (!eventId) {
+    return res.status(400).json({ message: "Event ID is undefined" });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(eventId)) {
+    return res.status(400).json({ message: `Invalid event ID: ${eventId}` });
+  }
+
+  // Check if studentIds is provided and is an array
+  if (!studentIds || !Array.isArray(studentIds) || studentIds.length === 0) {
+    return res.status(400).json({ message: "Student IDs are required" });
+  }
+
+  try {
+    // Query for users based on studentIds
+    const users = await User.find({ studentId: { $in: studentIds } });
+    
+    // Log the users found
+    console.log("Users found:", users);
+
+    if (!users.length) {
+      return res.status(404).json({ message: "No valid users found for the provided IDs" });
+    }
+
+    // Find the event and remove participants
+    const event = await Event.findByIdAndUpdate(
+      eventId,
+      { $pull: { participants: { $in: users.map((user) => user._id) } } },
+      { new: true, runValidators: true }
+    ).populate("participants", "name studentId email");
+
+    // Check if the event was found
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Update the participatedEvents array for each user
+    await User.updateMany(
+      { _id: { $in: users.map((user) => user._id) } },
+      { $pull: { participatedEvents: eventId } }
+    );
+
+    res.status(200).json({ message: "Participants removed successfully", event });
+  } catch (error) {
+    console.error("Error removing participants:", error);
+    res.status(500).json({ message: "Error removing participants", error: error.message });
+  }
+};
