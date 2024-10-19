@@ -193,11 +193,13 @@ const Home = ({ darkMode }) => {
           <Marquee velocity={40} minScale={1} resetAfterTries={200}>
             {events.map((image, index) => (
               <div key={index} className="px-2">
-                <img
-                  src={image.offlinePoster}
-                  alt={image.alt}
-                  className="w-48 object-cover"
-                />
+                <div className="w-48 h-auto aspect-[1/1.41] bg-gray-200 overflow-hidden">
+                  <img
+                    src={image.offlinePoster}
+                    alt={image.alt}
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
               </div>
             ))}
           </Marquee>
