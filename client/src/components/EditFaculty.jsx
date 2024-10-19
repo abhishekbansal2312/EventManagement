@@ -33,7 +33,9 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
 
   // Handle specializations input (comma-separated values)
   const handleSpecializationsChange = (e) => {
-    const specializations = e.target.value.split(",").map((spec) => spec.trim());
+    const specializations = e.target.value
+      .split(",")
+      .map((spec) => spec.trim());
     setFormData({ ...formData, specializations });
   };
 
@@ -45,7 +47,7 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
   // Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     setUploading(true); // Show uploading state
 
     let pictureURL = formData.pictureURL; // Keep the existing picture URL
@@ -78,13 +80,14 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
 
   return (
     <div
-      className={`p-6 border border-gray-300 rounded-lg shadow-lg max-w-3xl mx-auto ${
-        darkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white text-gray-900"
+      className={`max-w-3xl mx-auto ${
+        darkMode ? "bg-gray-800 text-white " : "bg-white text-gray-900"
       }`}
     >
-      <h2 className="text-2xl font-bold mb-4">Edit Faculty Details</h2>
-
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[14px]"
+      >
         {/* Name Input */}
         <div className="mb-2">
           <label htmlFor="name" className="block font-semibold mb-1">
@@ -96,7 +99,7 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
           />
         </div>
@@ -112,7 +115,7 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
           />
         </div>
@@ -128,7 +131,7 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
             name="facultyId"
             value={formData.facultyId}
             onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
             required
           />
         </div>
@@ -144,7 +147,7 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
             name="specializations"
             value={formData.specializations.join(", ")}
             onChange={handleSpecializationsChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
 
@@ -158,7 +161,7 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
             name="description"
             value={formData.description}
             onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
 
@@ -173,7 +176,7 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleInputChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
 
@@ -185,7 +188,7 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
           <input
             type="file"
             onChange={handlePictureChange}
-            className="w-full p-2 border border-gray-300 rounded-lg"
+            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
 
@@ -203,12 +206,20 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
         </div>
 
         {/* Button Container for Save and Cancel */}
-        <div className="md:col-span-2 flex justify-between mt-4">
-          <button type="submit" className="p-2 bg-blue-500 text-white rounded" disabled={uploading}>
-            {uploading ? "Uploading..." : "Save Changes"}
-          </button>
-          <button type="button" onClick={onCancel} className="p-2 bg-gray-500 text-white rounded">
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="bg-gray-500 hover:bg-gray-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
+          >
             Cancel
+          </button>
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
+            disabled={uploading}
+          >
+            {uploading ? "Uploading..." : "Save Changes"}
           </button>
         </div>
       </form>

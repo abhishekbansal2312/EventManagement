@@ -183,26 +183,25 @@ const Users = ({ darkMode }) => {
     );
   }
 
-  const commonButtonClass = `mb-4 p-2 text-m rounded dark:bg-blue-600 dark:text-white bg-blue-500 text-white hover:bg-blue-700`;
-
+  const commonButtonClass =
+    "bg-blue-500 hover:bg-blue-700 text-[12px] text-white font-normal py-2 px-4 rounded-md transition-colors duration-300";
 
   return (
     <div className="px-16 dark:bg-gray-900 dark:text-white bg-white text-black">
       <ToastContainer />
       <div className="flex justify-between items-center pb-4 pt-8">
-  <h1 className="text-xl font-bold">User Management</h1>
+        <h1 className="text-xl font-bold">User Management</h1>
 
-  <button
-    onClick={() => {
-      resetForm();
-      setShowForm(true);
-    }}
-    className={commonButtonClass} // Assuming you have this defined like in the Members page
-  >
-    Add User
-  </button>
-</div>
-
+        <button
+          onClick={() => {
+            resetForm();
+            setShowForm(true);
+          }}
+          className={commonButtonClass} // Assuming you have this defined like in the Members page
+        >
+          Add User
+        </button>
+      </div>
 
       {showForm && (
         <>

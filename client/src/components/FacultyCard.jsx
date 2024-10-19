@@ -95,13 +95,9 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
   };
 
   return (
-    <div
-      className={`flex shadow-md rounded-md ${
-        darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-      } relative overflow-hidden`}
-    >
+    <div className="flex shadow-md rounded-md dark:bg-gray-800 dark:text-white bg-white text-gray-900 relative overflow-hidden">
       {/* Faculty Picture */}
-      <div className="flex justify-center mt-4 bg-gray-100 p-2">
+      <div className="flex justify-center bg-gray-100 dark:bg-slate-500 p-2 pt-4">
         {faculty.pictureURL && (
           <img
             src={faculty.pictureURL}

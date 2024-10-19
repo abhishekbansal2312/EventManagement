@@ -18,8 +18,8 @@ const CreateEvent = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const onlinePosterInputRef = useRef(null); 
-  const offlinePosterInputRef = useRef(null); 
+  const onlinePosterInputRef = useRef(null);
+  const offlinePosterInputRef = useRef(null);
 
   const validateFile = (file) => {
     const validTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -229,7 +229,7 @@ const CreateEvent = () => {
             onChange={(e) => handleFileChange(e, setOnlinePosterFile)}
             className="hidden"
             id="eventOnlinePoster"
-            ref={onlinePosterInputRef} 
+            ref={onlinePosterInputRef}
           />
           <label
             htmlFor="eventOnlinePoster"
@@ -265,7 +265,7 @@ const CreateEvent = () => {
             onChange={(e) => handleFileChange(e, setOfflinePosterFile)}
             className="hidden"
             id="eventOfflinePoster"
-            ref={offlinePosterInputRef} 
+            ref={offlinePosterInputRef}
           />
           <label
             htmlFor="eventOfflinePoster"
@@ -291,11 +291,11 @@ const CreateEvent = () => {
           </div>
         </div>
 
-        <div className="col-span-2 flex justify-center mt-4">
+        <div className="col-span-2 flex justify-end mt-4">
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+            className="bg-blue-500 hover:bg-blue-700 text-[12px] text-white font-normal py-2 px-4 rounded-md transition-colors duration-300"
           >
             {loading ? "Creating..." : "Create Event"}
           </button>
