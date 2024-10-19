@@ -118,18 +118,14 @@ const Members = ({ darkMode }) => {
   };
 
   return (
-    <div className={darkMode ? "dark" : ""}>
-      <div
-        className={`min-h-screen transition duration-500 ${
-          darkMode ? "bg-gray-900 text-white" : "bg-white text-black"
-        } p-6`}
-      >
+    <div className="px-16 py-8 dark:bg-gray-900 dark:text-white bg-white text-black">
+      <div className="min-h-screen transition duration-500">
         {/* Faculty Section */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">Faculty Members</h2>
           {isAdmin && (
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+              className="bg-blue-500 hover:bg-blue-700 text-[12px] text-white font-normal py-2 px-4 rounded-md transition-colors duration-300"
               onClick={() => setShowCreateFaculty(true)}
             >
               Add Faculty
@@ -176,7 +172,7 @@ const Members = ({ darkMode }) => {
           <h2 className="text-2xl font-semibold">Members</h2>
           {isAdmin && (
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+              className="bg-blue-500 hover:bg-blue-700 text-[12px] text-white font-normal py-2 px-4 rounded-md transition-colors duration-300"
               onClick={() => setShowCreateMember(true)}
             >
               Add Member

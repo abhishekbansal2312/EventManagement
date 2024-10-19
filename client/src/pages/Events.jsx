@@ -111,7 +111,7 @@ const Events = ({ darkMode }) => {
         />
         {isAdmin && (
           <Link to="create-event" className="">
-            <button className="bg-blue-500 hover:bg-blue-700 text-sm text-white font-normal py-2 px-4 rounded">
+            <button className="bg-blue-500 hover:bg-blue-700 text-[12px] text-white font-normal py-2 px-4 rounded-md transition-colors duration-300">
               Create Event
             </button>
           </Link>
