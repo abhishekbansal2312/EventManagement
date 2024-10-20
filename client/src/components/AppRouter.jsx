@@ -16,6 +16,7 @@ import Footer from "./Footer";
 import Users from "./Users";
 import ProtectedRouteAdminOnly from "./ProtectedRouteAdminOnly";
 import Live from "../pages/Live";
+import Review from "../pages/Review";
 
 const AppRouter = () => {
   const { isAuthenticated, setIsAuthenticated, darkMode, setDarkMode } =
@@ -127,6 +128,15 @@ const AppRouter = () => {
                 </ProtectedRouteAdminOnly>
               }
             />
+               <Route
+              path="/reviews"
+              element={
+                <ProtectedRoute>
+                  <Review darkMode={darkMode} />
+                </ProtectedRoute>
+              }
+            />
+
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
