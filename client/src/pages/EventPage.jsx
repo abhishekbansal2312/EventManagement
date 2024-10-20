@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useParams, Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode"; // Corrected to default import
 import EventTask from "../components/EventTask.jsx";
+import Participants from "../components/Participants.jsx";
+import { FaTrash } from "react-icons/fa"; // Import the trash icon
 
 const EventPage = ({ darkMode }) => {
   const { id } = useParams();
@@ -33,15 +35,9 @@ const EventPage = ({ darkMode }) => {
         setError(null);
       } catch (error) {
         setError(error.message);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchTasks();
-  }, [id]);
-
-  useEffect(() => {
     const fetchEvent = async () => {
       try {
         const response = await fetch(`http://localhost:4600/api/events/${id}`, {
@@ -72,6 +68,7 @@ const EventPage = ({ darkMode }) => {
       }
     };
 
+    fetchTasks();
     fetchEvent();
     checkUserRole();
   }, [id]);
@@ -95,7 +92,7 @@ const EventPage = ({ darkMode }) => {
       if (!response.ok) throw new Error("Error adding participants");
 
       const updatedEvent = await response.json();
-      setEvent(updatedEvent.event); // Ensure updated participants are included
+      setEvent(updatedEvent.event);
       toast.success("Participants added successfully!");
       setParticipantIds("");
     } catch (error) {
@@ -103,12 +100,29 @@ const EventPage = ({ darkMode }) => {
     }
   };
 
+  const handleRemoveParticipant = async (participantId) => {
+    try {
+      const response = await fetch(`http://localhost:4600/api/events/${id}/participants`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ studentIds: [participantId] }),
+      });
+
+      if (!response.ok) throw new Error("Error removing participant");
+
+      const updatedEvent = await response.json();
+      setEvent(updatedEvent.event);
+      toast.success("Participant removed successfully!");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <p>Loading...</p>;
   }
 
   if (error) {
@@ -130,19 +144,18 @@ const EventPage = ({ darkMode }) => {
     );
   }
 
-  // Sort participants in ascending order by studentId (numerically)
   const sortedParticipants = [...(event.participants || [])].sort((a, b) => {
-    return (parseInt(a.studentId, 10) || 0) - (parseInt(b.studentId, 10) || 0); // Numeric sorting
+    return (parseInt(a.studentId, 10) || 0) - (parseInt(b.studentId, 10) || 0);
   });
 
   return (
-    <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "text-gray-900"} py-10`}>
+    <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"} py-10`}>
       <ToastContainer />
       <div className="container mx-auto p-4 flex flex-col md:flex-row">
         {/* Left Side: Event Details */}
         <div className="flex-1 pr-0 md:pr-4 mb-4 md:mb-0">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">{event.title}</h1>
-          <p className="mb-4 text-lg">{event.description}</p>
+          <h1 className="text-4xl font-extrabold mb-6">{event.title}</h1>
+          <p className="text-lg mb-4 leading-relaxed">{event.description}</p>
 
           <div className="mb-4">
             <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
@@ -167,7 +180,7 @@ const EventPage = ({ darkMode }) => {
                 href={event.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 underline"
+                className="underline hover:text-gray-500 transition-all"
               >
                 Event Link
               </a>
@@ -179,77 +192,40 @@ const EventPage = ({ darkMode }) => {
           </div>
 
           {event.onlinePoster && (
-            <div className="bg-white border border-gray-300 p-4 rounded mb-4">
-              <strong>Online Poster:</strong>
-              <img src={event.onlinePoster} alt="Online Poster" className="w-full h-auto rounded" />
+            <div className="mb-4">
+              <img src={event.onlinePoster} alt="Online Poster" className="w-full rounded-lg shadow-md" />
             </div>
           )}
 
           {event.offlinePoster && (
-            <div className="bg-white border border-gray-300 p-4 rounded mb-4">
-              <strong>Offline Poster:</strong>
-              <img src={event.offlinePoster} alt="Offline Poster" className="w-full h-auto rounded" />
+            <div className="mb-4">
+              <img src={event.offlinePoster} alt="Offline Poster" className="w-full rounded-lg shadow-md" />
             </div>
           )}
 
           {isAdmin && (
-            <a href={`/event/${id}/edit`} className="bg-yellow-500 text-white py-2 px-4 rounded">
+            <Link
+              to={`/event/${id}/edit`}
+              className="bg-yellow-500 text-white py-2 px-6 rounded-lg mt-4 inline-block hover:bg-yellow-600 transition-all"
+            >
               Edit Event
-            </a>
+            </Link>
           )}
         </div>
 
         {/* Right Side: Participants */}
         <div className="flex-1 pl-0 md:pl-4">
-          <div>
-            <EventTask tasks={tasks} darkMode={darkMode} eventId={id}/>
-          </div>
-          <h2 className="text-2xl font-bold mb-4">Participants</h2>
-
-          {/* Table for participants */}
-          <table className={`min-w-full border border-gray-300 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
-            <thead>
-              <tr className={`${darkMode ? "bg-gray-700" : "bg-gray-200"}`}>
-                <th className="border px-4 py-2">Name</th>
-                <th className="border px-4 py-2">Student ID</th>
-                <th className="border px-4 py-2">Email</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedParticipants.length > 0 ? (
-                sortedParticipants.map((participant, index) => (
-                  <tr key={index} className={`hover:bg-gray-600 ${darkMode ? "hover:bg-gray-600" : "hover:bg-gray-100"}`}>
-                    <td className="border px-4 py-2">{participant.name}</td>
-                    <td className="border px-4 py-2">{participant.studentId}</td>
-                    <td className="border px-4 py-2">{participant.email}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className="border px-4 py-2 text-center">No participants yet.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          {isAdmin && (
-            <form onSubmit={handleAddParticipants} className="mt-4">
-              <input
-                type="text"
-                value={participantIds}
-                onChange={handleParticipantChange}
-                placeholder="Enter participant IDs (comma separated)"
-                className="border rounded py-2 px-4 w-full"
-                required
-              />
-              <button
-                type="submit"
-                className="bg-blue-500 text-white py-2 px-4 rounded mt-2"
-              >
-                Add Participants
-              </button>
-            </form>
-          )}
+          <EventTask tasks={tasks} darkMode={darkMode} eventId={id} />
+          <Participants
+          participantIds={participantIds}
+          setParticipantIds={setParticipantIds}
+          event={event}
+            participants={sortedParticipants}
+            handleAddParticipants={handleAddParticipants}
+            handleRemoveParticipant={handleRemoveParticipant}
+            isAdmin={isAdmin}
+            darkMode={darkMode}
+          />
         </div>
       </div>
     </div>
