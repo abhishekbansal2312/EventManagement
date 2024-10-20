@@ -100,7 +100,7 @@ const Events = ({ darkMode }) => {
   return (
     <div
       className={`min-h-screen px-16 pb-4 ${
-        darkMode ? "bg-gray-700 text-white" : "text-gray-900"
+        darkMode ? "bg-gray-900 text-white" : "text-gray-900"
       }`}
     >
       <div className="container pt-8 flex justify-between">

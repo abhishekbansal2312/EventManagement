@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import ReviewItem from "../components/ReviewItem";
 import ReviewForm from "../components/ReviewForm";
 
-const Review = () => {
+const Review = (darkMode) => {
   const [reviews, setReviews] = useState([]);
   const [studentId, setStudentId] = useState("");
   const [studentName, setStudentName] = useState(""); // Add state for student name
@@ -17,6 +17,7 @@ const Review = () => {
     4: 0,
     5: 0,
   });
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const getStudentDetailsFromToken = () => {
     const token = Cookies.get("authtoken");
@@ -45,12 +46,13 @@ const Review = () => {
   };
 
   const calculateAverageRating = (data) => {
-    const totalRatings = data.reduce((acc, review) => acc + review.rating, 0);
-    const avgRating = (totalRatings / data.length).toFixed(2) || 0;
+    const approvedReviews = data.filter((review) => review.approved); // Filter approved reviews
+    const totalRatings = approvedReviews.reduce((acc, review) => acc + review.rating, 0);
+    const avgRating = (totalRatings / approvedReviews.length).toFixed(2) || 0;
     setAverageRating(avgRating);
 
     const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    data.forEach((review) => {
+    approvedReviews.forEach((review) => {
       counts[review.rating] = (counts[review.rating] || 0) + 1;
     });
     setRatingCounts(counts);
@@ -191,12 +193,17 @@ const handleDisapprove = async (reviewId) => {
     }
 };
 
-
   useEffect(() => {
     const studentDetailsFromToken = getStudentDetailsFromToken();
     setStudentId(studentDetailsFromToken ? studentDetailsFromToken.id : "");
     setStudentName(studentDetailsFromToken ? studentDetailsFromToken.name : ""); // Set student name
     fetchReviews();
+
+    const authtoken = Cookies.get("authtoken");
+    if (authtoken) {
+      const decodedToken = jwtDecode(authtoken);
+      setIsAdmin(decodedToken.role === "admin");
+    }
   }, []);
 
   return (
@@ -204,6 +211,8 @@ const handleDisapprove = async (reviewId) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         {/* First Column: Two Rows */}
         <div className="flex flex-col gap-6">
+
+
           {/* Row 1: Average Rating Display */}
           <div className="p-6 rounded-lg shadow-sm flex flex-col justify-center items-center text-center bg-yellow-100">
             <h3 className="text-2xl font-semibold text-gray-800 mb-2">Average Rating</h3>
@@ -211,71 +220,67 @@ const handleDisapprove = async (reviewId) => {
 
             {/* Display Total Number of Ratings */}
             <p className="text-gray-600 mt-2">
-              {reviews.length} Total Rating{reviews.length !== 1 ? "s" : ""}
+              {reviews.filter((review) => review.approved).length} Total Rating{reviews.filter((review) => review.approved).length !== 1 ? "s" : ""}
             </p>
           </div>
 
           {/* Row 2: Average Rating Breakdown */}
           <div className="p-6 rounded-lg shadow-sm">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Average Rating Breakdown</h3>
-            {/* Total Number of Ratings */}
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-gray-700">Total Number of Ratings:</span>
-              <span className="text-gray-600">{reviews.length} Ratings</span>
-            </div>
-            {/* Rating breakdown with stars */}
-            {Object.entries(ratingCounts).map(([star, count]) => (
-              <div key={star} className="flex justify-between items-center mb-2">
-                {/* Display star icons */}
-                <div className="flex">
-                  {Array.from({ length: star }, (_, i) => (
-                    <svg
-                      key={i}
-                      className="w-6 h-6 text-yellow-500 fill-current"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 .288l2.833 8.718H23.5l-7.167 5.198L18.833 23 12 17.802 5.167 23l1.667-8.796L.5 9.006h8.667z" />
-                    </svg>
-                  ))}
-                </div>
-                <span className="text-gray-600">
-                  {count} Review{count !== 1 ? "s" : ""}
-                </span>
-              </div>
-            ))}
-          </div>
+  <h3 className="text-xl font-semibold text-gray-800 mb-4">Average Rating Breakdown</h3>
+  {/* Total Number of Ratings */}
+  {[1, 2, 3, 4, 5].map((star) => (
+    <div className="flex justify-between items-center mb-4" key={star}>
+      <span className="text-gray-600">
+        {star} Star{star > 1 ? 's' : ''}
+        <span className="ml-1">{'⭐️'.repeat(star)}</span> {/* Displaying stars */}
+      </span>
+      <span className="text-gray-600">{ratingCounts[star] || 0}</span>
+    </div>
+  ))}
+</div>
+
+
+
+          
         </div>
 
         {/* Second Column: Review Form */}
-        <div className="p-6 border-neutral-500 border-l-2">
-          <ReviewForm onSubmit={handleSubmit} error={error} />
+        <div className="p-6 rounded-lg shadow-sm bg-gray-100">
+          <ReviewForm onSubmit={handleSubmit} />
+          {error && <p className="text-red-500">{error}</p>}
         </div>
+
+
       </div>
 
-      {/* Second Row: Reviews */}
-      <div className="grid grid-cols-1">
-        <div className="p-6">
-          <h3 className="text-3xl font-semibold text-gray-800 mb-4">Reviews</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {reviews.length > 0 ? (
-  reviews.map((review) => (
-    <ReviewItem
-      key={review._id}
-      review={review}
-      onDelete={handleDelete}
-      onLike={handleLike}          // Pass handleLike
-      onDislike={handleDislike} 
-      onApprove={handleApprove}   // Pass handleDislike
-      onDisapprove={handleDisapprove}
-    />
-  ))
-) : (
-  <div className="col-span-1 text-center text-gray-500">No reviews yet.</div>
-)}
-          </div>
-        </div>
-      </div>
+
+
+      {/* Review List */}
+<div className="space-y-4">
+  <h3 className="text-xl font-semibold text-gray-800 mb-4">Reviews</h3>
+  {reviews.length > 0 ? (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> {/* Using grid to create two columns */}
+      {reviews
+        .filter((review) => isAdmin || review.approved) // Only show approved reviews for regular users
+        .map((review) => (
+          <ReviewItem
+            key={review._id}
+            review={review}
+            isAdmin={isAdmin}
+            onDelete={handleDelete}
+            onApprove={handleApprove}
+            onDisapprove={handleDisapprove}
+            onLike={handleLike}
+            onDislike={handleDislike}
+          />
+        ))}
+    </div> 
+  ) : (
+    <p>No reviews found</p>
+  )}
+</div>
+
+
     </div>
   );
 };
