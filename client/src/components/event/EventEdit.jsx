@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { storage } from "../../firebase"; // Import firebase storage
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Import storage functions
+import { storage } from "../../firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const EditEventPage = ({ darkMode }) => {
   const { id } = useParams();
-  const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
@@ -19,12 +18,11 @@ const EditEventPage = ({ darkMode }) => {
     link: "",
     onlinePoster: "",
     offlinePoster: "",
-    isLive: false, // Add isLive property to the form data
+    isLive: false,
   });
   const [onlinePosterFile, setOnlinePosterFile] = useState(null);
   const [offlinePosterFile, setOfflinePosterFile] = useState(null);
 
-  // Fetch event data on component mount
   useEffect(() => {
     const fetchEvent = async () => {
       try {
@@ -39,8 +37,14 @@ const EditEventPage = ({ darkMode }) => {
         if (!response.ok) throw new Error("Event not found");
 
         const data = await response.json();
-        setEvent(data);
-        setFormData({ ...data, isLive: data.isLive }); // Ensure isLive is set correctly
+        const eventDate = data.date
+          ? new Date(data.date).toISOString().split("T")[0]
+          : "";
+
+        setFormData({
+          ...data,
+          date: eventDate,
+        });
         setError(null);
       } catch (error) {
         setError(error.message);
@@ -52,7 +56,6 @@ const EditEventPage = ({ darkMode }) => {
     fetchEvent();
   }, [id]);
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -61,19 +64,16 @@ const EditEventPage = ({ darkMode }) => {
     }));
   };
 
-  // Upload image to Firebase and get the URL
   const uploadImage = async (file) => {
     const storageRef = ref(storage, `images/${file.name}`);
     await uploadBytes(storageRef, file);
     return await getDownloadURL(storageRef);
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Handle file uploads
       let onlinePosterUrl = formData.onlinePoster;
       let offlinePosterUrl = formData.offlinePoster;
 
@@ -103,14 +103,12 @@ const EditEventPage = ({ darkMode }) => {
       if (!response.ok) throw new Error("Error updating event");
 
       toast.success("Event updated successfully!");
-      // Redirect to the event page after a successful update
       window.location.href = `/event/${id}`;
     } catch (error) {
       toast.error(error.message);
     }
   };
 
-  // Loading state
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -119,7 +117,6 @@ const EditEventPage = ({ darkMode }) => {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="container mx-auto p-4">
@@ -138,88 +135,129 @@ const EditEventPage = ({ darkMode }) => {
       } py-10`}
     >
       <ToastContainer />
-      <div className="container mx-auto p-4">
-        <h1 className="text-4xl font-bold mb-4">Edit Event</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Event Title"
-            className="block w-full p-2 border rounded"
-            required
-          />
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Event Description"
-            className="block w-full p-2 border rounded"
-            required
-          />
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            className="block w-full p-2 border rounded"
-            required
-          />
-          <input
-            type="time"
-            name="time"
-            value={formData.time}
-            onChange={handleChange}
-            className="block w-full p-2 border rounded"
-          />
-          <input
-            type="text"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            placeholder="Event Location"
-            className="block w-full p-2 border rounded"
-          />
-          <input
-            type="url"
-            name="link"
-            value={formData.link}
-            onChange={handleChange}
-            placeholder="Event Link"
-            className="block w-full p-2 border rounded"
-          />
-
-          {/* Upload Online Poster */}
-          <input
-            type="file"
-            onChange={(e) => setOnlinePosterFile(e.target.files[0])}
-            className="block w-full p-2 border rounded"
-          />
-          {formData.onlinePoster && (
-            <img
-              src={formData.onlinePoster}
-              alt="Online Poster"
-              className="w-32 h-32"
+      <div className="container mx-auto p-8 px-16 bg-white dark:bg-gray-800 shadow-lg rounded-lg text-[14px]">
+        <h1 className="text-4xl font-bold mb-8">Edit Event</h1>
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300">
+              Event Title
+            </label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+              required
             />
-          )}
+          </div>
 
-          {/* Upload Offline Poster */}
-          <input
-            type="file"
-            onChange={(e) => setOfflinePosterFile(e.target.files[0])}
-            className="block w-full p-2 border rounded"
-          />
-          {formData.offlinePoster && (
-            <img
-              src={formData.offlinePoster}
-              alt="Offline Poster"
-              className="w-32 h-32"
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300">
+              Date
+            </label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+              required
             />
-          )}
+          </div>
 
-          {/* Checkbox for isLive */}
-          <div className="flex items-center">
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300">
+              Time
+            </label>
+            <input
+              type="time"
+              name="time"
+              value={formData.time}
+              onChange={handleChange}
+              className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300">
+              Event Location
+            </label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300">
+              Event Description
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300">
+              Event Link
+            </label>
+            <input
+              type="url"
+              name="link"
+              value={formData.link}
+              onChange={handleChange}
+              className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+            />
+          </div>
+
+          <div className="col-span-1 md:col-span-2">
+            <label className="block text-gray-700 dark:text-gray-300">
+              Online Poster
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setOnlinePosterFile(e.target.files[0])}
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 mt-1 dark:bg-gray-800 cursor-pointer"
+            />
+            {formData.onlinePoster && (
+              <img
+                src={formData.onlinePoster}
+                alt="Online Poster"
+                className="w-32 h-32 mt-2 object-cover rounded"
+              />
+            )}
+          </div>
+
+          <div className="col-span-1 md:col-span-2">
+            <label className="block text-gray-700 dark:text-gray-300">
+              Offline Poster
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setOfflinePosterFile(e.target.files[0])}
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 mt-1 dark:bg-gray-800 cursor-pointer"
+            />
+            {formData.offlinePoster && (
+              <img
+                src={formData.offlinePoster}
+                alt="Offline Poster"
+                className="w-32 h-32 mt-2 object-cover rounded"
+              />
+            )}
+          </div>
+
+          <div className="col-span-1 md:col-span-2 flex items-center">
             <input
               type="checkbox"
               name="isLive"
@@ -227,12 +265,14 @@ const EditEventPage = ({ darkMode }) => {
               onChange={handleChange}
               className="mr-2"
             />
-            <label htmlFor="isLive">Is Live</label>
+            <label className="text-gray-700 dark:text-gray-300">
+              Make this event live
+            </label>
           </div>
 
           <button
             type="submit"
-            className="bg-blue-500 text-white py-2 px-4 rounded"
+            className="bg-blue-500 hover:bg-blue-700 text-[12px] text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 col-span-1 md:col-span-2"
           >
             Update Event
           </button>
