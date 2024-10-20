@@ -11,6 +11,7 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
   const [hoveredMember, setHoveredMember] = useState(null); // Track hovered member
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
   const [isEditing, setIsEditing] = useState(false); // State to track if we are editing
+  const [selectedTaskId, setSelectedTaskId] = useState(null); // State to store the selected taskId
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -31,6 +32,7 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
   const handleCloseModal = () => {
     setIsModalOpen(false); // Close the modal
     setIsEditing(false); // Reset editing state
+    setSelectedTaskId(null); // Clear the selected taskId
   };
 
   if (loading) {
@@ -75,6 +77,7 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
               className="bg-green-600 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-green-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-400"
               onClick={() => {
                 setIsEditing(true);
+                setSelectedTaskId(tasks[0]._id); // Set the taskId of the first task for editing
                 setIsModalOpen(true); // Open modal for editing a task
               }}
             >
@@ -89,7 +92,7 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
           onClose={handleCloseModal} // Pass the function here
           title={isEditing ? "Edit Task" : "Create New Task"}
         >
-          {isEditing ? <EditTask eventId={eventId} /> : <CreateTask onClose={handleCloseModal} eventId={eventId} />}
+          {isEditing ? <EditTask eventId={eventId} selectedTaskId={selectedTaskId} setSelectedTaskId={setSelectedTaskId} taskId={selectedTaskId} onClose={handleCloseModal}/> : <CreateTask onClose={handleCloseModal} eventId={eventId} />}
         </Modal>
       </div>
 
