@@ -15,6 +15,7 @@ import DarkMode from "../components/DarkMode";
 import Footer from "./Footer";
 import Users from "./Users";
 import ProtectedRouteAdminOnly from "./ProtectedRouteAdminOnly";
+import Review from "../pages/Review";
 
 const AppRouter = () => {
   const { isAuthenticated, setIsAuthenticated, darkMode, setDarkMode } =
@@ -123,6 +124,14 @@ const AppRouter = () => {
                 <ProtectedRouteAdminOnly>
                   <Users darkMode={darkMode} />
                 </ProtectedRouteAdminOnly>
+              }
+            />
+            <Route
+              path="/reviews"
+              element={
+                <ProtectedRoute>
+                  <Review darkMode={darkMode} />
+                </ProtectedRoute>
               }
             />
 

@@ -62,6 +62,18 @@ const Footer = () => {
                 Privacy Policy
               </a>
             </li>
+            <li>
+              <a
+                href="/reviews"
+                className={`hover:underline transition-colors duration-300 ${
+                  darkMode
+                    ? "text-gray-400 hover:text-gray-200"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+              Reviews
+              </a>
+            </li>
           </ul>
         </div>
 
