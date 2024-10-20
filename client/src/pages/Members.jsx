@@ -118,7 +118,7 @@ const Members = ({ darkMode }) => {
   };
 
   return (
-    <div className="px-16 py-8 dark:bg-gray-900 dark:text-white bg-white text-black">
+    <div className="px-16 py-8 dark:bg-gray-800 dark:text-white bg-white text-black">
       <div className="min-h-screen transition duration-500">
         {/* Faculty Section */}
         <div className="flex justify-between items-center mb-4">
@@ -135,6 +135,7 @@ const Members = ({ darkMode }) => {
 
         <Modal
           isOpen={showCreateFaculty}
+          title={"Add Faculty Member"}
           onClose={() => setShowCreateFaculty(false)}
         >
           <CreateFaculty

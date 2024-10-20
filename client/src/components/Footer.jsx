@@ -11,7 +11,7 @@ const Footer = () => {
   const { darkMode } = useAuth();
   return (
     <footer
-      className={`p-8 ${
+      className={`p-16 ${
         darkMode ? "bg-gray-900 text-gray-300" : "bg-gray-800 text-white"
       }`}
     >
@@ -80,7 +80,7 @@ const Footer = () => {
         {/* Follow Us Section */}
         <div className="w-full md:w-auto text-center md:text-left">
           <h3
-            className={`text-xl font-semibold mb-4 ${
+            className={`text-xl text-right font-semibold mb-4 ${
               darkMode ? "text-white" : "text-gray-200"
             }`}
           >

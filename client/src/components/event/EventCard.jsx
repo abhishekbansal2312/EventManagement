@@ -57,7 +57,7 @@ const EventCard = ({ event, darkMode, onDelete }) => {
     <div
       onClick={handleEventClick}
       className={`flex shadow-md rounded-md ${
-        darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+        darkMode ? "bg-gray-700 text-white" : "bg-white text-gray-900"
       } relative overflow-hidden`}
     >
       {/* Event Poster */}

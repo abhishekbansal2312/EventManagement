@@ -8,20 +8,18 @@ import Members from "../pages/Members";
 import Gallery from "../pages/Gallery";
 import GalleryPage from "../pages/GalleryPage";
 import Events from "../pages/Events";
-import CreateEvent from "./CreateEvent";
+import CreateEvent from "./event/CreateEvent";
 import EventPage from "../pages/EventPage";
-import EventEdit from "../components/EventEdit";
+import EventEdit from "../components/event/EventEdit";
 import DarkMode from "../components/DarkMode";
 import Footer from "./Footer";
 import Users from "./Users";
 import ProtectedRouteAdminOnly from "./ProtectedRouteAdminOnly";
-import Live from "../pages/Live";
 import Review from "../pages/Review";
 
 const AppRouter = () => {
   const { isAuthenticated, setIsAuthenticated, darkMode, setDarkMode } =
     useAuth();
-  const location = useLocation();
   return (
     <div>
       <div className={`flex flex-col min-h-screen`}>
@@ -128,7 +126,7 @@ const AppRouter = () => {
                 </ProtectedRouteAdminOnly>
               }
             />
-               <Route
+            <Route
               path="/reviews"
               element={
                 <ProtectedRoute>
@@ -136,7 +134,6 @@ const AppRouter = () => {
                 </ProtectedRoute>
               }
             />
-
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

@@ -3,8 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
-import {jwtDecode} from "jwt-decode"; // Corrected to default import
-import EventTask from "../components/EventTask.jsx";
+import { jwtDecode } from "jwt-decode"; // Corrected to default import
+import EventTask from "../components/event/EventTask.jsx";
 import Participants from "../components/Participants.jsx";
 import { FaTrash } from "react-icons/fa"; // Import the trash icon
 
@@ -80,14 +80,17 @@ const EventPage = ({ darkMode }) => {
   const handleAddParticipants = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:4600/api/events/${id}/participants`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ studentIds: participantIds }),
-      });
+      const response = await fetch(
+        `http://localhost:4600/api/events/${id}/participants`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ studentIds: participantIds }),
+        }
+      );
 
       if (!response.ok) throw new Error("Error adding participants");
 
@@ -102,14 +105,17 @@ const EventPage = ({ darkMode }) => {
 
   const handleRemoveParticipant = async (participantId) => {
     try {
-      const response = await fetch(`http://localhost:4600/api/events/${id}/participants`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ studentIds: [participantId] }),
-      });
+      const response = await fetch(
+        `http://localhost:4600/api/events/${id}/participants`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ studentIds: [participantId] }),
+        }
+      );
 
       if (!response.ok) throw new Error("Error removing participant");
 
@@ -149,7 +155,11 @@ const EventPage = ({ darkMode }) => {
   });
 
   return (
-    <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"} py-10`}>
+    <div
+      className={`min-h-screen ${
+        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+      } py-10`}
+    >
       <ToastContainer />
       <div className="container mx-auto p-4 flex flex-col md:flex-row">
         {/* Left Side: Event Details */}
@@ -187,19 +197,31 @@ const EventPage = ({ darkMode }) => {
             </div>
           )}
 
-          <div className={`mb-4 ${event.isLive ? "text-green-500" : "text-red-500"}`}>
+          <div
+            className={`mb-4 ${
+              event.isLive ? "text-green-500" : "text-red-500"
+            }`}
+          >
             <strong>Status:</strong> {event.isLive ? "Live" : "Not Live"}
           </div>
 
           {event.onlinePoster && (
             <div className="mb-4">
-              <img src={event.onlinePoster} alt="Online Poster" className="w-full rounded-lg shadow-md" />
+              <img
+                src={event.onlinePoster}
+                alt="Online Poster"
+                className="w-full rounded-lg shadow-md"
+              />
             </div>
           )}
 
           {event.offlinePoster && (
             <div className="mb-4">
-              <img src={event.offlinePoster} alt="Offline Poster" className="w-full rounded-lg shadow-md" />
+              <img
+                src={event.offlinePoster}
+                alt="Offline Poster"
+                className="w-full rounded-lg shadow-md"
+              />
             </div>
           )}
 
@@ -217,9 +239,9 @@ const EventPage = ({ darkMode }) => {
         <div className="flex-1 pl-0 md:pl-4">
           <EventTask tasks={tasks} darkMode={darkMode} eventId={id} />
           <Participants
-          participantIds={participantIds}
-          setParticipantIds={setParticipantIds}
-          event={event}
+            participantIds={participantIds}
+            setParticipantIds={setParticipantIds}
+            event={event}
             participants={sortedParticipants}
             handleAddParticipants={handleAddParticipants}
             handleRemoveParticipant={handleRemoveParticipant}

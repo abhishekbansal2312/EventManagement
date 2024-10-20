@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { storage } from '../firebase'; // Import firebase storage
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Import storage functions
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { storage } from "../../firebase"; // Import firebase storage
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Import storage functions
 
 const EditEventPage = ({ darkMode }) => {
   const { id } = useParams();
@@ -11,14 +11,14 @@ const EditEventPage = ({ darkMode }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    date: '',
-    time: '',
-    location: '',
-    link: '',
-    onlinePoster: '',
-    offlinePoster: '',
+    title: "",
+    description: "",
+    date: "",
+    time: "",
+    location: "",
+    link: "",
+    onlinePoster: "",
+    offlinePoster: "",
     isLive: false, // Add isLive property to the form data
   });
   const [onlinePosterFile, setOnlinePosterFile] = useState(null);
@@ -55,9 +55,9 @@ const EditEventPage = ({ darkMode }) => {
   // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -132,7 +132,11 @@ const EditEventPage = ({ darkMode }) => {
   }
 
   return (
-    <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "text-gray-900"} py-10`}>
+    <div
+      className={`min-h-screen ${
+        darkMode ? "bg-gray-900 text-white" : "text-gray-900"
+      } py-10`}
+    >
       <ToastContainer />
       <div className="container mx-auto p-4">
         <h1 className="text-4xl font-bold mb-4">Edit Event</h1>
@@ -192,7 +196,13 @@ const EditEventPage = ({ darkMode }) => {
             onChange={(e) => setOnlinePosterFile(e.target.files[0])}
             className="block w-full p-2 border rounded"
           />
-          {formData.onlinePoster && <img src={formData.onlinePoster} alt="Online Poster" className="w-32 h-32" />}
+          {formData.onlinePoster && (
+            <img
+              src={formData.onlinePoster}
+              alt="Online Poster"
+              className="w-32 h-32"
+            />
+          )}
 
           {/* Upload Offline Poster */}
           <input
@@ -200,7 +210,13 @@ const EditEventPage = ({ darkMode }) => {
             onChange={(e) => setOfflinePosterFile(e.target.files[0])}
             className="block w-full p-2 border rounded"
           />
-          {formData.offlinePoster && <img src={formData.offlinePoster} alt="Offline Poster" className="w-32 h-32" />}
+          {formData.offlinePoster && (
+            <img
+              src={formData.offlinePoster}
+              alt="Offline Poster"
+              className="w-32 h-32"
+            />
+          )}
 
           {/* Checkbox for isLive */}
           <div className="flex items-center">
@@ -214,7 +230,10 @@ const EditEventPage = ({ darkMode }) => {
             <label htmlFor="isLive">Is Live</label>
           </div>
 
-          <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white py-2 px-4 rounded"
+          >
             Update Event
           </button>
         </form>

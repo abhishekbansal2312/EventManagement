@@ -95,7 +95,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
   };
 
   return (
-    <div className="flex shadow-md rounded-md dark:bg-gray-800 dark:text-white bg-white text-gray-900 relative overflow-hidden">
+    <div className="flex shadow-md rounded-md dark:bg-gray-700 dark:text-white bg-white text-gray-900 relative overflow-hidden">
       {/* Faculty Picture */}
       <div className="flex justify-center bg-gray-100 dark:bg-slate-500 p-2 pt-4">
         {faculty.pictureURL && (
@@ -109,27 +109,30 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
       </div>
 
       {/* Faculty Information */}
-      <div className="flex-1 flex flex-col justify-between p-4">
+      <div className="flex-1 flex flex-col justify-between">
         <div>
           {/* Faculty Name */}
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg text-gray-700 dark:text-gray-400 font-semibold">
-              {faculty.name || "No Name Provided"}
-            </h2>
-            <span
-              className={`${
-                faculty.isActive ? "text-green-500" : "text-gray-500"
-              } rounded-md text-[12px] font-bold`}
-            >
-              {faculty.isActive ? "Active" : "Inactive"}
-            </span>
-          </div>
-
-          <div className="text-[12px] mt-2">
-            {/* Faculty Email */}
-            <div className="mb-1">
-              <strong>Email:</strong> {faculty.email || "No Email Provided"}
+          <div className="p-2">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg text-gray-700 dark:text-gray-400 font-semibold">
+                {faculty.name || "No Name Provided"}
+              </h2>
+              <span
+                className={`${
+                  faculty.isActive ? "text-green-500" : "text-gray-500"
+                } rounded-md text-[12px] font-bold`}
+              >
+                {faculty.isActive ? "Active" : "Inactive"}
+              </span>
             </div>
+            <div className="mb-2 text-[12px]">
+              {faculty.email || "No Email Provided"}
+            </div>
+          </div>
+          <hr />
+
+          <div className="text-[12px] mt-2 p-2">
+            {/* Faculty Email */}
 
             {/* Faculty Specializations */}
             {faculty.specializations && faculty.specializations.length > 0 && (
@@ -153,7 +156,6 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
                 {new Date(faculty.joinDate).toLocaleDateString() || "N/A"}
               </div>
             )}
-            <hr />
             {/* Faculty Bio */}
             <div className="mt-2">
               <strong className="text-gray-700 dark:text-gray-400">Bio</strong>
@@ -166,7 +168,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
 
         {/* Edit/Delete Buttons for Admins */}
         {isAdmin && (
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex justify-between items-center mt-4 p-2">
             <div className="cursor-pointer" onClick={handleEditClick}>
               <FaEdit
                 size={12}

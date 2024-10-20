@@ -47,7 +47,10 @@ const Review = (darkMode) => {
 
   const calculateAverageRating = (data) => {
     const approvedReviews = data.filter((review) => review.approved); // Filter approved reviews
-    const totalRatings = approvedReviews.reduce((acc, review) => acc + review.rating, 0);
+    const totalRatings = approvedReviews.reduce(
+      (acc, review) => acc + review.rating,
+      0
+    );
     const avgRating = (totalRatings / approvedReviews.length).toFixed(2) || 0;
     setAverageRating(avgRating);
 
@@ -85,15 +88,20 @@ const Review = (darkMode) => {
   const handleDelete = async (reviewId) => {
     if (window.confirm("Are you sure you want to delete this review?")) {
       try {
-        const response = await fetch(`http://localhost:4600/api/reviews/${reviewId}`, {
-          method: "DELETE",
-          credentials: "include",
-        });
+        const response = await fetch(
+          `http://localhost:4600/api/reviews/${reviewId}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) throw new Error("Failed to delete review");
-        
+
         // Update state to remove deleted review
-        setReviews((prevReviews) => prevReviews.filter((review) => review._id !== reviewId));
+        setReviews((prevReviews) =>
+          prevReviews.filter((review) => review._id !== reviewId)
+        );
       } catch (error) {
         console.error("Error deleting review:", error.message);
         setError(error.message);
@@ -103,95 +111,107 @@ const Review = (darkMode) => {
 
   const handleLike = async (reviewId) => {
     try {
-        const response = await fetch(`http://localhost:4600/api/reviews/${reviewId}/like`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ studentId }), // Ensure the correct studentId is sent
-        });
+      const response = await fetch(
+        `http://localhost:4600/api/reviews/${reviewId}/like`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ studentId }), // Ensure the correct studentId is sent
+        }
+      );
 
-        if (!response.ok) throw new Error('Failed to like review');
-        const updatedReview = await response.json();
-        // Update your reviews state here with the updatedReview
-        setReviews((prevReviews) =>
-          prevReviews.map((review) => 
-            review._id === updatedReview._id ? updatedReview : review
-          )
-        );
+      if (!response.ok) throw new Error("Failed to like review");
+      const updatedReview = await response.json();
+      // Update your reviews state here with the updatedReview
+      setReviews((prevReviews) =>
+        prevReviews.map((review) =>
+          review._id === updatedReview._id ? updatedReview : review
+        )
+      );
     } catch (error) {
-        console.error('Error liking review:', error);
+      console.error("Error liking review:", error);
     }
-};
+  };
 
-const handleDislike = async (reviewId) => {
+  const handleDislike = async (reviewId) => {
     try {
-        const response = await fetch(`http://localhost:4600/api/reviews/${reviewId}/dislike`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ studentId }), // Ensure the correct studentId is sent
-        });
+      const response = await fetch(
+        `http://localhost:4600/api/reviews/${reviewId}/dislike`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ studentId }), // Ensure the correct studentId is sent
+        }
+      );
 
-        if (!response.ok) throw new Error('Failed to dislike review');
-        const updatedReview = await response.json();
-        // Update your reviews state here with the updatedReview
-        setReviews((prevReviews) =>
-          prevReviews.map((review) => 
-            review._id === updatedReview._id ? updatedReview : review
-          )
-        );
+      if (!response.ok) throw new Error("Failed to dislike review");
+      const updatedReview = await response.json();
+      // Update your reviews state here with the updatedReview
+      setReviews((prevReviews) =>
+        prevReviews.map((review) =>
+          review._id === updatedReview._id ? updatedReview : review
+        )
+      );
     } catch (error) {
-        console.error('Error disliking review:', error);
+      console.error("Error disliking review:", error);
     }
-};
+  };
 
-const handleApprove = async (reviewId) => {
+  const handleApprove = async (reviewId) => {
     try {
-        const response = await fetch(`http://localhost:4600/api/reviews/${reviewId}/approve`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+      const response = await fetch(
+        `http://localhost:4600/api/reviews/${reviewId}/approve`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-        if (!response.ok) throw new Error('Failed to approve review');
-        const updatedReview = await response.json();
+      if (!response.ok) throw new Error("Failed to approve review");
+      const updatedReview = await response.json();
 
-        // Update the state with the new review data
-        setReviews((prevReviews) =>
-          prevReviews.map((review) => 
-            review._id === updatedReview._id ? updatedReview : review
-          )
-        );
+      // Update the state with the new review data
+      setReviews((prevReviews) =>
+        prevReviews.map((review) =>
+          review._id === updatedReview._id ? updatedReview : review
+        )
+      );
     } catch (error) {
-        console.error('Error approving review:', error);
+      console.error("Error approving review:", error);
     }
-};
+  };
 
-const handleDisapprove = async (reviewId) => {
+  const handleDisapprove = async (reviewId) => {
     try {
-        const response = await fetch(`http://localhost:4600/api/reviews/${reviewId}/disapprove`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+      const response = await fetch(
+        `http://localhost:4600/api/reviews/${reviewId}/disapprove`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-        if (!response.ok) throw new Error('Failed to disapprove review');
-        const updatedReview = await response.json();
+      if (!response.ok) throw new Error("Failed to disapprove review");
+      const updatedReview = await response.json();
 
-        // Update the state with the new review data
-        setReviews((prevReviews) =>
-            prevReviews.map((review) =>
-                review._id === updatedReview._id ? updatedReview : review
-            )
-        );
+      // Update the state with the new review data
+      setReviews((prevReviews) =>
+        prevReviews.map((review) =>
+          review._id === updatedReview._id ? updatedReview : review
+        )
+      );
     } catch (error) {
-        console.error('Error disapproving review:', error);
+      console.error("Error disapproving review:", error);
     }
-};
+  };
 
   useEffect(() => {
     const studentDetailsFromToken = getStudentDetailsFromToken();
@@ -211,37 +231,44 @@ const handleDisapprove = async (reviewId) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         {/* First Column: Two Rows */}
         <div className="flex flex-col gap-6">
-
-
           {/* Row 1: Average Rating Display */}
           <div className="p-6 rounded-lg shadow-sm flex flex-col justify-center items-center text-center bg-yellow-100">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-2">Average Rating</h3>
-            <div className="text-4xl font-bold text-yellow-500">{averageRating} / 5</div>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-2">
+              Average Rating
+            </h3>
+            <div className="text-4xl font-bold text-yellow-500">
+              {averageRating} / 5
+            </div>
 
             {/* Display Total Number of Ratings */}
             <p className="text-gray-600 mt-2">
-              {reviews.filter((review) => review.approved).length} Total Rating{reviews.filter((review) => review.approved).length !== 1 ? "s" : ""}
+              {reviews.filter((review) => review.approved).length} Total Rating
+              {reviews.filter((review) => review.approved).length !== 1
+                ? "s"
+                : ""}
             </p>
           </div>
 
           {/* Row 2: Average Rating Breakdown */}
           <div className="p-6 rounded-lg shadow-sm">
-  <h3 className="text-xl font-semibold text-gray-800 mb-4">Average Rating Breakdown</h3>
-  {/* Total Number of Ratings */}
-  {[1, 2, 3, 4, 5].map((star) => (
-    <div className="flex justify-between items-center mb-4" key={star}>
-      <span className="text-gray-600">
-        {star} Star{star > 1 ? 's' : ''}
-        <span className="ml-1">{'⭐️'.repeat(star)}</span> {/* Displaying stars */}
-      </span>
-      <span className="text-gray-600">{ratingCounts[star] || 0}</span>
-    </div>
-  ))}
-</div>
-
-
-
-          
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Average Rating Breakdown
+            </h3>
+            {/* Total Number of Ratings */}
+            {[1, 2, 3, 4, 5].map((star) => (
+              <div
+                className="flex justify-between items-center mb-4"
+                key={star}
+              >
+                <span className="text-gray-600">
+                  {star} Star{star > 1 ? "s" : ""}
+                  <span className="ml-1">{"⭐️".repeat(star)}</span>{" "}
+                  {/* Displaying stars */}
+                </span>
+                <span className="text-gray-600">{ratingCounts[star] || 0}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Second Column: Review Form */}
@@ -249,38 +276,34 @@ const handleDisapprove = async (reviewId) => {
           <ReviewForm onSubmit={handleSubmit} />
           {error && <p className="text-red-500">{error}</p>}
         </div>
-
-
       </div>
 
-
-
       {/* Review List */}
-<div className="space-y-4">
-  <h3 className="text-xl font-semibold text-gray-800 mb-4">Reviews</h3>
-  {reviews.length > 0 ? (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> {/* Using grid to create two columns */}
-      {reviews
-        .filter((review) => isAdmin || review.approved) // Only show approved reviews for regular users
-        .map((review) => (
-          <ReviewItem
-            key={review._id}
-            review={review}
-            isAdmin={isAdmin}
-            onDelete={handleDelete}
-            onApprove={handleApprove}
-            onDisapprove={handleDisapprove}
-            onLike={handleLike}
-            onDislike={handleDislike}
-          />
-        ))}
-    </div> 
-  ) : (
-    <p>No reviews found</p>
-  )}
-</div>
-
-
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">Reviews</h3>
+        {reviews.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {" "}
+            {/* Using grid to create two columns */}
+            {reviews
+              .filter((review) => isAdmin || review.approved) // Only show approved reviews for regular users
+              .map((review) => (
+                <ReviewItem
+                  key={review._id}
+                  review={review}
+                  isAdmin={isAdmin}
+                  onDelete={handleDelete}
+                  onApprove={handleApprove}
+                  onDisapprove={handleDisapprove}
+                  onLike={handleLike}
+                  onDislike={handleDislike}
+                />
+              ))}
+          </div>
+        ) : (
+          <p>No reviews found</p>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import EventCard from "../components/EventCard";
+import EventCard from "../components/event/EventCard";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode"; // Correct import
@@ -100,7 +100,7 @@ const Events = ({ darkMode }) => {
   return (
     <div
       className={`min-h-screen px-16 pb-4 ${
-        darkMode ? "bg-gray-900 text-white" : "text-gray-900"
+        darkMode ? "dark:bg-gray-800 text-white" : "text-gray-900"
       }`}
     >
       <div className="container pt-8 flex justify-between">
