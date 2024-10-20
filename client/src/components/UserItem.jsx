@@ -42,7 +42,7 @@ const UserItem = ({
           {/* Edit button with icon */}
           <button
             onClick={() => handleEdit(user)}
-            className={`flex items-center px-3 py-1 text-green-500 border border-green-500 rounded hover:bg-green-500 hover:text-white transition duration-200 text-[12px]`}
+            className={`flex items-center px-3 py-1 text-teal-400 border border-teal-400 rounded hover:bg-teal-400 hover:text-white transition duration-200 text-[12px]`}
           >
             <FaEdit className="mr-1" />
             Edit

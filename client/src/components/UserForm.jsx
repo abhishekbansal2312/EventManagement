@@ -9,7 +9,7 @@ const UserForm = ({
   onClose,
 }) => {
   return (
-    <form onSubmit={handleSubmit} className={``}>
+    <form onSubmit={handleSubmit} className="">
       {/* Student ID */}
       <div className="mb-3">
         <label

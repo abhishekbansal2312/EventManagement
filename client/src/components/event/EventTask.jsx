@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import CreateTask from './CreateTask';
-import EditTask from './EditTask';
-import Modal from './Modal'; // Ensure you import the Modal component
+import React, { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CreateTask from "../CreateTask";
+import EditTask from "./EditTask";
+import Modal from "../Modal"; // Ensure you import the Modal component
 
 const EventTasks = ({ tasks, darkMode, eventId }) => {
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
         setLoading(false);
       } catch (err) {
         setError(err.message);
-        toast.error('Error loading tasks: ' + err.message);
+        toast.error("Error loading tasks: " + err.message);
         setLoading(false);
       }
     };
@@ -55,7 +55,11 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
   }
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'text-gray-900'} py-10`}>
+    <div
+      className={`min-h-screen ${
+        darkMode ? "bg-gray-900 text-white" : "text-gray-900"
+      } py-10`}
+    >
       <ToastContainer />
       <div className="flex justify-between mx-16">
         <h2 className="text-3xl font-bold mb-6 text-center">Tasks Overview</h2>
@@ -87,12 +91,22 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
         </div>
 
         {/* Modal for creating a new task */}
-        <Modal 
-          isOpen={isModalOpen} 
+        <Modal
+          isOpen={isModalOpen}
           onClose={handleCloseModal} // Pass the function here
           title={isEditing ? "Edit Task" : "Create New Task"}
         >
-          {isEditing ? <EditTask eventId={eventId} selectedTaskId={selectedTaskId} setSelectedTaskId={setSelectedTaskId} taskId={selectedTaskId} onClose={handleCloseModal}/> : <CreateTask onClose={handleCloseModal} eventId={eventId} />}
+          {isEditing ? (
+            <EditTask
+              eventId={eventId}
+              selectedTaskId={selectedTaskId}
+              setSelectedTaskId={setSelectedTaskId}
+              taskId={selectedTaskId}
+              onClose={handleCloseModal}
+            />
+          ) : (
+            <CreateTask onClose={handleCloseModal} eventId={eventId} />
+          )}
         </Modal>
       </div>
 
@@ -102,34 +116,57 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
             const taskEntries = Object.keys(task)
               .filter(
                 (key) =>
-                  key !== '_id' &&
-                  key !== 'event' &&
-                  key !== '__v' &&
-                  key !== 'deadline' &&
-                  key !== 'createdDate' &&
-                  key !== 'status'
+                  key !== "_id" &&
+                  key !== "event" &&
+                  key !== "__v" &&
+                  key !== "deadline" &&
+                  key !== "createdDate" &&
+                  key !== "status"
               )
               .map((key) => {
                 const members = task[key]?.assignedTo || [];
                 const memberNames =
-                  members.length > 0 ? members.map((member) => member.name).join(', ') : 'No members assigned';
+                  members.length > 0
+                    ? members.map((member) => member.name).join(", ")
+                    : "No members assigned";
 
                 return (
-                  <div key={key} className="flex justify-between items-center border-b border-gray-300 py-2">
-                    <span className="font-semibold">{key.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                  <div
+                    key={key}
+                    className="flex justify-between items-center border-b border-gray-300 py-2"
+                  >
+                    <span className="font-semibold">
+                      {key.replace(/([A-Z])/g, " $1").trim()}:
+                    </span>
                     <span
-                      className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-700'} cursor-pointer`}
-                      onMouseEnter={() => setHoveredMember(members)}  // Show member details
-                      onMouseLeave={() => setHoveredMember(null)}  // Hide member details
+                      className={`text-sm ${
+                        darkMode ? "text-gray-400" : "text-gray-700"
+                      } cursor-pointer`}
+                      onMouseEnter={() => setHoveredMember(members)} // Show member details
+                      onMouseLeave={() => setHoveredMember(null)} // Hide member details
                     >
                       {memberNames}
                     </span>
 
                     {/* Show member details in a tooltip with animation */}
                     {hoveredMember && (
-                      <div className={`absolute bg-black text-white p-3 rounded-lg shadow-lg transition-opacity duration-300 ease-in-out ${hoveredMember === members ? 'opacity-100' : 'opacity-0'} z-10`}>
-                        <p className="text-sm"><strong>Name:</strong> {members.map(member => member.name).join(', ')}</p>
-                        <p className="text-sm"><strong>Number:</strong> {members.map(member => member.phoneNumber || 'N/A').join(', ')}</p>
+                      <div
+                        className={`absolute bg-black text-white p-3 rounded-lg shadow-lg transition-opacity duration-300 ease-in-out ${
+                          hoveredMember === members
+                            ? "opacity-100"
+                            : "opacity-0"
+                        } z-10`}
+                      >
+                        <p className="text-sm">
+                          <strong>Name:</strong>{" "}
+                          {members.map((member) => member.name).join(", ")}
+                        </p>
+                        <p className="text-sm">
+                          <strong>Number:</strong>{" "}
+                          {members
+                            .map((member) => member.phoneNumber || "N/A")
+                            .join(", ")}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -139,20 +176,40 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
             return (
               <div
                 key={task._id}
-                className={`shadow-lg p-6 rounded-lg mb-6 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} hover:shadow-2xl transition-all duration-300 ease-in-out`}
+                className={`shadow-lg p-6 rounded-lg mb-6 ${
+                  darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+                } hover:shadow-2xl transition-all duration-300 ease-in-out`}
               >
                 <div className="mb-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Deadline:</span>
-                    <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-700'}`}>{new Date(task.deadline).toLocaleDateString()}</span>
+                    <span
+                      className={`text-sm ${
+                        darkMode ? "text-gray-400" : "text-gray-700"
+                      }`}
+                    >
+                      {new Date(task.deadline).toLocaleDateString()}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Created Date:</span>
-                    <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-700'}`}>{new Date(task.createdDate).toLocaleDateString()}</span>
+                    <span
+                      className={`text-sm ${
+                        darkMode ? "text-gray-400" : "text-gray-700"
+                      }`}
+                    >
+                      {new Date(task.createdDate).toLocaleDateString()}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center mb-4">
                     <span className="font-bold">Status:</span>
-                    <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-700'}`}>{task.status}</span>
+                    <span
+                      className={`text-sm ${
+                        darkMode ? "text-gray-400" : "text-gray-700"
+                      }`}
+                    >
+                      {task.status}
+                    </span>
                   </div>
                 </div>
 

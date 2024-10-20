@@ -69,7 +69,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
 
   return (
     <div
-      className="overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 dark:text-white profile-card flex flex-col group transition-all duration-1000 cursor-pointer border"
+      className="overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-700 dark:text-white profile-card flex flex-col group transition-all duration-1000 cursor-pointer border"
       onMouseEnter={() => {
         setHoverActive(true);
         setActivateSection(false);
@@ -110,7 +110,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
             } ${!hoverActive ? "" : ""}`}
           >
             <div className="flex-grow-1">
-              <h2 className="text-xl font-semibold mb-1">
+              <h2 className="text-xl font-semibold mb-1 text-gray-700 dark:text-gray-400">
                 {member.name || "Unknown"}
               </h2>
               {member.specializations && member.specializations.length > 0 && (
@@ -177,7 +177,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
         <div className="grid grid-cols-2 gap-2 p-2 text-[12px] flex-grow-0">
           <button
             onClick={handleEditClick}
-            className="flex justify-center items-center bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
+            className="flex justify-center items-center bg-teal-500 text-white px-4 py-2 rounded-md shadow hover:bg-teal-600"
           >
             <FaEdit className="mr-2" /> Edit
           </button>
@@ -186,7 +186,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
               e.stopPropagation();
               onDelete(member._id);
             }}
-            className="flex justify-center items-center bg-yellow-400 text-black px-4 py-2 rounded-md shadow hover:bg-yellow-300"
+            className="flex justify-center items-center bg-red-500 text-white px-4 py-2 rounded-md shadow hover:bg-red-600"
           >
             <FaTrash className="mr-2" /> Delete
           </button>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Import storage functions
 import { storage } from "../firebase"; // Import Firebase Storage
+import { MdUpload } from "react-icons/md";
 
 const CreateFaculty = ({ setFaculty, setError, darkMode }) => {
   const [newFaculty, setNewFaculty] = useState({
@@ -20,20 +21,23 @@ const CreateFaculty = ({ setFaculty, setError, darkMode }) => {
 
   const handleAddFaculty = async (event) => {
     event.preventDefault(); // Prevent the default form submission
-  
+
     // Check if picture is selected
     if (!newFaculty.pictureURL) {
       setError("Please upload a picture.");
       return;
     }
-  
+
     try {
       // Upload the picture to Firebase Storage
       const storageRef = ref(storage, `faculty/${newFaculty.pictureURL.name}`); // Create storage reference
-      const uploadTask = uploadBytesResumable(storageRef, newFaculty.pictureURL); // Upload the file
-  
+      const uploadTask = uploadBytesResumable(
+        storageRef,
+        newFaculty.pictureURL
+      ); // Upload the file
+
       setUploading(true); // Show uploading state
-  
+
       uploadTask.on(
         "state_changed",
         (snapshot) => {
@@ -48,7 +52,7 @@ const CreateFaculty = ({ setFaculty, setError, darkMode }) => {
           // Get the picture's URL once the upload is complete
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
           console.log("Download URL: ", downloadURL); // Log download URL
-  
+
           // After getting the download URL, save the faculty data (including the picture URL) to MongoDB
           const response = await fetch("http://localhost:4600/api/faculty", {
             method: "POST",
@@ -68,19 +72,19 @@ const CreateFaculty = ({ setFaculty, setError, darkMode }) => {
             }),
             credentials: "include",
           });
-  
+
           if (!response.ok) {
             const errorData = await response.json();
             console.log("Error response from server: ", errorData); // Log server error
             throw new Error(errorData.message || "Failed to add faculty");
           }
-  
+
           const data = await response.json();
           console.log("Faculty added successfully: ", data); // Log success
-  
+
           // Update the faculty state with the new faculty
           setFaculty((prevFaculty) => [...prevFaculty, data.faculty]);
-  
+
           // Reset the input fields
           setNewFaculty({
             name: "",
@@ -94,9 +98,9 @@ const CreateFaculty = ({ setFaculty, setError, darkMode }) => {
             joinDate: "", // Reset joinDate
           });
           setPictureSelected(false); // Reset picture selected state
-  
+
           setUploading(false); // Hide uploading state
-          
+
           // Refresh the page on successful addition
           window.location.reload();
         }
@@ -107,103 +111,193 @@ const CreateFaculty = ({ setFaculty, setError, darkMode }) => {
       setUploading(false);
     }
   };
-  
+
   return (
-    <form onSubmit={handleAddFaculty} className="mb-6 p-4 border rounded-lg shadow-md">
-      {/** Error message */}
+    <form onSubmit={handleAddFaculty} className="container mx-auto text-sm">
       {setError && <p className="text-red-500">{setError}</p>}
-      
-      <div>
-        <label htmlFor="name">Name</label>
+
+      <div className="mb-4">
+        <label
+          htmlFor="name"
+          className="block text-gray-700 dark:text-gray-300"
+        >
+          Name
+        </label>
         <input
           type="text"
           placeholder="Enter faculty name"
           value={newFaculty.name}
-          onChange={(e) => setNewFaculty({ ...newFaculty, name: e.target.value })}
+          onChange={(e) =>
+            setNewFaculty({ ...newFaculty, name: e.target.value })
+          }
           required
-          className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
+          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
         />
       </div>
-      <div>
-        <label htmlFor="email">Email</label>
+
+      <div className="mb-4">
+        <label
+          htmlFor="email"
+          className="block text-gray-700 dark:text-gray-300"
+        >
+          Email
+        </label>
         <input
           type="email"
           placeholder="Enter faculty email"
           value={newFaculty.email}
-          onChange={(e) => setNewFaculty({ ...newFaculty, email: e.target.value })}
+          onChange={(e) =>
+            setNewFaculty({ ...newFaculty, email: e.target.value })
+          }
           required
-          className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
+          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
         />
       </div>
-      <div>
-        <label htmlFor="facultyId">Faculty ID</label>
+
+      <div className="mb-4">
+        <label
+          htmlFor="facultyId"
+          className="block text-gray-700 dark:text-gray-300"
+        >
+          Faculty ID
+        </label>
         <input
           type="text"
           placeholder="Enter faculty ID"
           value={newFaculty.facultyId}
-          onChange={(e) => setNewFaculty({ ...newFaculty, facultyId: e.target.value })}
+          onChange={(e) =>
+            setNewFaculty({ ...newFaculty, facultyId: e.target.value })
+          }
           required
-          className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
+          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
         />
       </div>
-      <div>
-        <label htmlFor="pictureURL">Picture</label>
-        <input
-          type="file"
-          onChange={(e) => {
-            setNewFaculty({ ...newFaculty, pictureURL: e.target.files[0] });
-            setPictureSelected(true); // Set picture as selected
-          }} // Handle file input
-          required
-          className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
-        />
+
+      <div className="mb-4">
+        <label
+          htmlFor="pictureURL"
+          className="block text-gray-700 dark:text-gray-300"
+        >
+          Picture
+        </label>
+        <div className="flex items-center justify-between w-full mt-1">
+          <label className="flex items-center justify-center w-full h-12 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer transition duration-200 dark:bg-gray-800">
+            <span className="flex items-center text-gray-600 dark:text-gray-300">
+              <MdUpload className="mr-2" /> Select a picture
+            </span>
+            <input
+              type="file"
+              onChange={(e) => {
+                setNewFaculty({ ...newFaculty, pictureURL: e.target.files[0] });
+                setPictureSelected(true);
+              }}
+              required
+              className="hidden"
+            />
+          </label>
+        </div>
+
+        {pictureSelected && newFaculty.pictureURL && (
+          <div className="flex justify-between items-center mt-2">
+            <span className="text-gray-700 dark:text-gray-300">
+              {newFaculty.pictureURL.name}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setNewFaculty({ ...newFaculty, pictureURL: null });
+                setPictureSelected(false);
+              }}
+              className="text-red-500 hover:underline ml-2"
+            >
+              Remove
+            </button>
+          </div>
+        )}
       </div>
-      <div>
-        <label htmlFor="specialization">Specialization</label>
+
+      <div className="mb-4">
+        <label
+          htmlFor="specialization"
+          className="block text-gray-700 dark:text-gray-300"
+        >
+          Specialization
+        </label>
         <input
           type="text"
           placeholder="Enter specialization (comma separated)"
-          value={newFaculty.specialization.join(", ")} // Join array for display
-          onChange={(e) => setNewFaculty({
-            ...newFaculty,
-            specialization: e.target.value.split(",").map(item => item.trim()) // Split string into array
-          })}
-          className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
+          value={newFaculty.specialization}
+          onChange={(e) =>
+            setNewFaculty({
+              ...newFaculty,
+              specialization: e.target.value,
+            })
+          }
+          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
         />
       </div>
-      <div>
-        <label htmlFor="description">Description</label>
+
+      <div className="mb-4">
+        <label
+          htmlFor="description"
+          className="block text-gray-700 dark:text-gray-300"
+        >
+          Description
+        </label>
         <textarea
           placeholder="Enter a short description"
           value={newFaculty.description}
-          onChange={(e) => setNewFaculty({ ...newFaculty, description: e.target.value })}
-          className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
+          onChange={(e) =>
+            setNewFaculty({ ...newFaculty, description: e.target.value })
+          }
+          className="w-full mt-1 p-2 h-28 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
         />
       </div>
-      <div>
-        <label htmlFor="phoneNumber">Phone Number</label>
+
+      <div className="mb-4">
+        <label
+          htmlFor="phoneNumber"
+          className="block text-gray-700 dark:text-gray-300"
+        >
+          Phone Number
+        </label>
         <input
           type="text"
           placeholder="Enter phone number"
           value={newFaculty.phoneNumber}
-          onChange={(e) => setNewFaculty({ ...newFaculty, phoneNumber: e.target.value })}
-          className={`w-full p-2 border rounded ${darkMode ? "bg-gray-800 text-white" : "bg-white text-black"}`}
+          onChange={(e) =>
+            setNewFaculty({ ...newFaculty, phoneNumber: e.target.value })
+          }
+          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
         />
       </div>
-      <div>
-        <label htmlFor="isActive" className="inline-flex items-center">
+
+      <div className="mb-4">
+        <label
+          htmlFor="isActive"
+          className="inline-flex items-center text-gray-700 dark:text-gray-300"
+        >
           <input
             type="checkbox"
             checked={newFaculty.isActive}
-            onChange={(e) => setNewFaculty({ ...newFaculty, isActive: e.target.checked })}
-            className="mr-2"
+            onChange={(e) =>
+              setNewFaculty({ ...newFaculty, isActive: e.target.checked })
+            }
+            className="mr-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
           />
-          Is Active
+          Active
         </label>
       </div>
-      <button type="submit" className="mt-4 p-2 bg-blue-500 text-white rounded" disabled={uploading}>
-        {uploading ? "Uploading..." : "Add Faculty"}
-      </button>
+
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={uploading}
+          className="bg-blue-500 hover:bg-blue-700 text-[12px] text-white font-normal py-2 px-4 rounded-md transition-colors duration-300"
+        >
+          {uploading ? "Uploading..." : "Add Faculty"}
+        </button>
+      </div>
     </form>
   );
 };
