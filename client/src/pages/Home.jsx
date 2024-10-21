@@ -78,36 +78,7 @@ const Home = ({ darkMode }) => {
     fetchReviews();
   }, []);
 
-  const images = [
-    {
-      src: "https://img.daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.webp",
-      alt: "Drink 1",
-    },
-    {
-      src: "https://img.daisyui.com/images/stock/photo-1565098772267-60af42b81ef2.webp",
-      alt: "Drink 2",
-    },
-    {
-      src: "https://img.daisyui.com/images/stock/photo-1572635148818-ef6fd45eb394.webp",
-      alt: "Drink 3",
-    },
-    {
-      src: "https://img.daisyui.com/images/stock/photo-1494253109108-2e30c049369b.webp",
-      alt: "Drink 4",
-    },
-    {
-      src: "https://img.daisyui.com/images/stock/photo-1550258987-190a2d41a8ba.webp",
-      alt: "Drink 5",
-    },
-    {
-      src: "https://img.daisyui.com/images/stock/photo-1559181567-c3190ca9959b.webp",
-      alt: "Drink 6",
-    },
-    {
-      src: "https://img.daisyui.com/images/stock/photo-1601004890684-d8cbf643f5f2.webp",
-      alt: "Drink 7",
-    },
-  ];
+
 
   return (
     <div className={`bg-white ${darkMode ? "dark" : ""} font-sans`}>
@@ -177,7 +148,7 @@ const Home = ({ darkMode }) => {
         <h2 className="text-2xl dark:text-gray-400 font-normal text-center mb-12 uppercase">
           Our Previous Events
         </h2>
-        <div className="px-16 flex">
+        <div className=" flex">
           <Marquee velocity={40} minScale={1} resetAfterTries={200}>
             {events.map((image, index) => (
               <div key={index} className="px-2">
