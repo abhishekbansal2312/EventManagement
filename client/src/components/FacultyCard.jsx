@@ -95,14 +95,14 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
   };
 
   return (
-    <div className="flex shadow-md rounded-md dark:bg-gray-700 dark:text-white bg-white text-gray-900 relative overflow-hidden">
+    <div className="flex shadow-md rounded-md dark:bg-gray-800 dark:text-white bg-white text-gray-900 relative overflow-hidden">
       {/* Faculty Picture */}
-      <div className="flex justify-center bg-gray-100 dark:bg-slate-500 p-2 pt-4">
+      <div className="flex justify-center bg-gray-100 dark:bg-slate-600 p-2 pt-4">
         {faculty.pictureURL && (
           <img
             src={faculty.pictureURL}
             alt={faculty.name}
-            className="w-24 h-24 object-cover rounded-full border-2 border-gray-300 dark:border-gray-600"
+            className="w-24 h-24 object-cover rounded-full border-2 border-gray-300 dark:border-gray-800"
             onClick={(e) => e.stopPropagation()} // Prevent card click on image click
           />
         )}
@@ -114,7 +114,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
           {/* Faculty Name */}
           <div className="p-2">
             <div className="flex justify-between items-center">
-              <h2 className="text-lg text-gray-700 dark:text-gray-400 font-semibold">
+              <h2 className="text-lg text-gray-700 dark:text-gray-500 font-semibold">
                 {faculty.name || "No Name Provided"}
               </h2>
               <span
