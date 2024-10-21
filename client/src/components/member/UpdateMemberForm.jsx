@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "../firebase";
+import { storage } from "../../firebase";
 
 const UpdateMember = ({ member, setMembers, setError, darkMode, onClose }) => {
   const [updatedMember, setUpdatedMember] = useState({

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import Modal from "./Modal";
+import Modal from "../Modal";
 import EditMember from "./UpdateMemberForm";
 
 const MemberCard = ({ member, onDelete, setError, setMembers }) => {

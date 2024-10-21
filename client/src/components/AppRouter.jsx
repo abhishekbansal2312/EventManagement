@@ -13,7 +13,7 @@ import EventPage from "../pages/EventPage";
 import EventEdit from "../components/event/EventEdit";
 import DarkMode from "../components/DarkMode";
 import Footer from "./Footer";
-import Users from "./Users";
+import Users from "./user/Users";
 import ProtectedRouteAdminOnly from "./ProtectedRouteAdminOnly";
 import Review from "../pages/Review";
 

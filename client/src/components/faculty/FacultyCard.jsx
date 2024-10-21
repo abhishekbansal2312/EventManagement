@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode"; // Use default import for jwt-decode
-import Modal from "./Modal"; // Import your modal component
+import Modal from "../Modal"; // Import your modal component
 import EditFaculty from "./EditFaculty"; // Import your EditFaculty form component
 
 const FacultyCard = ({ faculty, darkMode, onDelete }) => {
@@ -225,3 +225,4 @@ FacultyCard.propTypes = {
 };
 
 export default FacultyCard;
+ 
