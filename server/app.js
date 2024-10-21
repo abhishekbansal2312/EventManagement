@@ -48,6 +48,7 @@ const contactRoute = require("./routes/contactRoute");
 const eventsRoute = require("./routes/eventsRoutes");
 const facultyRoutes =  require("./routes/facultyRoutes");
 const taskRoutes =  require("./routes/taskRoutes");
+const reviewRoutes =   require("./routes/reviewRoutes");
 
 // Use routes
 app.use("/api/auth", authRoutes);
@@ -56,7 +57,8 @@ app.use("/api/members", membersRoute);
 app.use("/api/contact", contactRoute);
 app.use("/api/events", eventsRoute);
 app.use("/api/faculty", facultyRoutes);
-app.use("/api/tasks/", taskRoutes)
+app.use("/api/tasks", taskRoutes)
+app.use("/api/reviews", reviewRoutes);
 
 
 // Error handling middleware
