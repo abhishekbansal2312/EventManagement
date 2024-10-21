@@ -274,11 +274,12 @@ const handleDisapprove = async (reviewId) => {
             onDislike={handleDislike}
           />
         ))}
-    </div>
+    </div> 
   ) : (
-    <p>No reviews found.</p>
+    <p>No reviews found</p>
   )}
 </div>
+
 
     </div>
   );
