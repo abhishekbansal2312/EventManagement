@@ -53,6 +53,8 @@ const EventCard = ({ event, darkMode, onDelete }) => {
     }
   };
 
+  
+
   return (
     <div
       onClick={handleEventClick}

@@ -32,7 +32,10 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
     try {
       const response = await fetch("http://localhost:4600/api/reviews", {
         method: "GET",
-        credentials: "include",
+        headers: {
+          "Content-Type": "application/json", // Added content type
+        },
+        credentials: "include", // Include credentials
       });
 
       if (!response.ok) throw new Error("Failed to fetch reviews");
@@ -44,7 +47,6 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
       setError(error.message);
     }
   };
-
   const calculateAverageRating = (data) => {
     // Use approved reviews for calculation
     const approvedReviews = isAdmin ? data : data.filter((review) => review.approved);
@@ -69,10 +71,10 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
       const response = await fetch("http://localhost:4600/api/reviews", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json", // Added content type
         },
         body: JSON.stringify({ studentId, name: studentName, rating, comment }), // Include name
-        credentials: "include",
+        credentials: "include", // Include credentials
       });
 
       if (!response.ok) throw new Error("Failed to create review");
@@ -85,6 +87,7 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
     }
   };
 
+
   // Delete review function
   const handleDelete = async (reviewId) => {
     if (window.confirm("Are you sure you want to delete this review?")) {
@@ -93,13 +96,15 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
           `http://localhost:4600/api/reviews/${reviewId}`,
           {
             method: "DELETE",
-            credentials: "include",
+            headers: {
+              "Content-Type": "application/json", // Added content type
+            },
+            credentials: "include", // Include credentials
           }
         );
 
         if (!response.ok) throw new Error("Failed to delete review");
 
-        // Update state to remove deleted review
         setReviews((prevReviews) =>
           prevReviews.filter((review) => review._id !== reviewId)
         );
@@ -117,15 +122,15 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json", // Added content type
           },
           body: JSON.stringify({ studentId }), // Ensure the correct studentId is sent
+          credentials: "include", // Include credentials
         }
       );
 
       if (!response.ok) throw new Error("Failed to like review");
       const updatedReview = await response.json();
-      // Update your reviews state here with the updatedReview
       setReviews((prevReviews) =>
         prevReviews.map((review) =>
           review._id === updatedReview._id ? updatedReview : review
@@ -136,6 +141,7 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
     }
   };
 
+  
   const handleDislike = async (reviewId) => {
     try {
       const response = await fetch(
@@ -143,15 +149,15 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json", // Added content type
           },
           body: JSON.stringify({ studentId }), // Ensure the correct studentId is sent
+          credentials: "include", // Include credentials
         }
       );
 
       if (!response.ok) throw new Error("Failed to dislike review");
       const updatedReview = await response.json();
-      // Update your reviews state here with the updatedReview
       setReviews((prevReviews) =>
         prevReviews.map((review) =>
           review._id === updatedReview._id ? updatedReview : review
@@ -162,6 +168,7 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
     }
   };
 
+
   const handleApprove = async (reviewId) => {
     try {
       const response = await fetch(
@@ -169,15 +176,14 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
         {
           method: "PATCH",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json", // Added content type
           },
+          credentials: "include", // Include credentials
         }
       );
 
       if (!response.ok) throw new Error("Failed to approve review");
       const updatedReview = await response.json();
-
-      // Update the state with the new review data
       setReviews((prevReviews) =>
         prevReviews.map((review) =>
           review._id === updatedReview._id ? updatedReview : review
@@ -188,6 +194,7 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
     }
   };
 
+
   const handleDisapprove = async (reviewId) => {
     try {
       const response = await fetch(
@@ -195,15 +202,14 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
         {
           method: "PATCH",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json", // Added content type
           },
+          credentials: "include", // Include credentials
         }
       );
 
       if (!response.ok) throw new Error("Failed to disapprove review");
       const updatedReview = await response.json();
-
-      // Update the state with the new review data
       setReviews((prevReviews) =>
         prevReviews.map((review) =>
           review._id === updatedReview._id ? updatedReview : review
@@ -213,6 +219,7 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
       console.error("Error disapproving review:", error);
     }
   };
+
 
   useEffect(() => {
     const studentDetailsFromToken = getStudentDetailsFromToken();

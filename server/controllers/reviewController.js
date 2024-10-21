@@ -46,130 +46,144 @@ exports.getAllReviews = async (req, res) => {
 
 // Like a review
 exports.likeReview = async (req, res) => {
-  const { studentId } = req.body;
-  const { id } = req.params;
-
-  // Validate ObjectId
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Invalid review ID" });
-  }
-
-  try {
-    const review = await Review.findById(id);
-    if (!review) return res.status(404).json({ message: "Review not found" });
-
-    // Check if the student has already liked the review
-    if (review.likedBy.includes(studentId)) {
-      return res
-        .status(400)
-        .json({ message: "You have already liked this review" });
+    const { studentId } = req.body;
+    const { id } = req.params;
+  
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid review ID" });
     }
-
-    // Remove from dislikedBy if exists
-    if (review.dislikedBy.includes(studentId)) {
-      review.dislikedBy.pull(studentId);
-      review.dislikes -= 1; // Adjust dislikes count
+  
+    try {
+      const review = await Review.findById(id);
+      if (!review) return res.status(404).json({ message: "Review not found" });
+  
+      // Check if the student has already liked the review
+      if (review.likedBy.includes(studentId)) {
+        return res.status(400).json({ message: "You have already liked this review" });
+      }
+  
+      // Remove from dislikedBy if exists
+      if (review.dislikedBy.includes(studentId)) {
+        review.dislikedBy.pull(studentId);
+        review.dislikes -= 1;
+      }
+  
+      // Add to likedBy and increment likes
+      review.likedBy.push(studentId);
+      review.likes += 1;
+      await review.save();
+  
+      // Populate the student details in the updated review
+      const populatedReview = await Review.findById(review._id).populate("studentId", "name");
+  
+      res.status(200).json(populatedReview);
+    } catch (error) {
+      console.error("Error liking review:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
     }
+  };
 
-    // Add to likedBy and increment likes
-    review.likedBy.push(studentId);
-    review.likes += 1;
-    await review.save();
-
-    res.status(200).json(review);
-  } catch (error) {
-    console.error("Error liking review:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-// Dislike a review
-exports.dislikeReview = async (req, res) => {
-  const { studentId } = req.body;
-  const { id } = req.params;
-
-  // Validate ObjectId
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Invalid review ID" });
-  }
-
-  try {
-    const review = await Review.findById(id);
-    if (!review) return res.status(404).json({ message: "Review not found" });
-
-    // Check if the student has already disliked the review
-    if (review.dislikedBy.includes(studentId)) {
-      return res
-        .status(400)
-        .json({ message: "You have already disliked this review" });
+  exports.dislikeReview = async (req, res) => {
+    const { studentId } = req.body;
+    const { id } = req.params;
+  
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid review ID" });
     }
-
-    // Remove from likedBy if exists
-    if (review.likedBy.includes(studentId)) {
-      review.likedBy.pull(studentId);
-      review.likes -= 1; // Adjust likes count
+  
+    try {
+      const review = await Review.findById(id);
+      if (!review) return res.status(404).json({ message: "Review not found" });
+  
+      // Check if the student has already disliked the review
+      if (review.dislikedBy.includes(studentId)) {
+        return res.status(400).json({ message: "You have already disliked this review" });
+      }
+  
+      // Remove from likedBy if exists
+      if (review.likedBy.includes(studentId)) {
+        review.likedBy.pull(studentId);
+        review.likes -= 1;
+      }
+  
+      // Add to dislikedBy and increment dislikes
+      review.dislikedBy.push(studentId);
+      review.dislikes += 1;
+      await review.save();
+  
+      // Populate the student details in the updated review
+      const populatedReview = await Review.findById(review._id).populate("studentId", "name");
+  
+      res.status(200).json(populatedReview);
+    } catch (error) {
+      console.error("Error disliking review:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
     }
+  };
 
-    // Add to dislikedBy and increment dislikes
-    review.dislikedBy.push(studentId);
-    review.dislikes += 1;
-    await review.save();
-
-    res.status(200).json(review);
-  } catch (error) {
-    console.error("Error disliking review:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-exports.approveReview = async (req, res) => {
-  const { id } = req.params;
-
-  // Validate ObjectId
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Invalid review ID" });
-  }
-
-  try {
-    const review = await Review.findByIdAndUpdate(
-      id,
-      { approved: true },
-      { new: true }
-    );
-    if (!review) {
-      return res.status(404).json({ message: "Review not found" });
+  exports.approveReview = async (req, res) => {
+    const { id } = req.params;
+  
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid review ID" });
     }
-    res.status(200).json(review);
-  } catch (error) {
-    console.error("Error approving review:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-exports.disapproveReview = async (req, res) => {
-  const { id } = req.params;
-
-  // Validate ObjectId
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Invalid review ID" });
-  }
-
-  try {
-    const review = await Review.findByIdAndUpdate(
-      id,
-      { approved: false },
-      { new: true }
-    );
-    if (!review) {
-      return res.status(404).json({ message: "Review not found" });
+  
+    try {
+      // Approve the review
+      const review = await Review.findByIdAndUpdate(
+        id,
+        { approved: true },
+        { new: true }
+      );
+  
+      if (!review) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+  
+      // Populate the studentId field with student details
+      const populatedReview = await Review.findById(review._id).populate("studentId", "name");
+  
+      res.status(200).json(populatedReview);
+    } catch (error) {
+      console.error("Error approving review:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
     }
-    res.status(200).json(review);
-  } catch (error) {
-    console.error("Error disapproving review:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
+  };
+  
 
+  exports.disapproveReview = async (req, res) => {
+    const { id } = req.params;
+  
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid review ID" });
+    }
+  
+    try {
+      // Disapprove the review
+      const review = await Review.findByIdAndUpdate(
+        id,
+        { approved: false },
+        { new: true }
+      );
+  
+      if (!review) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+  
+      // Populate the studentId field with student details
+      const populatedReview = await Review.findById(review._id).populate("studentId", "name");
+  
+      res.status(200).json(populatedReview);
+    } catch (error) {
+      console.error("Error disapproving review:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  };
+  
 // Delete a review
 exports.deleteReview = async (req, res) => {
   const { id } = req.params;
