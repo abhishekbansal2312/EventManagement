@@ -2,34 +2,35 @@ import React from 'react';
 import { FaStar, FaTrashAlt, FaThumbsUp, FaThumbsDown, FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; 
 import moment from 'moment';
 
-const ReviewItem = ({ review, onDelete, onLike, onDislike, onApprove, onDisapprove, isAdmin }) => {
+const ReviewItem = ({ review, onDelete, onLike, onDislike, onApprove, onDisapprove, isAdmin, darkMode }) => {
     const renderStars = (rating) => {
         return Array.from({ length: 5 }, (_, index) => (
-            <FaStar key={index} className={`text-lg ${index < rating ? 'text-yellow-400' : 'text-gray-300'}`} />
+            <FaStar key={index} className={`text-lg ${index < rating ? 'text-yellow-400' : darkMode ? 'text-gray-500' : 'text-gray-300'}`} />
         ));
     };
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+        <div className={`p-6 rounded-lg shadow-md mb-6 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white'}`}>
             <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center">
-                    <span className="text-gray-700 text-lg font-medium">
+                    <span className={`text-lg font-medium ${darkMode ? 'text-white' : 'text-gray-700'}`}>
                         {review.studentId?.name || 'Unknown'}
                     </span>
                 </div>
                 <div className="flex items-center">
                     {renderStars(review.rating)}
-                    <span className="ml-3 text-gray-600 text-lg">{review.rating}/5</span>
+                    <span className={`ml-3 text-lg ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {review.rating}/5
+                    </span>
                 </div>
             </div>
-            <div className="text-sm text-gray-500 mb-4">
+            <div className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                 {moment(review.createdAt).format('MMMM Do YYYY, h:mm a')}
             </div>
-            <p className="text-gray-700 mb-4">
+            <p className={`mb-4 ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                 {review.comment}
             </p>
             <div className="flex justify-between items-center mb-4">
-                {/* Like and Dislike Buttons */}
                 <div className="flex items-center">
                     <button
                         onClick={() => onLike(review._id)} 
@@ -48,8 +49,6 @@ const ReviewItem = ({ review, onDelete, onLike, onDislike, onApprove, onDisappro
                         {review.dislikes} 
                     </button>
                 </div>
-                
-                {/* Approve or Disapprove Button */}
                 <div className="flex items-center">
                     {isAdmin && (
                         <>
@@ -74,7 +73,6 @@ const ReviewItem = ({ review, onDelete, onLike, onDislike, onApprove, onDisappro
                             )}
                         </>
                     )}
-                    {/* Delete Button */}
                     {isAdmin && (
                         <button
                             onClick={() => onDelete(review._id)} 
