@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import MemberCard from "../components/Membercard";
-import CreateMember from "../components/CreateMember";
-import UpdateMemberForm from "../components/UpdateMemberForm";
-import FacultyCard from "../components/FacultyCard";
-import CreateFaculty from "../components/CreateFaculty";
+import MemberCard from "../components/member/Membercard";
+import CreateMember from "../components/member/CreateMember";
+import UpdateMemberForm from "../components/member/UpdateMemberForm";
+import FacultyCard from "../components/faculty/FacultyCard";
+import CreateFaculty from "../components/faculty/CreateFaculty";
 import Modal from "../components/Modal";
 import "../App.css";
 
@@ -155,15 +155,16 @@ const Members = ({ darkMode }) => {
               isAdmin={isAdmin}
               onEdit={isAdmin ? () => setEditingFaculty(facultyMember) : null}
               onDelete={
-                isAdmin
-                  ? () =>
-                      handleDelete(
-                        "http://localhost:4600/api/faculty",
-                        facultyMember._id,
-                        setFaculty
-                      )
-                  : null
-              }
+  isAdmin
+    ? () =>
+        handleDelete(
+          "http://localhost:4600/api/faculty",
+          facultyMember._id,
+          setFaculty
+        )
+    : () => {}  // Provide a no-op function
+}
+
             />
           ))}
         </div>

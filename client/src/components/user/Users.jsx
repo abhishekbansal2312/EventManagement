@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserForm from "./UserForm";
 import UserList from "./UserList";
-import Modal from "./Modal";
+import Modal from "../Modal";
 
 const Users = ({ darkMode }) => {
   const [users, setUsers] = useState([]);

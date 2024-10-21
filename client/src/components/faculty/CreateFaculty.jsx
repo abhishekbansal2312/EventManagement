@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Import storage functions
-import { storage } from "../firebase"; // Import Firebase Storage
+import { storage } from "../../firebase"; // Import Firebase Storage
 import { MdUpload } from "react-icons/md";
 
 const CreateFaculty = ({ setFaculty, setError, darkMode }) => {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ParticipatedEvents from "./ParticipatedEvents"; // Import the participated events component
+import ParticipatedEvents from "../ParticipatedEvents"; // Import the participated events component
 import { FaEdit, FaTrash } from "react-icons/fa";
 
 const UserItem = ({
