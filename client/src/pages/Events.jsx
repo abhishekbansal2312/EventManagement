@@ -96,7 +96,12 @@ const Events = ({ darkMode }) => {
     { value: "participated", label: "Participated Events" },
     { value: "live", label: "Live Events" },
   ];
+  const handleDeleteEvent = (id) => {
+    // Remove the deleted event from the state
+    setEvents((prevEvents) => prevEvents.filter((event) => event._id !== id));
+  };
 
+  
   return (
     <div
       className={`min-h-screen px-16 pb-4 ${
@@ -138,7 +143,7 @@ const Events = ({ darkMode }) => {
         <div className="grid gap-6 grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 mt-4">
           {filteredEvents().length > 0 ? (
             filteredEvents().map((event) => (
-              <EventCard key={event._id} event={event} darkMode={darkMode} />
+              <EventCard key={event._id} event={event} darkMode={darkMode} onDelete={handleDeleteEvent}/>
             ))
           ) : (
             <div className="text-center">
