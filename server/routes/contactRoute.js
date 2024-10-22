@@ -1,25 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const Contact = require("../models/Contact");
+const contactController = require("../controllers/contactController"); // Verify this path
 
-// Handle contact form submission
-router.post("/", async (req, res) => {
-  const { name, email, message } = req.body;
+// Route to create a new contact message
+router.post("/", contactController.createContact); // This should not be undefined
 
-  if (!name || !email || !message) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
+// Route to get all contact messages (for admin)
+router.get("/", contactController.getAllContacts); // This should not be undefined
 
-  try {
-    // Save contact message to MongoDB
-    const contactMessage = new Contact({ name, email, message });
-    await contactMessage.save();
+// Route to reply to a contact message
+router.post("/reply", contactController.replyToContact); // This should not be undefined
 
-    res.status(200).json({ message: "Message saved successfully" });
-  } catch (error) {
-    console.error("Error handling contact form submission:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+// Route to mark a contact message as read/unread
+router.patch("/:id/read", contactController.markAsRead); // This should not be undefined
 
 module.exports = router;
