@@ -18,7 +18,7 @@ import ProtectedRouteAdminOnly from "./ProtectedRouteAdminOnly";
 import Review from "../pages/Review";
 import Contact from "../pages/Contact";
 import Register from "../pages/Register"
-
+import AllMails from "./contact/AllMails";
 const AppRouter = () => {
   const { isAuthenticated, setIsAuthenticated, darkMode, setDarkMode } =
     useAuth();
@@ -150,6 +150,14 @@ const AppRouter = () => {
                 <ProtectedRoute>
                   <Contact darkMode={darkMode} />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contact/allmails"
+              element={
+                <ProtectedRouteAdminOnly>
+                  <AllMails darkMode={darkMode} />
+                </ProtectedRouteAdminOnly>
               }
             />
 

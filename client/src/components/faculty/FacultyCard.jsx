@@ -114,7 +114,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
           {/* Faculty Name */}
           <div className="p-2">
             <div className="flex justify-between items-center">
-              <h2 className="text-lg text-gray-700 dark:text-gray-500 font-semibold">
+              <h2 className="text-lg text-gray-700 dark:text-gray-100 font-semibold">
                 {faculty.name || "No Name Provided"}
               </h2>
               <span
