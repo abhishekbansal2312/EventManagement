@@ -17,6 +17,7 @@ import Users from "./user/Users";
 import ProtectedRouteAdminOnly from "./ProtectedRouteAdminOnly";
 import Review from "../pages/Review";
 import Contact from "../pages/Contact";
+import Register from "../pages/Register"
 
 const AppRouter = () => {
   const { isAuthenticated, setIsAuthenticated, darkMode, setDarkMode } =
@@ -108,6 +109,14 @@ const AppRouter = () => {
               element={
                 <ProtectedRoute>
                   <EventPage darkMode={darkMode} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/event/:id/register"
+              element={
+                <ProtectedRoute>
+                  <Register darkMode={darkMode} />
                 </ProtectedRoute>
               }
             />

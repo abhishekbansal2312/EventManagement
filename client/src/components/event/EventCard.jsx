@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { FaTrash } from "react-icons/fa"; // Import icon for delete
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import { Link } from 'react-router-dom';
+import Register  from '../../pages/Register';
 
 const EventCard = ({ event, darkMode, onDelete }) => {
   const navigate = useNavigate(); // For navigating to the event page
@@ -123,34 +125,35 @@ const EventCard = ({ event, darkMode, onDelete }) => {
           </div>
         </div>
 
-        {/* Registration Link or Status */}
-        <div className="flex justify-between items-center">
-          {event.isLive ? (
-            <a
-              href={event.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 dark:text-blue-400 font-normal text-[12px]"
-              onClick={(e) => e.stopPropagation()} // Prevent card click on link click
-            >
-              Register Here
-            </a>
-          ) : (
-            <span className="text-yellow-800 dark:text-yellow-400 font-normal text-[12px]">
-              Registrations Closed
-            </span>
-          )}
-          {/* Delete Event Icon (only shown for admins) */}
-          {isAdmin && (
-            <div className="cursor-pointer" onClick={handleDeleteEvent}>
-              <FaTrash
-                size={12}
-                className="text-red-500 dark:text-red-700 hover:text-red-700 "
-              />
-            </div>
-          )}
-          {/* Live Status */}
-        </div>
+
+
+       <div className="flex justify-between items-center">
+  {event.isLive ? (
+    <Link
+      to={`/event/${event._id}/register`} // Use the correct ID property
+      state={{ link: event.link }} // Pass event.link using state
+      className="text-blue-600 dark:text-blue-400 font-normal text-[12px]"
+      onClick={(e) => e.stopPropagation()} // Prevent card click on link click
+    >
+      Register Here
+    </Link>
+  ) : (
+    <span className="text-yellow-800 dark:text-yellow-400 font-normal text-[12px]">
+      Registrations Closed
+    </span>
+  )}
+  {/* Delete Event Icon (only shown for admins) */}
+  {isAdmin && (
+    <div className="cursor-pointer" onClick={handleDeleteEvent}>
+      <FaTrash
+        size={12}
+        className="text-red-500 dark:text-red-700 hover:text-red-700 "
+      />
+    </div>
+  )}
+  {/* Live Status */}
+</div>
+
       </div>
     </div>
   );
