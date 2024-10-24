@@ -7,11 +7,18 @@ const ParticipatedEvents = ({ events }) => {
       year: "numeric",
       month: "long",
       day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
     };
+
     return new Date(dateString).toLocaleString(undefined, options);
+  };
+
+  // Function to format time into 12-hour with AM/PM
+  const formatTime = (timeString) => {
+    const [hours, minutes] = timeString.split(':');
+    const hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const formattedHour = hour % 12 || 12; // Convert to 12-hour format
+    return `${formattedHour}:${minutes} ${ampm}`;
   };
 
   if (!events || events.length === 0) {
@@ -21,17 +28,15 @@ const ParticipatedEvents = ({ events }) => {
   return (
     <ul className="">
       {events.map((event) => (
-        <>
-          <li key={event._id} className="text-[12px]">
-            <a
-              href={`http://localhost:3000/event/${event._id}`}
-              className="text-blue-600 hover:underline"
-            >
-              {event.title}
-            </a>
-            - {formatDate(event.date)} {/* Use the formatDate function */}
-          </li>
-        </>
+        <li key={event._id} className="text-[12px]"> {/* Added key here */}
+          <a
+            href={`http://localhost:3000/event/${event._id}`}
+            className="text-blue-600 hover:underline"
+          >
+            {event.title}
+          </a>
+          - {formatDate(event.date)} at {formatTime(event.time)}
+        </li>
       ))}
     </ul>
   );

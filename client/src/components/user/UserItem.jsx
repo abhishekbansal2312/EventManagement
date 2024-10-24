@@ -14,34 +14,31 @@ const UserItem = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleParticipatedEvents = (userId) => {
-    setIsExpanded((prev) => !prev);
+    setIsExpanded(!isExpanded);
     handleParticipatedEvents(userId);
   };
-
-  // Calculate the max height for transition
-  const maxHeight = events[user._id] ? `${events[user._id].length * 40}px` : "0px";
 
   return (
     <li
       key={user._id}
-      className={`flex flex-col p-2 shadow-md transition duration-300 pb-1`}
+      className={`flex flex-col p-2 shadow-md transition duration-300 pb-1 w-full  mx-auto`}
     >
-      <div className="flex justify-between items-center">
-        <div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+        <div className="flex-1">
           <p className={`text-md font-normal flex flex-col`}>
             {user.studentId} | {user.name}
             <span className="text-[12px] text-gray-400">{user.email}</span>
           </p>
           <button
             onClick={() => toggleParticipatedEvents(user._id)}
-            className={`mt-1 text-[12px] text-blue-500 hover:text-blue-700 transition-transform duration-200 transform ${isExpanded ? 'scale-95' : 'scale-100'}`}
+            className={`mt-1 text-[12px] text-blue-500 hover:text-blue-700 transition duration-200`}
           >
             {events[user._id]
               ? "Hide Participated Events"
               : "View Participated Events"}
           </button>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex mt-2 sm:mt-0 space-x-2">
           {/* Edit button with icon */}
           <button
             onClick={() => handleEdit(user)}
@@ -64,12 +61,13 @@ const UserItem = ({
 
       {/* Participated Events section with height transition */}
       <div
-        className={`transition-all duration-700 ease-in-out overflow-hidden`}
-        style={{ maxHeight: isExpanded ? maxHeight : "0px" }} // Control height with style
+        className={`transition-max-height duration-500 ease-in overflow-auto ${
+          events[user._id] ? "h-[80px]" : "h-0"
+        }`}
       >
         {events[user._id] && (
           <div
-            className={`mt-2 p-4 rounded-lg transition-opacity duration-700 ease-in-out delay-200 ${isExpanded ? 'opacity-100' : 'opacity-0'} ${
+            className={`mt-2 p-4 rounded-lg ${
               darkMode ? "dark:bg-gray-700" : "bg-gray-100"
             } shadow-md`}
           >
@@ -85,7 +83,7 @@ const UserItem = ({
         )}
       </div>
     </li>
-  );  
+  );
 };
 
 export default UserItem;
