@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase";
 
-const UpdateMember = ({ member, setMembers, setError, darkMode, onClose }) => {
+const UpdateMember = ({ member, setMembers, onCancel, setError }) => {
   const [updatedMember, setUpdatedMember] = useState({
     name: member.name || "",
     email: member.email || "",
@@ -118,7 +118,7 @@ const UpdateMember = ({ member, setMembers, setError, darkMode, onClose }) => {
     );
 
     console.log("Updated member data: ", data); // Now this should log the updated member object
-    onClose();
+    onCancel();
     setUpdatedMember({
       name: "",
       email: "",
@@ -135,76 +135,25 @@ const UpdateMember = ({ member, setMembers, setError, darkMode, onClose }) => {
   return (
     <form
       onSubmit={handleUpdateMember}
-      className="mb-6 p-4 border rounded-lg shadow-md grid grid-cols-1 md:grid-cols-2 gap-4"
+      className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[14px]"
     >
-      <div className="flex flex-col">
-        <label htmlFor="name">Name</label>
-        <input
-          type="text"
-          placeholder="Enter member name"
-          value={updatedMember.name}
-          onChange={(e) =>
-            setUpdatedMember({ ...updatedMember, name: e.target.value })
-          }
-          required
-          className={`w-full p-2 border rounded ${
-            darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
-          }`}
-        />
-      </div>
-      <div className="flex flex-col">
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          placeholder="Enter member email"
-          value={updatedMember.email}
-          onChange={(e) =>
-            setUpdatedMember({ ...updatedMember, email: e.target.value })
-          }
-          required
-          className={`w-full p-2 border rounded ${
-            darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
-          }`}
-        />
-      </div>
-      <div className="flex flex-col">
-        <label htmlFor="studentId">Student ID</label>
-        <input
-          type="text"
-          placeholder="Enter student ID"
-          value={updatedMember.studentId}
-          onChange={(e) =>
-            setUpdatedMember({ ...updatedMember, studentId: e.target.value })
-          }
-          required
-          className={`w-full p-2 border rounded ${
-            darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
-          }`}
-        />
-      </div>
       <div
-        className={`flex flex-col border-2 border-dashed rounded-lg p-4 transition ${
-          dragging
-            ? "border-blue-500"
-            : darkMode
-            ? "border-gray-600"
-            : "border-gray-300"
-        }`}
+        className={`mb-2 border-2 border-dashed rounded-lg p-4 transition col-span-2 ${
+          dragging ? "border-blue-500" : ""
+        } dark:border-gray-300
+              border-gray-600`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => document.getElementById("fileInput").click()} // Click to select file
+        onClick={() => document.getElementById("fileInput").click()}
       >
-        <label htmlFor="pictureURL" className="mb-2">
-          Picture
-        </label>
         <input
           type="file"
           id="fileInput"
           onChange={handleFileChange}
-          className="hidden" // Hide the default input
+          className="hidden"
         />
-        <div className="flex items-center justify-center h-8">
+        <div className="flex items-center justify-center h-14">
           {updatedMember.pictureURL ? (
             <p>{updatedMember.pictureURL.name}</p>
           ) : (
@@ -214,21 +163,103 @@ const UpdateMember = ({ member, setMembers, setError, darkMode, onClose }) => {
           )}
         </div>
       </div>
-      <div className="flex flex-col">
-        <label htmlFor="description">Description</label>
+      <div className="mb-2">
+        <label
+          htmlFor="name"
+          className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+        >
+          Name
+        </label>
+        <input
+          type="text"
+          placeholder="Enter member name"
+          value={updatedMember.name}
+          onChange={(e) =>
+            setUpdatedMember({ ...updatedMember, name: e.target.value })
+          }
+          required
+          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+        />
+      </div>
+      <div className="mb-2">
+        <label
+          htmlFor="email"
+          className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+        >
+          Email
+        </label>
+        <input
+          type="email"
+          placeholder="Enter member email"
+          value={updatedMember.email}
+          onChange={(e) =>
+            setUpdatedMember({ ...updatedMember, email: e.target.value })
+          }
+          required
+          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+        />
+      </div>
+      <div className="mb-2">
+        <label
+          htmlFor="studentId"
+          className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+        >
+          Student ID
+        </label>
+        <input
+          type="text"
+          placeholder="Enter student ID"
+          value={updatedMember.studentId}
+          onChange={(e) =>
+            setUpdatedMember({ ...updatedMember, studentId: e.target.value })
+          }
+          required
+          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+        />
+      </div>
+      <div className="mb-2">
+        <label
+          htmlFor="phoneNumber"
+          className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+        >
+          Phone Number
+        </label>
+        <input
+          type="text"
+          placeholder="Enter phone number"
+          value={updatedMember.phoneNumber}
+          onChange={(e) =>
+            setUpdatedMember({
+              ...updatedMember,
+              phoneNumber: e.target.value,
+            })
+          }
+          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+        />
+      </div>
+      <div className="mb-2 col-span-2">
+        <label
+          htmlFor="description"
+          className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+        >
+          Description
+        </label>
         <textarea
           placeholder="Enter a brief description"
           value={updatedMember.description}
           onChange={(e) =>
             setUpdatedMember({ ...updatedMember, description: e.target.value })
           }
-          className={`w-full p-2 border rounded ${
-            darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
-          }`}
+          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white h-28"
         />
       </div>
-      <div className="flex flex-col">
-        <label htmlFor="hobbies">Hobbies</label>
+      <div className="mb-2">
+        <label
+          htmlFor="hobbies"
+          className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+        >
+          Hobbies
+        </label>
         <input
           type="text"
           placeholder="Enter hobbies (comma-separated)"
@@ -236,44 +267,76 @@ const UpdateMember = ({ member, setMembers, setError, darkMode, onClose }) => {
           onChange={(e) =>
             setUpdatedMember({ ...updatedMember, hobbies: e.target.value })
           }
-          className={`w-full p-2 border rounded ${
-            darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
-          }`}
+          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
         />
       </div>
-      <div className="flex flex-col">
-        <label htmlFor="phoneNumber">Phone Number</label>
+
+      {/* <div className="flex items-center justify-start mt-4">
         <input
-          type="text"
-          placeholder="Enter phone number"
-          value={updatedMember.phoneNumber}
+          type="checkbox"
+          id="isActive"
+          checked={updatedMember.isActive}
           onChange={(e) =>
-            setUpdatedMember({ ...updatedMember, phoneNumber: e.target.value })
+            setUpdatedMember({ ...updatedMember, isActive: e.target.checked })
           }
-          className={`w-full p-2 border rounded ${
-            darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
-          }`}
+          className="mr-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
         />
-      </div>
-      <div className="flex items-center col-span-2">
-        <label htmlFor="isActive" className="inline-flex items-center">
-          <input
-            type="checkbox"
-            checked={updatedMember.isActive}
-            onChange={(e) =>
-              setUpdatedMember({ ...updatedMember, isActive: e.target.checked })
-            }
-            className="mr-2"
-          />
+        <label
+          htmlFor="isActive"
+          className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+        >
+          Active
+        </label>
+      </div> */}
+      {/* Is Active Toggle Switch */}
+      <div className="mb-2">
+        <label
+          htmlFor="isActive"
+          className="block text-gray-700 dark:text-gray-300 font-semibold mb-3"
+        >
           Is Active
         </label>
+        <div
+          className="relative inline-block w-10 h-6"
+          onClick={(e) =>
+            setUpdatedMember({
+              ...updatedMember,
+              isActive: !updatedMember.isActive,
+            })
+          }
+        >
+          {/* Background of the toggle */}
+          <div
+            className={`w-10 h-6 rounded-full cursor-pointer transition-colors duration-300 ${
+              updatedMember.isActive
+                ? "bg-blue-500"
+                : "bg-gray-300 dark:bg-gray-600"
+            }`}
+          ></div>
+
+          {/* Toggle handle */}
+          <div
+            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
+              updatedMember.isActive ? "translate-x-4" : ""
+            }`}
+          ></div>
+        </div>
       </div>
-      <button
-        type="submit"
-        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded col-span-2"
-      >
-        {uploading ? "Updating..." : "Update Member"}
-      </button>
+      <div className="col-span-2 flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="bg-gray-500 hover:bg-gray-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
+        >
+          {uploading ? "Updating..." : "Update Member"}
+        </button>
+      </div>
     </form>
   );
 };

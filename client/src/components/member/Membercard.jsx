@@ -86,7 +86,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
         <>
           <div
             className={`flex justify-center relative h-24 top-section transition-opacity duration-500 ${
-              !hoverActive ? "opacity-100" : "opacity-0"
+              !hoverActive || !isEditModalOpen ? "opacity-100" : "opacity-0"
             } ${!hoverActive ? "" : ""}`}
             style={{ backgroundColor: bgColor }}
           >
@@ -106,7 +106,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
           </div>
           <div
             className={`text-center pt-14 flex flex-col justify-between transition-opacity duration-500 ${
-              !hoverActive ? "opacity-100" : "opacity-0"
+              !hoverActive || !isEditModalOpen ? "opacity-100" : "opacity-0"
             } ${!hoverActive ? "" : ""}`}
           >
             <div className="flex-grow-1">
@@ -201,10 +201,8 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
           <EditMember
             member={member}
             setMembers={setMembers}
-            onUpdate={() => setIsEditModalOpen(false)}
             onCancel={handleCloseModal}
             setError={setError}
-            onClose={handleCloseModal}
           />
         </Modal>
       )}

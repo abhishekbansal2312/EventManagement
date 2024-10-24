@@ -6,11 +6,11 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 "
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50  z-50 "
       // onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-sm min-w-[800px] max-h-[90vh] overflow-auto"
+        className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-sm min-w-[800px] max-h-[90vh] max-w-md m-auto overflow-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">

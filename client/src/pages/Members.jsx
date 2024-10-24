@@ -15,6 +15,7 @@ const Members = ({ darkMode }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreateMember, setShowCreateMember] = useState(false);
+  const [showEditMember, setShowEditMember] = useState(false);
   const [showCreateFaculty, setShowCreateFaculty] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [editingFaculty, setEditingFaculty] = useState(null);
@@ -138,11 +139,7 @@ const Members = ({ darkMode }) => {
           title={"Add Faculty Member"}
           onClose={() => setShowCreateFaculty(false)}
         >
-          <CreateFaculty
-            setFaculty={setFaculty}
-            setError={setError}
-            darkMode={darkMode}
-          />
+          <CreateFaculty setFaculty={setFaculty} setError={setError} />
         </Modal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
@@ -155,16 +152,15 @@ const Members = ({ darkMode }) => {
               isAdmin={isAdmin}
               onEdit={isAdmin ? () => setEditingFaculty(facultyMember) : null}
               onDelete={
-  isAdmin
-    ? () =>
-        handleDelete(
-          "http://localhost:4600/api/faculty",
-          facultyMember._id,
-          setFaculty
-        )
-    : () => {}  // Provide a no-op function
-}
-
+                isAdmin
+                  ? () =>
+                      handleDelete(
+                        "http://localhost:4600/api/faculty",
+                        facultyMember._id,
+                        setFaculty
+                      )
+                  : () => {} // Provide a no-op function
+              }
             />
           ))}
         </div>
@@ -185,6 +181,7 @@ const Members = ({ darkMode }) => {
         <Modal
           isOpen={showCreateMember}
           onClose={() => setShowCreateMember(false)}
+          title="Create Member"
         >
           <CreateMember
             setMembers={setMembers}
@@ -193,21 +190,22 @@ const Members = ({ darkMode }) => {
           />
         </Modal>
 
-        {editingMember && (
-          <div className="my-4 p-4 border rounded bg-gray-100">
-            <h2 className="text-xl font-semibold mb-2">Edit Member</h2>
-            <UpdateMemberForm
-              setError={setError}
-              member={editingMember}
-              onUpdate={(updatedMember) => {
-                handleUpdateMember(updatedMember);
-                setEditingMember(null);
-              }}
-              onCancel={() => setEditingMember(null)}
-              darkMode={darkMode}
-            />
-          </div>
-        )}
+        <Modal
+          isOpen={showEditMember}
+          onClose={() => setShowEditMember(false)}
+          title="Edit                                      Member"
+        >
+          <UpdateMemberForm
+            setError={setError}
+            member={editingMember}
+            onCancel={() => {
+              setEditingMember(null);
+              console.log(darkMode);
+            }}
+            setMembers={setMembers}
+            darkMode={true}
+          />
+        </Modal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {members.length === 0 ? (

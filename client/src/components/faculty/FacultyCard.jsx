@@ -196,7 +196,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
             faculty={faculty}
             onSave={handleSaveFaculty}
             onCancel={handleCloseModal}
-            darkMode={darkMode}
+            setErrorMessage={setErrorMessage}
           />
         </Modal>
       )}
@@ -225,4 +225,3 @@ FacultyCard.propTypes = {
 };
 
 export default FacultyCard;
- 
