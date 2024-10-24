@@ -190,7 +190,7 @@ const Users = ({ darkMode }) => {
     <div className="px-16 dark:bg-gray-900 dark:text-white bg-white text-black">
       <ToastContainer />
       <div className="flex justify-between items-center pb-4 pt-8">
-        <h1 className="text-xl font-bold">User Management</h1>
+      <h2 className="text-2xl font-semibold">Faculty Members</h2>
 
         <button
           onClick={() => {
