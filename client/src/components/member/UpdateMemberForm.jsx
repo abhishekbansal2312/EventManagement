@@ -128,7 +128,7 @@ const UpdateMember = ({ member, setMembers, onCancel, setError }) => {
       hobbies: "",
       phoneNumber: "",
       isActive: true,
-      joinDate: "",
+      joinDate: member.joinDate || new Date().toISOString().split("T")[0],
     });
   };
 
@@ -271,24 +271,24 @@ const UpdateMember = ({ member, setMembers, onCancel, setError }) => {
         />
       </div>
 
-      {/* <div className="flex items-center justify-start mt-4">
-        <input
-          type="checkbox"
-          id="isActive"
-          checked={updatedMember.isActive}
-          onChange={(e) =>
-            setUpdatedMember({ ...updatedMember, isActive: e.target.checked })
-          }
-          className="mr-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-        />
+      <div className="mb-2">
         <label
-          htmlFor="isActive"
+          htmlFor="joinDate"
           className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
         >
-          Active
+          Join Date
         </label>
-      </div> */}
-      {/* Is Active Toggle Switch */}
+        <input
+          type="date"
+          placeholder="Select join date"
+          value={updatedMember.joinDate}
+          onChange={(e) =>
+            setUpdatedMember({ ...updatedMember, joinDate: e.target.value })
+          }
+          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+        />
+      </div>
+
       <div className="mb-2">
         <label
           htmlFor="isActive"

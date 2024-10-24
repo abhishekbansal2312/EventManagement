@@ -7,7 +7,7 @@ import { jwtDecode } from "jwt-decode"; // Use default import for jwt-decode
 import Modal from "../Modal"; // Import your modal component
 import EditFaculty from "./EditFaculty"; // Import your EditFaculty form component
 
-const FacultyCard = ({ faculty, darkMode, onDelete }) => {
+const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false); // Track if the user is admin
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Control modal visibility
@@ -21,44 +21,13 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
     }
   }, []);
 
-  // Handle faculty deletion
-  const handleDeleteFaculty = async (e) => {
-    e.stopPropagation(); // Prevent card click
-    console.log("Delete button clicked for faculty:", faculty._id); // Debug log
-
-    try {
-      const response = await fetch(
-        `http://localhost:4600/api/faculty/${faculty._id}`, // Use _id instead of facultyId
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
-
-      console.log("Response Status:", response.status); // Debug log
-
-      if (response.ok) {
-        console.log("Faculty deleted successfully:", faculty._id); // Debug log
-        onDelete(faculty._id); // Notify parent component that faculty is deleted
-        alert("Faculty deleted successfully."); // Inform user about successful deletion
-      } else {
-        const errorText = await response.text();
-        console.error("Error deleting faculty:", errorText);
-        setErrorMessage("Failed to delete faculty. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error deleting faculty:", error);
-      setErrorMessage("An error occurred while deleting the faculty.");
-    }
-  };
-
   // Toggle edit modal
   const handleEditClick = (e) => {
     e.stopPropagation(); // Prevent card click
     setIsEditModalOpen(true); // Open edit modal
   };
 
-  const handleSaveFaculty = async (updatedFaculty) => {
+  const handleUpdateFaculty = async (updatedFaculty) => {
     console.log("Updated faculty:", updatedFaculty); // Debugging
 
     try {
@@ -76,9 +45,11 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
       );
 
       if (response.ok) {
+        const updatedFacultyData = await response.json(); // Get updated data from the response
         console.log("Faculty updated successfully.");
         setIsEditModalOpen(false); // Close the modal after successful save
         alert("Faculty details updated successfully.");
+        onUpdate(updatedFacultyData); // Call onUpdate to update the state in parent component
       } else {
         const errorText = await response.text();
         console.error("Failed to update faculty:", errorText);
@@ -132,8 +103,6 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
           <hr />
 
           <div className="text-[12px] mt-2 p-2">
-            {/* Faculty Email */}
-
             {/* Faculty Specializations */}
             {faculty.specializations && faculty.specializations.length > 0 && (
               <div className="mb-1">
@@ -175,7 +144,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
                 className="text-blue-500 dark:text-blue-700 hover:text-blue-700"
               />
             </div>
-            <div className="cursor-pointer" onClick={handleDeleteFaculty}>
+            <div className="cursor-pointer" onClick={onDelete}>
               <FaTrash
                 size={12}
                 className="text-red-500 dark:text-red-700 hover:text-red-700"
@@ -194,7 +163,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete }) => {
         >
           <EditFaculty
             faculty={faculty}
-            onSave={handleSaveFaculty}
+            onSave={handleUpdateFaculty} // Use the updated handleUpdateFaculty function
             onCancel={handleCloseModal}
             setErrorMessage={setErrorMessage}
           />
@@ -222,6 +191,7 @@ FacultyCard.propTypes = {
   }).isRequired,
   darkMode: PropTypes.bool.isRequired,
   onDelete: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired, // Add onUpdate prop validation
 };
 
 export default FacultyCard;

@@ -110,7 +110,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
             } ${!hoverActive ? "" : ""}`}
           >
             <div className="flex-grow-1">
-              <h2 className="text-xl font-semibold mb-1 text-gray-700 dark:text-gray-400">
+              <h2 className="text-xl font-semibold mb-1 text-gray-700 dark:text-gray-200">
                 {member.name || "Unknown"}
               </h2>
               {member.specializations && member.specializations.length > 0 && (

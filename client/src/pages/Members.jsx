@@ -25,17 +25,17 @@ const Members = ({ darkMode }) => {
     const fetchMembersAndFaculty = async () => {
       try {
         const token = Cookies.get("authtoken");
-
+  
         if (!token) {
           console.error("No token found. Redirecting to login page...");
           setError("No token found. Redirecting to login page...");
           window.location.href = "/login";
           return;
         }
-
+  
         const decodedToken = jwtDecode(token);
         setIsAdmin(decodedToken.role === "admin");
-
+  
         // Fetch members and faculty concurrently
         const [membersResponse, facultyResponse] = await Promise.all([
           fetch("http://localhost:4600/api/members", {
@@ -55,26 +55,36 @@ const Members = ({ darkMode }) => {
             credentials: "include",
           }),
         ]);
-
+  
         if (!membersResponse.ok) throw new Error("Failed to fetch members");
         if (!facultyResponse.ok) throw new Error("Failed to fetch faculty");
-
+  
         const [membersData, facultyData] = await Promise.all([
           membersResponse.json(),
           facultyResponse.json(),
         ]);
+  
+        // Sort members by join date (assuming joinDate is a valid date string)
 
-        setMembers(membersData);
-        setFaculty(facultyData);
+        const sortedFaculties = facultyData.sort((a, b) => 
+          new Date(b.joinDate) - new Date(a.joinDate)  // Reverse order
+        );
+        const sortedMembers = membersData.sort((a, b) => 
+          new Date(b.joinDate) - new Date(a.joinDate)  // Reverse order
+        );
+  
+        setMembers(sortedMembers);
+        setFaculty(sortedFaculties);
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchMembersAndFaculty();
   }, []);
+  
 
   if (loading) {
     return (
@@ -118,6 +128,14 @@ const Members = ({ darkMode }) => {
     );
   };
 
+  const handleUpdateFaculty = (updatedFaculty) => {
+    setFaculty((prevFaculty) =>
+      prevFaculty.map((faculty) =>
+        faculty._id === updatedFaculty._id ? updatedFaculty : faculty
+      )
+    );
+  };
+
   return (
     <div className="px-16 py-8 dark:bg-gray-900 dark:text-white bg-white text-black">
       <div className="min-h-screen transition duration-500">
@@ -145,23 +163,27 @@ const Members = ({ darkMode }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {faculty.map((facultyMember) => (
             <FacultyCard
-              key={facultyMember._id}
-              faculty={facultyMember}
-              darkMode={darkMode}
-              setFaculty={setFaculty}
-              isAdmin={isAdmin}
-              onEdit={isAdmin ? () => setEditingFaculty(facultyMember) : null}
-              onDelete={
-                isAdmin
-                  ? () =>
-                      handleDelete(
-                        "http://localhost:4600/api/faculty",
-                        facultyMember._id,
-                        setFaculty
-                      )
-                  : () => {} // Provide a no-op function
-              }
-            />
+  key={facultyMember._id}
+  faculty={facultyMember}
+  darkMode={darkMode}
+  setFaculty={setFaculty}
+  isAdmin={isAdmin}
+  onUpdate={handleUpdateFaculty} 
+  onEdit={isAdmin ? () => {
+      setEditingFaculty(facultyMember);
+    } : null}
+  onDelete={
+    isAdmin
+      ? () =>
+          handleDelete(
+            "http://localhost:4600/api/faculty",
+            facultyMember._id,
+            setFaculty
+          )
+      : () => {}
+  }
+/>
+
           ))}
         </div>
 
