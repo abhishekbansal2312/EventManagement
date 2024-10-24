@@ -86,6 +86,12 @@ const EditFaculty = ({ faculty, onSave, onCancel, setErrorMessage }) => {
     setUploading(false);
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return ""; // Return empty if dateString is not provided
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+  };
+  
   return (
     <div className={`text-sm`}>
       <form
@@ -227,6 +233,24 @@ const EditFaculty = ({ faculty, onSave, onCancel, setErrorMessage }) => {
             className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
           />
         </div>
+
+        <div className="mb-2">
+  <label
+    htmlFor="joinDate"
+    className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+  >
+    Join Date
+  </label>
+  <input
+    type="date" // assuming joinDate is a date field
+    id="joinDate"
+    name="joinDate"
+    value={formData.joinDate || formatDate(faculty.joinDate)} // Format the date
+    onChange={handleInputChange}
+    className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+  />
+</div>
+
 
         {/* Is Active Toggle Switch */}
         <div className="mb-2">

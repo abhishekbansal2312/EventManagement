@@ -49,7 +49,7 @@ const CreateMember = ({ setMembers, setError, darkMode, onSave, onCancel }) => {
             body: JSON.stringify({
               ...newMember,
               pictureURL: downloadURL,
-              joinDate: new Date().toISOString(),
+              joinDate: newMember.joinDate || new Date().toISOString(), // Use the joinDate from state or current date
             }),
             credentials: "include",
           });
@@ -77,7 +77,7 @@ const CreateMember = ({ setMembers, setError, darkMode, onSave, onCancel }) => {
             hobbies: "",
             phoneNumber: "",
             isActive: true,
-            joinDate: "",
+            joinDate: "", // Reset joinDate
           });
 
           setUploading(false);
@@ -115,8 +115,7 @@ const CreateMember = ({ setMembers, setError, darkMode, onSave, onCancel }) => {
         <div
           className={`mb-2 border-2 border-dashed rounded-lg p-4 transition col-span-2 ${
             dragging ? "border-blue-500" : ""
-          } dark:border-gray-300
-              border-gray-600`}
+          } dark:border-gray-300 border-gray-600`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -203,6 +202,7 @@ const CreateMember = ({ setMembers, setError, darkMode, onSave, onCancel }) => {
             className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
           />
         </div>
+        
         <div className="mb-2">
           <label
             htmlFor="phoneNumber"
@@ -256,40 +256,59 @@ const CreateMember = ({ setMembers, setError, darkMode, onSave, onCancel }) => {
             className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
           />
         </div>
-
-        <div className="flex items-center space-x-2">
-          <label htmlFor="isActive" className="inline-flex items-center">
-            Is Active
+        <div className="mb-2">
+          <label
+            htmlFor="joinDate"
+            className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+          >
+            Join Date
           </label>
           <input
-            type="checkbox"
-            id="isActive"
-            name="isActive"
-            checked={newMember.isActive}
+            type="date"
+            value={newMember.joinDate}
             onChange={(e) =>
-              setNewMember({ ...newMember, isActive: !newMember.isActive })
+              setNewMember({ ...newMember, joinDate: e.target.value })
             }
-            className="font-semibold"
+            required
+            className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
           />
         </div>
+        <div className="mb-2">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={newMember.isActive}
+              onChange={(e) =>
+                setNewMember({ ...newMember, isActive: e.target.checked })
+              }
+              className="mr-2"
+            />
+            Active
+          </label>
+        </div>
 
-        <div className="flex justify-end gap-2 mt-4 col-span-2">
+        <div className="flex justify-between md:col-span-2">
           <button
             type="button"
             onClick={onCancel}
-            className="bg-gray-500 hover:bg-gray-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
+            className="bg-red-500 text-white rounded-lg px-4 py-2"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
+            disabled={uploading}
+            className={`${
+              uploading ? "bg-gray-400" : "bg-blue-500"
+            } text-white rounded-lg px-4 py-2`}
           >
             {uploading ? "Uploading..." : "Add Member"}
           </button>
         </div>
 
-        {uploadError && <p className="text-red-500 mt-2">{uploadError}</p>}
+        {uploadError && (
+          <div className="col-span-2 text-red-600">{uploadError}</div>
+        )}
       </form>
     </div>
   );
