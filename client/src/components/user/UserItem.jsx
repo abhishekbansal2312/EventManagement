@@ -14,9 +14,12 @@ const UserItem = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleParticipatedEvents = (userId) => {
-    setIsExpanded(!isExpanded);
+    setIsExpanded((prev) => !prev);
     handleParticipatedEvents(userId);
   };
+
+  // Calculate the max height for transition
+  const maxHeight = events[user._id] ? `${events[user._id].length * 40}px` : "0px";
 
   return (
     <li
@@ -31,7 +34,7 @@ const UserItem = ({
           </p>
           <button
             onClick={() => toggleParticipatedEvents(user._id)}
-            className={`mt-1 text-[12px] text-blue-500 hover:text-blue-700 transition duration-200`}
+            className={`mt-1 text-[12px] text-blue-500 hover:text-blue-700 transition-transform duration-200 transform ${isExpanded ? 'scale-95' : 'scale-100'}`}
           >
             {events[user._id]
               ? "Hide Participated Events"
@@ -61,13 +64,12 @@ const UserItem = ({
 
       {/* Participated Events section with height transition */}
       <div
-        className={`transition-max-height duration-500 ease-in overflow-auto ${
-          events[user._id] ? "h-[80px]" : "h-0"
-        }`}
+        className={`transition-all duration-700 ease-in-out overflow-hidden`}
+        style={{ maxHeight: isExpanded ? maxHeight : "0px" }} // Control height with style
       >
         {events[user._id] && (
           <div
-            className={`mt-2 p-4 rounded-lg ${
+            className={`mt-2 p-4 rounded-lg transition-opacity duration-700 ease-in-out delay-200 ${isExpanded ? 'opacity-100' : 'opacity-0'} ${
               darkMode ? "dark:bg-gray-700" : "bg-gray-100"
             } shadow-md`}
           >
@@ -83,7 +85,7 @@ const UserItem = ({
         )}
       </div>
     </li>
-  );
+  );  
 };
 
 export default UserItem;

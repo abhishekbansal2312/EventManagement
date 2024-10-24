@@ -9,14 +9,12 @@ const UserForm = ({
   onClose,
 }) => {
   return (
-    <form onSubmit={handleSubmit} className="">
+    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[14px]">
       {/* Student ID */}
       <div className="mb-3">
         <label
           htmlFor="studentId"
-          className={`block mb-1 text-sm ${
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }`}
+          className={`block text-gray-700 dark:text-gray-300 font-semibold mb-1`}
         >
           Student ID
         </label>
@@ -26,7 +24,7 @@ const UserForm = ({
           value={formData.studentId}
           onChange={handleChange}
           required
-          className={`w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+          className={`w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
         />
       </div>
 
@@ -34,9 +32,7 @@ const UserForm = ({
       <div className="mb-3">
         <label
           htmlFor="name"
-          className={`block mb-1 text-sm ${
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }`}
+          className={`block text-gray-700 dark:text-gray-300 font-semibold mb-1`}
         >
           Name
         </label>
@@ -46,7 +42,7 @@ const UserForm = ({
           value={formData.name}
           onChange={handleChange}
           required
-          className={`w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+          className={`w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
         />
       </div>
 
@@ -54,9 +50,7 @@ const UserForm = ({
       <div className="mb-3">
         <label
           htmlFor="email"
-          className={`block mb-1 text-sm ${
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }`}
+          className={`block text-gray-700 dark:text-gray-300 font-semibold mb-1`}
         >
           Email
         </label>
@@ -66,7 +60,7 @@ const UserForm = ({
           value={formData.email}
           onChange={handleChange}
           required
-          className={`w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+          className={`w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
         />
       </div>
 
@@ -74,9 +68,7 @@ const UserForm = ({
       <div className="mb-3">
         <label
           htmlFor="password"
-          className={`block mb-1 text-sm ${
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }`}
+          className={`block text-gray-700 dark:text-gray-300 font-semibold mb-1`}
         >
           Password
         </label>
@@ -86,7 +78,7 @@ const UserForm = ({
           value={formData.password}
           onChange={handleChange}
           required={!isEditing} // Make password required only when adding a new user
-          className={`w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+          className={`w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
         />
       </div>
 
@@ -94,9 +86,7 @@ const UserForm = ({
       <div className="mb-3">
         <label
           htmlFor="role"
-          className={`block mb-1 text-sm ${
-            darkMode ? "text-gray-300" : "text-gray-700"
-          }`}
+          className={`block text-gray-700 dark:text-gray-300 font-semibold mb-1`}
         >
           User Role
         </label>
@@ -113,11 +103,11 @@ const UserForm = ({
       </div>
 
       {/* Submit Button */}
-      <div className="flex justify-end mt-4 space-x-4">
+      <div className="flex justify-end gap-2 mt-4 col-span-2">
         {/* Secondary Button (Cancel) */}
         <button
           type="button"
-          className={`bg-gray-200 text-gray-800 hover:bg-gray-300 px-5 py-2 rounded-lg transition-all duration-300 ease-in-out`}
+          className={`bg-gray-500 hover:bg-gray-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]`}
           onClick={onClose}
         >
           Cancel
@@ -126,7 +116,7 @@ const UserForm = ({
         {/* Primary Button (Submit) */}
         <button
           type="submit"
-          className={`bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-lg shadow-lg transition-all duration-300 ease-in-out`}
+          className={`bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]`}
         >
           {isEditing ? "Update User" : "Add User"}
         </button>
