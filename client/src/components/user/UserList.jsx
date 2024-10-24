@@ -1,9 +1,9 @@
 import React from 'react';
 import UserItem from './UserItem';
 
-const UserList = ({ users, handleEdit, handleDelete, handleParticipatedEvents,darkMode, events }) => {
+const UserList = ({ users, handleEdit, handleDelete, handleParticipatedEvents, darkMode, events }) => {
   return (
-    <ul>
+    <ul className="w-full gap-2 ">
       {users.map(user => (
         <UserItem 
           key={user._id} 
