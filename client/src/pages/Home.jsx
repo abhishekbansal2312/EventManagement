@@ -55,16 +55,16 @@ const Home = ({ darkMode }) => {
         method: "GET",
         credentials: "include",
       });
-  
+
       if (!response.ok) throw new Error("Failed to fetch reviews");
-  
+
       const data = await response.json();
-  
+
       // Filter to get only reviews with a rating of 5 and a comment length greater than 50
-      const filteredReviews = data.filter(review => 
-        review.rating === 5 && review.comment.length > 50
+      const filteredReviews = data.filter(
+        (review) => review.rating === 5 && review.comment.length > 50
       );
-  
+
       // Limit to the first 3 reviews
       setReviews(filteredReviews.slice(0, 3));
     } catch (error) {
@@ -72,18 +72,21 @@ const Home = ({ darkMode }) => {
       setError(error.message);
     }
   };
-  
 
   useEffect(() => {
     fetchReviews();
   }, []);
 
-
-
   return (
     <div className={`bg-white ${darkMode ? "dark" : ""} font-sans`}>
       {/* Hero Section */}
-      <div className={`relative bg-gradient-to-b ${darkMode ? "from-gray-400 via-gray-500 to-gray-600 text-white" : "from-purple-600 to-blue-600 text-white"} p-16 text-center shadow-lg`}>
+      <div
+        className={`relative bg-gradient-to-b ${
+          darkMode
+            ? "from-gray-400 via-gray-500 to-gray-600 text-white"
+            : "from-purple-600 to-blue-600 text-white"
+        } p-16 text-center shadow-lg`}
+      >
         <h1 className="text-9xl font-normal mb-4 bg-gradient-to-t to-blue-100 from-white bg-clip-text text-transparent">
           HOBBIES CLUB
         </h1>
@@ -91,10 +94,15 @@ const Home = ({ darkMode }) => {
           We plan and organize exciting events tailored for our college's needs.
         </p>
         <p className="text-md max-w-2xl mx-auto mb-8 text-gray-300">
-          Join us for thrilling games, events, and competitions. Experience the fun!
+          Join us for thrilling games, events, and competitions. Experience the
+          fun!
         </p>
         <button
-          className={`py-3 px-10 rounded-full shadow-lg transition duration-300 ${darkMode ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white text-indigo-600 hover:bg-gray-100"}`}
+          className={`py-3 px-10 rounded-full shadow-lg transition duration-300 ${
+            darkMode
+              ? "bg-gray-800 text-white hover:bg-gray-700"
+              : "bg-white text-indigo-600 hover:bg-gray-100"
+          }`}
           onClick={() => {
             isAuthenticated ? navigate("/events") : navigate("/login");
           }}
@@ -144,7 +152,11 @@ const Home = ({ darkMode }) => {
       </div>
 
       {/* Image Carousel */}
-      <div className={`py-16 ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
+      <div
+        className={`py-16 ${
+          darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
+        }`}
+      >
         <h2 className="text-2xl dark:text-gray-400 font-normal text-center mb-12 uppercase">
           Our Previous Events
         </h2>
@@ -166,17 +178,17 @@ const Home = ({ darkMode }) => {
       </div>
 
       {/* Reviews Section */}
-      <div className="bg-gray-50 dark:bg-gray-800 py-16">
+      <div className="bg-gray-50 dark:bg-gray-800 p-16">
         <h2 className="text-2xl font-normal text-center mb-12 dark:text-gray-400">
           What Our Members Say
         </h2>
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {reviews.length === 0 ? (
-            <div className="text-center text-gray-400">No reviews available</div>
+            <div className="text-center text-gray-400">
+              No reviews available
+            </div>
           ) : (
-            reviews.map((review, index) => (
-              <Card key={index} review={review} />
-            ))
+            reviews.map((review, index) => <Card key={index} review={review} />)
           )}
         </div>
       </div>

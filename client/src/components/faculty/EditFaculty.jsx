@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Import storage functions
 import { storage } from "../../firebase"; // Import Firebase Storage
 
-const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
+const EditFaculty = ({ faculty, onSave, onCancel, setErrorMessage }) => {
   const [formData, setFormData] = useState({
     _id: faculty._id || "",
     name: faculty.name || "",
@@ -13,11 +13,39 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
     phoneNumber: faculty.phoneNumber || "",
     isActive: faculty.isActive || false,
     joinDate: faculty.joinDate || "",
-    pictureURL: faculty.pictureURL || "",
+    pictureURL: null,
   });
 
   const [newPicture, setNewPicture] = useState(null); // State to hold the new picture file
   const [uploading, setUploading] = useState(false); // To show uploading state
+  const [dragging, setDragging] = useState(false);
+
+  const handleFileChange = (e) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+    setNewPicture(file);
+    if (file) {
+      setFormData({ ...formData, pictureURL: file });
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      setFormData({ ...formData, pictureURL: file });
+    }
+    setDragging(false);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -25,7 +53,7 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
   };
 
   const handleCheckboxChange = (e) => {
-    setFormData({ ...formData, isActive: e.target.checked });
+    setFormData({ ...formData, isActive: !formData.isActive });
   };
 
   const handleSpecializationsChange = (e) => {
@@ -33,16 +61,11 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
     setFormData({ ...formData, specializations });
   };
 
-  // Handle file input for new picture
-  const handlePictureChange = (e) => {
-    setNewPicture(e.target.files[0]); // Set the new picture file
-  };
-
   // Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
-    let pictureURL = formData.pictureURL;
+    let pictureURL;
 
     if (newPicture) {
       try {
@@ -52,7 +75,7 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
         pictureURL = await getDownloadURL(uploadTask.snapshot.ref);
       } catch (error) {
         console.error("Error uploading picture: ", error);
-        setError(error.message);
+        setErrorMessage(error.message);
         setUploading(false);
         return;
       }
@@ -69,6 +92,32 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[14px]"
       >
+        <div
+          className={`mb-2 border-2 border-dashed rounded-lg p-4 transition col-span-2 ${
+            dragging ? "border-blue-500" : ""
+          } dark:border-gray-300
+              border-gray-600`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => document.getElementById("fileInput").click()}
+        >
+          <input
+            type="file"
+            id="fileInput"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <div className="flex items-center justify-center h-14">
+            {formData.pictureURL ? (
+              <p>{formData.pictureURL.name}</p>
+            ) : (
+              <p className="text-gray-400">
+                Drag and drop a file here, or click to select a file
+              </p>
+            )}
+          </div>
+        </div>
         {/* Name Input */}
         <div className="mb-2">
           <label
@@ -176,21 +225,6 @@ const EditFaculty = ({ faculty, onSave, onCancel, darkMode, setError }) => {
             value={formData.phoneNumber}
             onChange={handleInputChange}
             className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-          />
-        </div>
-
-        {/* Picture Upload Input */}
-        <div className="mb-2 md:col-span-2">
-          <label
-            htmlFor="picture"
-            className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
-          >
-            Upload Picture
-          </label>
-          <input
-            type="file"
-            onChange={handlePictureChange}
-            className="flex items-center justify-center w-full h-12 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer transition duration-200 dark:bg-gray-800"
           />
         </div>
 

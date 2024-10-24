@@ -1,304 +1,313 @@
 import React, { useState } from "react";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Import storage functions
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Firebase imports
 import { storage } from "../../firebase"; // Import Firebase Storage
-import { MdUpload } from "react-icons/md";
 
-const CreateFaculty = ({ setFaculty, setError, darkMode }) => {
+const CreateFaculty = ({ setFaculty, setError, onSave, onCancel }) => {
   const [newFaculty, setNewFaculty] = useState({
     name: "",
     email: "",
     facultyId: "",
-    pictureURL: null, // URL for the picture
-    specialization: [], // Changed to array to match schema
-    description: "", // Changed from bio to description
+    pictureURL: null, // Picture URL for uploaded picture
+    specializations: "",
+    description: "",
     phoneNumber: "",
-    isActive: true, // New property for active status
-    joinDate: "", // New property for join date
+    isActive: true,
+    joinDate: "",
   });
 
-  const [uploading, setUploading] = useState(false); // To show uploading state
-  const [pictureSelected, setPictureSelected] = useState(false); // To track if a picture has been selected
+  const [uploading, setUploading] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const [newPicture, setNewPicture] = useState(null); // Store uploaded picture
 
-  const handleAddFaculty = async (event) => {
-    event.preventDefault(); // Prevent the default form submission
+  // Drag and drop handlers for picture upload
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragging(true);
+  };
 
-    // Check if picture is selected
-    if (!newFaculty.pictureURL) {
+  const handleDragLeave = () => {
+    setDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    setNewPicture(file);
+    setNewFaculty({ ...newFaculty, pictureURL: file });
+    setDragging(false);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setNewPicture(file);
+    setNewFaculty({ ...newFaculty, pictureURL: file });
+  };
+
+  // Input field change handler
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewFaculty({ ...newFaculty, [name]: value });
+  };
+
+  const handleCheckboxChange = () => {
+    setNewFaculty({ ...newFaculty, isActive: !newFaculty.isActive });
+  };
+
+  // Submit form handler
+  const handleAddFaculty = async (e) => {
+    e.preventDefault();
+
+    if (!newPicture) {
       setError("Please upload a picture.");
       return;
     }
 
     try {
-      // Upload the picture to Firebase Storage
-      const storageRef = ref(storage, `faculty/${newFaculty.pictureURL.name}`); // Create storage reference
-      const uploadTask = uploadBytesResumable(
-        storageRef,
-        newFaculty.pictureURL
-      ); // Upload the file
-
-      setUploading(true); // Show uploading state
+      // Upload to Firebase Storage
+      const storageRef = ref(storage, `faculty/${newPicture.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, newPicture);
+      setUploading(true);
 
       uploadTask.on(
         "state_changed",
-        (snapshot) => {
-          // You can monitor progress here if needed
-        },
+        () => {},
         (error) => {
-          console.error("Error during upload: ", error); // Log upload error
+          console.error("Error during upload: ", error);
           setError(error.message);
           setUploading(false);
         },
         async () => {
-          // Get the picture's URL once the upload is complete
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          console.log("Download URL: ", downloadURL); // Log download URL
-
-          // After getting the download URL, save the faculty data (including the picture URL) to MongoDB
           const response = await fetch("http://localhost:4600/api/faculty", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              name: newFaculty.name,
-              email: newFaculty.email,
-              facultyId: newFaculty.facultyId,
-              pictureURL: downloadURL, // Save the picture URL
-              specializations: newFaculty.specialization, // Use the correct field name
-              description: newFaculty.description, // Use description instead of bio
-              phoneNumber: newFaculty.phoneNumber,
-              isActive: newFaculty.isActive, // Include isActive in the request
-              joinDate: new Date().toISOString(), // Set join date to the current date
+              ...newFaculty,
+              pictureURL: downloadURL,
+              specializations: newFaculty.specializations.split(","),
+              joinDate: new Date().toISOString(),
             }),
             credentials: "include",
           });
 
           if (!response.ok) {
             const errorData = await response.json();
-            console.log("Error response from server: ", errorData); // Log server error
+            console.error("Error response from server: ", errorData);
             throw new Error(errorData.message || "Failed to add faculty");
           }
 
           const data = await response.json();
-          console.log("Faculty added successfully: ", data); // Log success
-
-          // Update the faculty state with the new faculty
           setFaculty((prevFaculty) => [...prevFaculty, data.faculty]);
 
-          // Reset the input fields
+          // Reset fields after submission
           setNewFaculty({
             name: "",
             email: "",
             facultyId: "",
             pictureURL: null,
-            specialization: [], // Reset specialization
-            description: "", // Reset description
+            specializations: "",
+            description: "",
             phoneNumber: "",
-            isActive: true, // Reset isActive to default value
-            joinDate: "", // Reset joinDate
+            isActive: true,
+            joinDate: "",
           });
-          setPictureSelected(false); // Reset picture selected state
-
-          setUploading(false); // Hide uploading state
-
-          // Refresh the page on successful addition
+          setNewPicture(null);
+          setUploading(false);
           window.location.reload();
         }
       );
     } catch (err) {
-      console.error("Error adding faculty: ", err); // Log the error
+      console.error("Error adding faculty: ", err);
       setError(err.message);
       setUploading(false);
     }
   };
 
   return (
-    <form onSubmit={handleAddFaculty} className="container mx-auto text-sm">
-      {setError && <p className="text-red-500">{setError}</p>}
-
-      <div className="mb-4">
-        <label
-          htmlFor="name"
-          className="block text-gray-700 dark:text-gray-300"
+    <div className={`text-sm`}>
+      <form
+        onSubmit={handleAddFaculty}
+        className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[14px]"
+      >
+        {/* Picture Upload Area */}
+        <div
+          className={`mb-2 border-2 border-dashed rounded-lg p-4 transition col-span-2 ${
+            dragging ? "border-blue-500" : ""
+          } dark:border-gray-300
+              border-gray-600`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
         >
-          Name
-        </label>
-        <input
-          type="text"
-          placeholder="Enter faculty name"
-          value={newFaculty.name}
-          onChange={(e) =>
-            setNewFaculty({ ...newFaculty, name: e.target.value })
-          }
-          required
-          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-        />
-      </div>
+          <input
+            type="file"
+            id="fileInput"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <div
+            className="flex items-center justify-center h-14"
+            onClick={() => document.getElementById("fileInput").click()}
+          >
+            {newFaculty.pictureURL ? (
+              <img
+                src={URL.createObjectURL(newFaculty.pictureURL)}
+                alt="Faculty"
+                className="h-full"
+              />
+            ) : (
+              <p className="text-gray-400 dark:text-gray-300">
+                Drag and drop a file here, or click to select a file
+              </p>
+            )}
+          </div>
+        </div>
 
-      <div className="mb-4">
-        <label
-          htmlFor="email"
-          className="block text-gray-700 dark:text-gray-300"
-        >
-          Email
-        </label>
-        <input
-          type="email"
-          placeholder="Enter faculty email"
-          value={newFaculty.email}
-          onChange={(e) =>
-            setNewFaculty({ ...newFaculty, email: e.target.value })
-          }
-          required
-          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-        />
-      </div>
+        {/* Name Field */}
+        <div className="mb-2">
+          <label
+            htmlFor="name"
+            className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+          >
+            Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={newFaculty.name}
+            onChange={handleInputChange}
+            className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+            required
+          />
+        </div>
 
-      <div className="mb-4">
-        <label
-          htmlFor="facultyId"
-          className="block text-gray-700 dark:text-gray-300"
-        >
-          Faculty ID
-        </label>
-        <input
-          type="text"
-          placeholder="Enter faculty ID"
-          value={newFaculty.facultyId}
-          onChange={(e) =>
-            setNewFaculty({ ...newFaculty, facultyId: e.target.value })
-          }
-          required
-          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-        />
-      </div>
+        {/* Email Field */}
+        <div className="mb-2">
+          <label
+            htmlFor="email"
+            className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+          >
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={newFaculty.email}
+            onChange={handleInputChange}
+            className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+            required
+          />
+        </div>
 
-      <div className="mb-4">
-        <label
-          htmlFor="pictureURL"
-          className="block text-gray-700 dark:text-gray-300"
-        >
-          Picture
-        </label>
-        <div className="flex items-center justify-between w-full mt-1">
-          <label className="flex items-center justify-center w-full h-12 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer transition duration-200 dark:bg-gray-800">
-            <span className="flex items-center text-gray-600 dark:text-gray-300">
-              <MdUpload className="mr-2" /> Select a picture
-            </span>
-            <input
-              type="file"
-              onChange={(e) => {
-                setNewFaculty({ ...newFaculty, pictureURL: e.target.files[0] });
-                setPictureSelected(true);
-              }}
-              required
-              className="hidden"
-            />
+        {/* Faculty ID */}
+        <div className="mb-2">
+          <label
+            htmlFor="facultyId"
+            className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+          >
+            Faculty ID
+          </label>
+          <input
+            type="text"
+            id="facultyId"
+            name="facultyId"
+            value={newFaculty.facultyId}
+            onChange={handleInputChange}
+            className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+            required
+          />
+        </div>
+
+        {/* Specializations */}
+        <div className="mb-2">
+          <label
+            htmlFor="specializations"
+            className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+          >
+            Specializations (comma-separated)
+          </label>
+          <input
+            type="text"
+            id="specializations"
+            name="specializations"
+            value={newFaculty.specializations}
+            onChange={handleInputChange}
+            className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+          />
+        </div>
+
+        {/* Description */}
+        <div className="mb-2 md:col-span-2">
+          <label
+            htmlFor="description"
+            className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+          >
+            Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            value={newFaculty.description}
+            onChange={handleInputChange}
+            className="w-full mt-1 p-2 h-28 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+          />
+        </div>
+
+        {/* Phone Number */}
+        <div className="mb-2">
+          <label
+            htmlFor="phoneNumber"
+            className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+          >
+            Phone Number
+          </label>
+          <input
+            type="text"
+            id="phoneNumber"
+            name="phoneNumber"
+            value={newFaculty.phoneNumber}
+            onChange={handleInputChange}
+            className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+          />
+        </div>
+
+        {/* Active Status */}
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="isActive"
+            name="isActive"
+            checked={newFaculty.isActive}
+            onChange={handleCheckboxChange}
+          />
+          <label htmlFor="isActive" className="font-semibold">
+            Active
           </label>
         </div>
 
-        {pictureSelected && newFaculty.pictureURL && (
-          <div className="flex justify-between items-center mt-2">
-            <span className="text-gray-700 dark:text-gray-300">
-              {newFaculty.pictureURL.name}
-            </span>
-            <button
-              type="button"
-              onClick={() => {
-                setNewFaculty({ ...newFaculty, pictureURL: null });
-                setPictureSelected(false);
-              }}
-              className="text-red-500 hover:underline ml-2"
-            >
-              Remove
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="specialization"
-          className="block text-gray-700 dark:text-gray-300"
-        >
-          Specialization
-        </label>
-        <input
-          type="text"
-          placeholder="Enter specialization (comma separated)"
-          value={newFaculty.specialization}
-          onChange={(e) =>
-            setNewFaculty({
-              ...newFaculty,
-              specialization: e.target.value,
-            })
-          }
-          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-        />
-      </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="description"
-          className="block text-gray-700 dark:text-gray-300"
-        >
-          Description
-        </label>
-        <textarea
-          placeholder="Enter a short description"
-          value={newFaculty.description}
-          onChange={(e) =>
-            setNewFaculty({ ...newFaculty, description: e.target.value })
-          }
-          className="w-full mt-1 p-2 h-28 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-        />
-      </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="phoneNumber"
-          className="block text-gray-700 dark:text-gray-300"
-        >
-          Phone Number
-        </label>
-        <input
-          type="text"
-          placeholder="Enter phone number"
-          value={newFaculty.phoneNumber}
-          onChange={(e) =>
-            setNewFaculty({ ...newFaculty, phoneNumber: e.target.value })
-          }
-          className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-        />
-      </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="isActive"
-          className="inline-flex items-center text-gray-700 dark:text-gray-300"
-        >
-          <input
-            type="checkbox"
-            checked={newFaculty.isActive}
-            onChange={(e) =>
-              setNewFaculty({ ...newFaculty, isActive: e.target.checked })
-            }
-            className="mr-2 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-          />
-          Active
-        </label>
-      </div>
-
-      <div className="flex justify-end">
-        <button
-          type="submit"
-          disabled={uploading}
-          className="bg-blue-500 hover:bg-blue-700 text-[12px] text-white font-normal py-2 px-4 rounded-md transition-colors duration-300"
-        >
-          {uploading ? "Uploading..." : "Add Faculty"}
-        </button>
-      </div>
-    </form>
+        {/* Form Buttons */}
+        <div className="flex justify-end gap-2 mt-4 col-span-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="bg-gray-500 hover:bg-gray-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={uploading}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
+          >
+            {uploading ? "Uploading..." : "Add Faculty"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
