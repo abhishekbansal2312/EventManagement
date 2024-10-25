@@ -99,7 +99,7 @@ const CreateFaculty = ({ setFaculty, setError, onSave, onCancel }) => {
           }
 
           const data = await response.json();
-          setFaculty((prevFaculty) => [...prevFaculty, data.faculty]);
+          setFaculty((prevFaculty) => [...prevFaculty, data.facultyConvener]);
 
           // Reset fields after submission
           setNewFaculty({
@@ -124,7 +124,6 @@ const CreateFaculty = ({ setFaculty, setError, onSave, onCancel }) => {
       setUploading(false);
     }
   };
-
 
   return (
     <div className={`text-sm`}>
@@ -276,24 +275,22 @@ const CreateFaculty = ({ setFaculty, setError, onSave, onCancel }) => {
           />
         </div>
 
-
         <div className="mb-2">
-  <label
-    htmlFor="joinDate"
-    className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
-  >
-    Join Date
-  </label>
-  <input
-    type="date" // assuming joinDate is a date field
-    id="joinDate"
-    name="joinDate"
-    value={newFaculty.joinDate}
-    onChange={handleInputChange}
-    className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-  />
-</div>
-
+          <label
+            htmlFor="joinDate"
+            className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
+          >
+            Join Date
+          </label>
+          <input
+            type="date" // assuming joinDate is a date field
+            id="joinDate"
+            name="joinDate"
+            value={newFaculty.joinDate}
+            onChange={handleInputChange}
+            className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+          />
+        </div>
 
         {/* Active Status */}
         <div className="flex items-center space-x-2">
