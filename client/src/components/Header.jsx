@@ -62,7 +62,11 @@ const Navbar = ({ darkMode }) => {
                 : "text-gray-900 hover:text-blue-500"
             } transition-all duration-300`}
           >
-            <p>MIT Hobbies Club</p>
+<p className="flex items-center space-x-2">
+  {/* <img src="logo.jpg" alt="Logo" className="w-12 h-12 rounded-3xl" /> */}
+  <span>Hobbies Club</span>
+</p>
+
           </Link>
         </div>
 
