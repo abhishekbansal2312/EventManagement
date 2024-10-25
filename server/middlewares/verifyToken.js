@@ -7,13 +7,31 @@ const authenticateToken = (req, res, next) => {
   }
 
   try {
+    // Verify the token
     const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified;
-    next(); // Pass control to the next middleware or route handler
+    req.user = verified; 
+
+    // Log the decoded token
+    console.log(verified);
+    const expTimestamp = verified.exp;
+    if (expTimestamp) {
+      const expirationDate = new Date(expTimestamp * 1000); 
+      const options = { timeZone: "Asia/Kolkata" }; 
+      console.log(expirationDate);
+      
+
+      console.log("Token Expiration Date:", expirationDate.toLocaleString("en-US", options));
+    } else {
+      console.log("Token does not have an expiration timestamp.");
+    }
+
+    next(); 
   } catch (err) {
+    // Handle token expiration error specifically
     if (err.name === "TokenExpiredError") {
       return res.status(401).json({ error: "Token expired." });
     }
+    // Handle other token-related errors
     res.status(403).json({ error: "Invalid token." });
   }
 };

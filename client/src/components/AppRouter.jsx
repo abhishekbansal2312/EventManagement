@@ -17,16 +17,21 @@ import Users from "./user/Users";
 import ProtectedRouteAdminOnly from "./ProtectedRouteAdminOnly";
 import Review from "../pages/Review";
 import Contact from "../pages/Contact";
-import Register from "../pages/Register"
+import Register from "../pages/Register";
 import AllMails from "./contact/AllMails";
+
 const AppRouter = () => {
-  const { isAuthenticated, setIsAuthenticated, darkMode, setDarkMode } =
-    useAuth();
+  const { isAuthenticated, setIsAuthenticated, darkMode, setDarkMode } = useAuth();
+  const location = useLocation();
+
+  // Pages where we don't want the Header and Footer
+  const noHeaderFooterRoutes = ["/login"];
+
   return (
     <div>
       <div className={`flex flex-col min-h-screen`}>
         {/* Conditionally render the Header */}
-        {isAuthenticated && (
+        {isAuthenticated && !noHeaderFooterRoutes.includes(location.pathname) && (
           <Header
             isAuthenticated={isAuthenticated}
             setIsAuthenticated={setIsAuthenticated}
@@ -58,7 +63,10 @@ const AppRouter = () => {
                 />
               }
             />
-            {/* <Route path="/register" element={<Signup darkMode={darkMode} />} /> */}
+            <Route
+              path="/register"
+              element={<Register darkMode={darkMode} />}
+            />
 
             {/* Protected routes */}
             <Route
@@ -167,7 +175,9 @@ const AppRouter = () => {
 
         {/* Dark mode toggle and footer */}
         <DarkMode darkMode={darkMode} setDarkMode={setDarkMode} />
-        {isAuthenticated && <Footer darkMode={darkMode} />}
+        {isAuthenticated && !noHeaderFooterRoutes.includes(location.pathname) && (
+          <Footer darkMode={darkMode} />
+        )}
       </div>
     </div>
   );

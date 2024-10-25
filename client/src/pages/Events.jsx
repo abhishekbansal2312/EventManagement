@@ -101,28 +101,27 @@ const Events = ({ darkMode }) => {
     setEvents((prevEvents) => prevEvents.filter((event) => event._id !== id));
   };
 
-  
   return (
     <div
-      className={`min-h-screen px-16 pb-4 ${
+      className={`min-h-screen px-4 md:px-8 lg:px-16 pb-4 ${
         darkMode ? "dark:bg-gray-900 text-white" : "text-gray-900"
       }`}
     >
-      <div className="container pt-8 flex justify-between">
+      <div className="container pt-8 flex flex-wrap justify-between items-center">
         <Radio
           options={radioOptions}
           selectedValue={filter}
           handleChange={(value) => setFilter(value)}
         />
         {isAdmin && (
-          <Link to="create-event" className="">
-            <button className="bg-blue-500 hover:bg-blue-700 text-[12px] text-white font-normal py-2 px-4 rounded-md transition-colors duration-300">
+          <Link to="create-event" className="mt-4 sm:mt-0">
+            <button className="bg-blue-500 hover:bg-blue-700 text-[12px] sm:text-sm text-white font-normal py-2 px-4 rounded-md transition-colors duration-300">
               Create Event
             </button>
           </Link>
         )}
       </div>
-      <div className="container mt-2">
+      <div className="container mt-4">
         {loading && (
           <div className="flex justify-center items-center">
             <div className="animate-pulse">
@@ -140,13 +139,18 @@ const Events = ({ darkMode }) => {
           </div>
         )}
 
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 mt-4">
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 mt-4">
           {filteredEvents().length > 0 ? (
             filteredEvents().map((event) => (
-              <EventCard key={event._id} event={event} darkMode={darkMode} onDelete={handleDeleteEvent}/>
+              <EventCard
+                key={event._id}
+                event={event}
+                darkMode={darkMode}
+                onDelete={handleDeleteEvent}
+              />
             ))
           ) : (
-            <div className="text-center">
+            <div className="text-center col-span-full">
               {filter === "participated" && user ? (
                 <p>You have not participated in any events yet.</p>
               ) : (

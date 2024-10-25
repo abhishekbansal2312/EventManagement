@@ -161,36 +161,36 @@ const EventPage = ({ darkMode }) => {
       } py-10`}
     >
       <ToastContainer />
-      <div className="container mx-auto p-4 flex flex-col md:flex-row">
+      <div className="container mx-auto p-4 flex flex-col md:flex-row gap-4">
         {/* Left Side: Event Details */}
-        <div className="flex-1 pr-0 md:pr-4 mb-4 md:mb-0">
-          <h1 className="text-4xl font-extrabold mb-6">{event.title}</h1>
-          <p className="text-lg mb-4 leading-relaxed">{event.description}</p>
+        <div className="flex-1 mb-4 md:mb-0">
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-4">{event.title}</h1>
+          <p className="text-base md:text-lg leading-relaxed mb-4">{event.description}</p>
 
-          <div className="mb-4">
+          <div className="mb-2">
             <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
           </div>
 
           {event.time && (
-            <div className="mb-4">
+            <div className="mb-2">
               <strong>Time:</strong> {event.time}
             </div>
           )}
 
           {event.location && (
-            <div className="mb-4">
+            <div className="mb-2">
               <strong>Location:</strong> {event.location}
             </div>
           )}
 
           {event.link && (
-            <div className="mb-4">
+            <div className="mb-2">
               <strong>Link:</strong>{" "}
               <a
                 href={event.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline hover:text-gray-500 transition-all"
+                className="underline hover:text-gray-500 transition"
               >
                 Event Link
               </a>
@@ -210,7 +210,7 @@ const EventPage = ({ darkMode }) => {
               <img
                 src={event.onlinePoster}
                 alt="Online Poster"
-                className="w-full rounded-lg shadow-md"
+                className="w-full rounded-lg shadow-lg"
               />
             </div>
           )}
@@ -220,7 +220,7 @@ const EventPage = ({ darkMode }) => {
               <img
                 src={event.offlinePoster}
                 alt="Offline Poster"
-                className="w-full rounded-lg shadow-md"
+                className="w-full rounded-lg shadow-lg"
               />
             </div>
           )}
@@ -228,7 +228,7 @@ const EventPage = ({ darkMode }) => {
           {isAdmin && (
             <Link
               to={`/event/${id}/edit`}
-              className="bg-yellow-500 text-white py-2 px-6 rounded-lg mt-4 inline-block hover:bg-yellow-600 transition-all"
+              className="bg-yellow-500 text-white py-2 px-6 rounded-lg inline-block hover:bg-yellow-600 transition"
             >
               Edit Event
             </Link>
@@ -236,7 +236,7 @@ const EventPage = ({ darkMode }) => {
         </div>
 
         {/* Right Side: Participants */}
-        <div className="flex-1 pl-0 md:pl-4">
+        <div className="flex-1">
           <EventTask tasks={tasks} darkMode={darkMode} eventId={id} />
           <Participants
             participantIds={participantIds}
