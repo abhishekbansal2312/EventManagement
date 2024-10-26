@@ -48,7 +48,7 @@ const Login = ({ darkMode }) => {
       console.log(data);
   
       // Set the cookie (though the token will expire in 1 minute)
-      Cookies.set("authtoken", data.token, { expires: 1 / 1440, path: "" }); // Still sets the cookie for 7 days, but JWT will expire in 1 minute
+      Cookies.set("authtoken", data.token, { expires: 7, path: "" }); // Still sets the cookie for 7 days, but JWT will expire in 1 minute
       setIsAuthenticated(true);
   
       navigate("/"); // Redirect to home page on successful login
