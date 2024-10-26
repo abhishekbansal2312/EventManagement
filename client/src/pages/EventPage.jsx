@@ -7,6 +7,8 @@ import { jwtDecode } from "jwt-decode"; // Corrected to default import
 import EventTask from "../components/event/EventTask.jsx";
 import Participants from "../components/Participants.jsx";
 import { FaTrash } from "react-icons/fa"; // Import the trash icon
+import EventEdit from "../components/event/EventEdit.jsx"
+import Modal from "../components/Modal.jsx";
 
 const EventPage = ({ darkMode }) => {
   const { id } = useParams();
@@ -16,6 +18,7 @@ const EventPage = ({ darkMode }) => {
   const [participantIds, setParticipantIds] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [tasks, setTasks] = useState([]);
+  const [showEditEvent,setShowEditEvent]=useState(false)
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -158,10 +161,10 @@ const EventPage = ({ darkMode }) => {
     <div
       className={`min-h-screen ${
         darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
-      } py-10`}
+      } px-16 py-8`}
     >
       <ToastContainer />
-      <div className="container mx-auto p-4 flex flex-col md:flex-row gap-4">
+      <div className="container mx-auto flex flex-col md:flex-row gap-4">
         {/* Left Side: Event Details */}
         <div className="flex-1 mb-4 md:mb-0">
           <h1 className="text-3xl md:text-4xl font-extrabold mb-4">{event.title}</h1>
@@ -226,14 +229,28 @@ const EventPage = ({ darkMode }) => {
           )}
 
           {isAdmin && (
-            <Link
-              to={`/event/${id}/edit`}
-              className="bg-yellow-500 text-white py-2 px-6 rounded-lg inline-block hover:bg-yellow-600 transition"
+            <div
+            onClick={() => setShowEditEvent(true)}
+              className="bg-blue-500 hover:bg-blue-700 text-[12px] sm:text-sm text-white font-normal py-2 px-4 rounded-md transition-colors duration-300"
             >
               Edit Event
-            </Link>
+            </div>
           )}
         </div>
+
+        <Modal
+          isOpen={showEditEvent}
+          onClose={() => setShowEditEvent(false)}
+          title="Edit Event"
+        >
+          <EventEdit
+          event={event}
+            setEvent={setEvent}
+            setError={setError}
+            darkMode={darkMode}
+          />
+        </Modal>
+
 
         {/* Right Side: Participants */}
         <div className="flex-1">

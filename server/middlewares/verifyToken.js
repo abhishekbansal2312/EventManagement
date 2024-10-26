@@ -12,7 +12,7 @@ const authenticateToken = (req, res, next) => {
     req.user = verified; 
 
     // Log the decoded token
-    console.log(verified);
+   
     const expTimestamp = verified.exp;
     if (expTimestamp) {
       const expirationDate = new Date(expTimestamp * 1000); 
