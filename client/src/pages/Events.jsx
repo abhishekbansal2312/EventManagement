@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode"; // Correct import
 import Radio from "../components/Radio"; // Import Radio component
+import Modal from "../components/Modal";
+import CreateEvent from "../components/event/CreateEvent";
 
 const Events = ({ darkMode }) => {
   const [events, setEvents] = useState([]);
@@ -12,6 +14,7 @@ const Events = ({ darkMode }) => {
   const [error, setError] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [filter, setFilter] = useState("all");
+  const [showAddEvent, setShowAddEvent] = useState(false); // Initialize showAddEvent state
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -31,12 +34,14 @@ const Events = ({ darkMode }) => {
               credentials: "include",
             }
           );
+
           if (!response.ok) throw new Error("Failed to fetch user data");
           const userData = await response.json();
           setUser(userData); // Set user data
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
+        setError(error.message);
       }
     };
 
@@ -59,10 +64,9 @@ const Events = ({ darkMode }) => {
           (a, b) => new Date(b.date) - new Date(a.date)
         );
         setEvents(sortedEvents);
-        setError(null);
       } catch (err) {
-        setError(err.message);
         console.error("Error fetching events:", err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -74,20 +78,12 @@ const Events = ({ darkMode }) => {
 
   // Function to filter events based on the selected option
   const filteredEvents = () => {
-    if (filter === "participated") {
-      // Ensure user and participatedEvents are defined
-      if (user && Array.isArray(user.participatedEvents)) {
-        return events.filter((event) =>
-          user.participatedEvents.includes(event._id.toString())
-        );
-      }
-      // Return an empty array if there's no participated data
-      return [];
+    if (filter === "participated" && user) {
+      return events.filter(event => user.participatedEvents.includes(event._id.toString()));
     } else if (filter === "live") {
-      return events.filter((event) => event.isLive);
+      return events.filter(event => event.isLive);
     }
-    // Return all events if "all" is selected
-    return events;
+    return events; // Return all events if "all" is selected
   };
 
   // Options for the radio buttons
@@ -96,9 +92,9 @@ const Events = ({ darkMode }) => {
     { value: "participated", label: "Participated Events" },
     { value: "live", label: "Live Events" },
   ];
-  const handleDeleteEvent = (id) => {
-    // Remove the deleted event from the state
-    setEvents((prevEvents) => prevEvents.filter((event) => event._id !== id));
+  
+  const handleDeleteEvent = id => {
+    setEvents(prevEvents => prevEvents.filter(event => event._id !== id));
   };
 
   return (
@@ -111,16 +107,30 @@ const Events = ({ darkMode }) => {
         <Radio
           options={radioOptions}
           selectedValue={filter}
-          handleChange={(value) => setFilter(value)}
+          handleChange={setFilter}
         />
         {isAdmin && (
-          <Link to="create-event" className="mt-4 sm:mt-0">
-            <button className="bg-blue-500 hover:bg-blue-700 text-[12px] sm:text-sm text-white font-normal py-2 px-4 rounded-md transition-colors duration-300">
-              Create Event
-            </button>
-          </Link>
+          <button
+            onClick={() => setShowAddEvent(true)}
+            className="bg-blue-500 hover:bg-blue-700 text-[12px] sm:text-sm text-white font-normal py-2 px-4 rounded-md transition-colors duration-300"
+          >
+            Add Event
+          </button>
         )}
+        
+        <Modal
+          isOpen={showAddEvent}
+          onClose={() => setShowAddEvent(false)}
+          title="Add Event"
+        >
+          <CreateEvent
+            setError={setError}
+            darkMode={darkMode}
+            setEvents={setEvents}
+          />
+        </Modal>
       </div>
+
       <div className="container mt-4">
         {loading && (
           <div className="flex justify-center items-center">
@@ -139,9 +149,9 @@ const Events = ({ darkMode }) => {
           </div>
         )}
 
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 mt-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 mt-4">
           {filteredEvents().length > 0 ? (
-            filteredEvents().map((event) => (
+            filteredEvents().map(event => (
               <EventCard
                 key={event._id}
                 event={event}

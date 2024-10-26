@@ -60,7 +60,7 @@ const EventCard = ({ event, darkMode, onDelete }) => {
   return (
     <div
       onClick={handleEventClick}
-      className={`flex shadow-md rounded-md ${
+      className={`max-h-64 flex shadow-md rounded-md ${
         darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
       } relative overflow-hidden`}
     >
@@ -69,7 +69,7 @@ const EventCard = ({ event, darkMode, onDelete }) => {
         <img
           src={event.offlinePoster}
           alt={event.title}
-          className="w-48 h-72 object-cover"
+          className="w-38 h-72 object-cover max-h-64"
           onClick={(e) => e.stopPropagation()} // Prevent card click on image click
         />
       )}
@@ -83,11 +83,11 @@ const EventCard = ({ event, darkMode, onDelete }) => {
               {event.title}
             </h2>
             {event.isLive ? (
-              <span className="text-green-500 rounded-md text-[12px] font-bold">
+              <span className="text-green-500 rounded-md text-[10px] font-bold">
                 Live Now
               </span>
             ) : (
-              <span className="text-gray-500 rounded-md text-[12px] font-bold">
+              <span className="text-gray-500 rounded-md text-[10px] font-bold">
                 Not Live
               </span>
             )}

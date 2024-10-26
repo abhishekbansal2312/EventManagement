@@ -1,308 +1,307 @@
-import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { MdUpload, MdDelete } from "react-icons/md";
 
-const CreateEvent = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [location, setLocation] = useState("");
-  const [link, setLink] = useState("");
+const CreateEventPage = ({ darkMode, setEvents }) => {
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    date: "",
+    time: "",
+    location: "",
+    link: "",
+    onlinePoster: "",
+    offlinePoster: "",
+    isLive: false,
+  });
   const [onlinePosterFile, setOnlinePosterFile] = useState(null);
   const [offlinePosterFile, setOfflinePosterFile] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [draggingOnline, setDraggingOnline] = useState(false);
+  const [draggingOffline, setDraggingOffline] = useState(false);
 
-  const navigate = useNavigate();
-  const onlinePosterInputRef = useRef(null);
-  const offlinePosterInputRef = useRef(null);
-
-  const validateFile = (file) => {
-    const validTypes = ["image/jpeg", "image/png", "image/gif"];
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    return validTypes.includes(file.type) && file.size <= maxSize;
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
-  const handleFileChange = (e, setFile) => {
-    const file = e.target.files[0]; // Allow only one file
-    if (file && validateFile(file)) {
-      setFile(file);
-      setErrorMessage(null); // Clear any previous error messages
-    } else {
-      setErrorMessage(
-        "Invalid file type or size. Please select a valid image (JPEG, PNG, GIF) under 5MB."
-      );
-    }
-  };
-
-  const removeFile = (setFile, inputRef) => {
-    setFile(null);
-    inputRef.current.value = ""; // Reset the input value to trigger onChange next time
+  const uploadImage = async (file) => {
+    const storageRef = ref(storage, `images/${file.name}`);
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setLoading(true); // Start loading
 
     try {
-      let onlinePosterUrl = null;
-      let offlinePosterUrl = null;
+      let onlinePosterUrl = formData.onlinePoster;
+      let offlinePosterUrl = formData.offlinePoster;
 
       if (onlinePosterFile) {
-        const onlinePosterRef = ref(
-          storage,
-          `posters/online/${onlinePosterFile.name}`
-        );
-        await uploadBytes(onlinePosterRef, onlinePosterFile);
-        onlinePosterUrl = await getDownloadURL(onlinePosterRef);
+        onlinePosterUrl = await uploadImage(onlinePosterFile);
       }
 
       if (offlinePosterFile) {
-        const offlinePosterRef = ref(
-          storage,
-          `posters/offline/${offlinePosterFile.name}`
-        );
-        await uploadBytes(offlinePosterRef, offlinePosterFile);
-        offlinePosterUrl = await getDownloadURL(offlinePosterRef);
+        offlinePosterUrl = await uploadImage(offlinePosterFile);
       }
 
-      const eventData = {
-        title,
-        description,
-        date,
-        time,
-        location,
-        link,
-        onlinePoster: onlinePosterUrl || "", // Only a single online poster
-        offlinePoster: offlinePosterUrl || "", // Only a single offline poster
+      const newEvent = {
+        ...formData,
+        onlinePoster: onlinePosterUrl,
+        offlinePoster: offlinePosterUrl,
       };
 
-      const response = await fetch("http://localhost:4600/api/events", {
+      const response = await fetch(`http://localhost:4600/api/events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(eventData),
+        body: JSON.stringify(newEvent),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create event");
-      }
+      if (!response.ok) throw new Error("Error creating event");
 
-      const data = await response.json();
-      setSuccessMessage(data.message);
-      setErrorMessage(null);
+      toast.success("Event created successfully!");
+       // Update event context
+      setLoading(false); // Stop loading
+      setFormData({ title: "", description: "", date: "", time: "", location: "", link: "", onlinePoster: "", offlinePoster: "", isLive: false }); // Reset form
 
-      // Reset form
-      setTitle("");
-      setDescription("");
-      setDate("");
-      setTime("");
-      setLocation("");
-      setLink("");
-      setOnlinePosterFile(null);
-      setOfflinePosterFile(null);
-
-      navigate("/events");
+      // Optionally redirect
+      setEvents(newEvent);
+      window.location.href = `/events`;
     } catch (error) {
-      setErrorMessage(error.message);
-      setSuccessMessage(null);
-    } finally {
-      setLoading(false);
+      toast.error(error.message);
+      setLoading(false); // Stop loading in case of error
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDraggingOnline(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDraggingOnline(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDraggingOnline(false);
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setOnlinePosterFile(file);
+      setFormData((prev) => ({
+        ...prev,
+        onlinePoster: URL.createObjectURL(file),
+      }));
+    } else {
+      toast.error("Only image files are allowed for the online poster.");
+    }
+  };
+
+  const handleDragOverOffline = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDraggingOffline(true);
+  };
+
+  const handleDragLeaveOffline = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDraggingOffline(false);
+  };
+
+  const handleDropOffline = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDraggingOffline(false);
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setOfflinePosterFile(file);
+      setFormData((prev) => ({
+        ...prev,
+        offlinePoster: URL.createObjectURL(file),
+      }));
+    } else {
+      toast.error("Only image files are allowed for the offline poster.");
     }
   };
 
   return (
-    <div className="container mx-auto p-8 px-16 bg-white shadow-lg rounded-lg text-[14px]">
-      <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
-        Create a New Event
-      </h1>
-
-      {successMessage && (
-        <p className="bg-green-100 text-green-700 p-4 rounded mb-4 text-center">
-          {successMessage}
-        </p>
-      )}
-
-      {errorMessage && (
-        <p className="bg-red-100 text-red-700 p-4 rounded mb-4 text-center">
-          {errorMessage}
-        </p>
-      )}
-
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-1 sm:grid-cols-2 gap-2"
-      >
-        <div>
-          <label htmlFor="eventTitle" className="block text-gray-700">
-            Event Title
-          </label>
-          <input
-            id="eventTitle"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="eventDate" className="block text-gray-700">
-            Date
-          </label>
-          <input
-            id="eventDate"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="eventTime" className="block text-gray-700 ">
-            Time
-          </label>
-          <input
-            id="eventTime"
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          />
-        </div>
-        <div>
-          <label htmlFor="eventLocation" className="block text-gray-700 ">
-            Location
-          </label>
-          <input
-            id="eventLocation"
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-        </div>
-
-        <div className="">
-          <label htmlFor="eventDescription" className="block text-gray-700 ">
-            Description
-          </label>
-          <textarea
-            id="eventDescription"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full mt-1 h-10 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-            rows="5"
-          />
-        </div>
-        <div>
-          <label htmlFor="eventLink" className="block text-gray-700 ">
-            Link (Optional)
-          </label>
-          <input
-            id="eventLink"
-            type="url"
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-            className="w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          />
-        </div>
-
-        <div className="">
-          <label className="block text-gray-700 mb-2">
-            Upload Online Poster
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleFileChange(e, setOnlinePosterFile)}
-            className="hidden"
-            id="eventOnlinePoster"
-            ref={onlinePosterInputRef}
-          />
-          <label
-            htmlFor="eventOnlinePoster"
-            className="flex items-center justify-center w-full h-12 border border-gray-300 rounded-lg bg-blue-50 cursor-pointer hover:bg-blue-100 transition duration-200"
-          >
-            <MdUpload className="mr-2" /> Select Online Poster
-          </label>
-          <div className="mt-2">
-            {onlinePosterFile && (
-              <div className="flex justify-between items-center">
-                {onlinePosterFile.name}
-                <button
-                  type="button"
-                  onClick={() =>
-                    removeFile(setOnlinePosterFile, onlinePosterInputRef)
-                  }
-                  className="text-red-500 hover:underline ml-2"
-                >
-                  <MdDelete />
-                </button>
-              </div>
-            )}
+    <div className={`min-h-screen ${darkMode ? " text-white" : "text-gray-900"}`}>
+      <ToastContainer />
+      <div className="text-sm">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[14px]">
+          <div className="mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">Event Title</label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+              required
+            />
           </div>
-        </div>
 
-        <div className="">
-          <label className="block text-gray-700 mb-2">
-            Upload Offline Poster
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => handleFileChange(e, setOfflinePosterFile)}
-            className="hidden"
-            id="eventOfflinePoster"
-            ref={offlinePosterInputRef}
-          />
-          <label
-            htmlFor="eventOfflinePoster"
-            className="flex items-center justify-center w-full h-12 border border-gray-300 rounded-lg bg-blue-50 cursor-pointer hover:bg-blue-100 transition duration-200"
-          >
-            <MdUpload className="mr-2" /> Select Offline Poster
-          </label>
-          <div className="mt-2">
-            {offlinePosterFile && (
-              <div className="flex justify-between items-center">
-                {offlinePosterFile.name}
-                <button
-                  type="button"
-                  onClick={() =>
-                    removeFile(setOfflinePosterFile, offlinePosterInputRef)
-                  }
-                  className="text-red-500 hover:underline ml-2"
-                >
-                  <MdDelete />
-                </button>
-              </div>
-            )}
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">Date</label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+              required
+            />
           </div>
-        </div>
 
-        <div className="col-span-2 flex justify-end mt-4">
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-blue-500 hover:bg-blue-700 text-[12px] text-white font-normal py-2 px-4 rounded-md transition-colors duration-300"
-          >
-            {loading ? "Creating..." : "Create Event"}
-          </button>
-        </div>
-      </form>
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">Time</label>
+            <input
+              type="time"
+              name="time"
+              value={formData.time}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">Location</label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+              required
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="w-full px-4 py-2 h-32 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">Event Link</label>
+            <input
+              type="url"
+              name="link"
+              value={formData.link}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+            />
+          </div>
+
+          {/* Online Poster Upload */}
+          <div className="md:col-span-2">
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">Online Poster</label>
+            <div
+              className={`border-2 border-dashed ${draggingOnline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <p className="mb-2">Drag & Drop Online Poster Here</p>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setOnlinePosterFile(file);
+                    setFormData((prev) => ({
+                      ...prev,
+                      onlinePoster: URL.createObjectURL(file),
+                    }));
+                  }
+                }}
+                className="hidden"
+              />
+              {formData.onlinePoster && (
+                <img src={formData.onlinePoster} alt="Online Poster" className="mt-2 max-h-40 mx-auto" />
+              )}
+            </div>
+          </div>
+
+          {/* Offline Poster Upload */}
+          <div className="md:col-span-2">
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">Offline Poster</label>
+            <div
+              className={`border-2 border-dashed ${draggingOffline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center`}
+              onDragOver={handleDragOverOffline}
+              onDragLeave={handleDragLeaveOffline}
+              onDrop={handleDropOffline}
+            >
+              <p className="mb-2">Drag & Drop Offline Poster Here</p>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setOfflinePosterFile(file);
+                    setFormData((prev) => ({
+                      ...prev,
+                      offlinePoster: URL.createObjectURL(file),
+                    }));
+                  }
+                }}
+                className="hidden"
+              />
+              {formData.offlinePoster && (
+                <img src={formData.offlinePoster} alt="Offline Poster" className="mt-2 max-h-40 mx-auto" />
+              )}
+            </div>
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="flex items-center mb-2">
+              <input
+                type="checkbox"
+                name="isLive"
+                checked={formData.isLive}
+                onChange={handleChange}
+                className="mr-2 h-4 w-4 border-gray-300 rounded focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600"
+              />
+              Is Live
+            </label>
+          </div>
+
+          <div className="md:col-span-2">
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full p-2 mt-4 text-white rounded-lg ${loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"}`}
+            >
+              {loading ? "Creating..." : "Create Event"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
 
-export default CreateEvent;
+export default CreateEventPage;

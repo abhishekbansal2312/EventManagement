@@ -187,7 +187,7 @@ const Users = ({ darkMode }) => {
     "bg-blue-500 hover:bg-blue-700 text-[12px] text-white font-normal py-2 px-4 rounded-md transition-colors duration-300";
 
   return (
-    <div className="px-4 sm:px-8 lg:px-16 xl:px-24 py-8 dark:bg-gray-900 dark:text-white bg-white text-black">
+    <div className="px-16 py-8 dark:bg-gray-900 dark:text-white bg-white text-black">
       <ToastContainer />
 
       <div className="flex flex-row sm:flex-row justify-between items-center max-w-full pb-4">
