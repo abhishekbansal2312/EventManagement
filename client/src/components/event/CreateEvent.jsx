@@ -213,68 +213,79 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
             />
           </div>
+{/* Online Poster Upload */}
+<div className="md:col-span-2">
+  <label className="block text-gray-700 dark:text-gray-300 mb-1">Online Poster</label>
+  <div
+    className={`border-2 border-dashed ${draggingOnline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center relative`}
+    onDragOver={handleDragOver}
+    onDragLeave={handleDragLeave}
+    onDrop={handleDrop}
+  >
+    <p className="mb-2">Drag & Drop Online Poster Here</p>
+    <input
+      type="file"
+      accept="image/*"
+      onChange={(e) => {
+        const file = e.target.files[0];
+        if (file) {
+          setOnlinePosterFile(file);
+          setFormData((prev) => ({
+            ...prev,
+            onlinePoster: URL.createObjectURL(file),
+          }));
+        }
+      }}
+      className="hidden"
+    />
+    <button
+      onClick={() => document.querySelector('input[type="file"]').click()}
+      className="mt-2 bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 focus:outline-none"
+    >
+      Browse Files
+    </button>
+    {formData.onlinePoster && (
+      <img src={formData.onlinePoster} alt="Online Poster" className="mt-2 max-h-40 mx-auto rounded-lg shadow-md" />
+    )}
+  </div>
+</div>
 
-          {/* Online Poster Upload */}
-          <div className="md:col-span-2">
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Online Poster</label>
-            <div
-              className={`border-2 border-dashed ${draggingOnline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-            >
-              <p className="mb-2">Drag & Drop Online Poster Here</p>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    setOnlinePosterFile(file);
-                    setFormData((prev) => ({
-                      ...prev,
-                      onlinePoster: URL.createObjectURL(file),
-                    }));
-                  }
-                }}
-                className="hidden"
-              />
-              {formData.onlinePoster && (
-                <img src={formData.onlinePoster} alt="Online Poster" className="mt-2 max-h-40 mx-auto" />
-              )}
-            </div>
-          </div>
-
-          {/* Offline Poster Upload */}
-          <div className="md:col-span-2">
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Offline Poster</label>
-            <div
-              className={`border-2 border-dashed ${draggingOffline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center`}
-              onDragOver={handleDragOverOffline}
-              onDragLeave={handleDragLeaveOffline}
-              onDrop={handleDropOffline}
-            >
-              <p className="mb-2">Drag & Drop Offline Poster Here</p>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    setOfflinePosterFile(file);
-                    setFormData((prev) => ({
-                      ...prev,
-                      offlinePoster: URL.createObjectURL(file),
-                    }));
-                  }
-                }}
-                className="hidden"
-              />
-              {formData.offlinePoster && (
-                <img src={formData.offlinePoster} alt="Offline Poster" className="mt-2 max-h-40 mx-auto" />
-              )}
-            </div>
-          </div>
+{/* Offline Poster Upload */}
+<div className="md:col-span-2">
+  <label className="block text-gray-700 dark:text-gray-300 mb-1">Offline Poster</label>
+  <div
+    className={`border-2 border-dashed ${draggingOffline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center relative`}
+    onDragOver={handleDragOverOffline}
+    onDragLeave={handleDragLeaveOffline}
+    onDrop={handleDropOffline}
+  >
+    <p className="mb-2">Drag & Drop Offline Poster Here</p>
+    <input
+      type="file"
+      accept="image/*"
+      onChange={(e) => {
+        const file = e.target.files[0];
+        if (file) {
+          setOfflinePosterFile(file);
+          setFormData((prev) => ({
+            ...prev,
+            offlinePoster: URL.createObjectURL(file),
+          }));
+        }
+      }}
+      className="hidden"
+    />
+    <button
+      onClick={() => document.querySelector('input[type="file"]').click()}
+      className="mt-2 bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 focus:outline-none"
+    >
+      Browse Files
+    </button>
+    {formData.offlinePoster && (
+      <img src={formData.offlinePoster} alt="Offline Poster" className="mt-2 max-h-40 mx-auto rounded-lg shadow-md" />
+    )}
+  </div>
+</div>
 
           <div className="md:col-span-2">
             <label className="flex items-center mb-2">

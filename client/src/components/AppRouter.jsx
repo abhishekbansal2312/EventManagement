@@ -105,14 +105,6 @@ const AppRouter = () => {
               }
             />
             <Route
-              path="/events/create-event"
-              element={
-                <ProtectedRoute>
-                  <CreateEvent darkMode={darkMode} />
-                </ProtectedRoute>
-              }
-            />
-            <Route
               path="/event/:id"
               element={
                 <ProtectedRoute>
@@ -128,14 +120,7 @@ const AppRouter = () => {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/event/:id/edit"
-              element={
-                <ProtectedRoute>
-                  <EventEdit darkMode={darkMode} />
-                </ProtectedRoute>
-              }
-            />
+
             <Route
               path="/users"
               element={
