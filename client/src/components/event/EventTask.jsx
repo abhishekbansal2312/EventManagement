@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-hot-toast"; // Import react-hot-toast
 import CreateTask from "../CreateTask";
 import EditTask from "./EditTask";
 import Modal from "../Modal"; // Ensure you import the Modal component
 
-const EventTasks = ({ tasks, darkMode, eventId }) => {
+const EventTasks = ({ tasks, setTasks, darkMode, eventId }) => {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [hoveredMember, setHoveredMember] = useState(null); // Track hovered member
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
   const [isEditing, setIsEditing] = useState(false); // State to track if we are editing
   const [selectedTaskId, setSelectedTaskId] = useState(null); // State to store the selected taskId
@@ -17,11 +14,10 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
     const fetchTasks = async () => {
       try {
         // Simulate data fetching
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Update the tasks state only if tasks prop is available
         setLoading(false);
       } catch (err) {
-        setError(err.message);
-        toast.error("Error loading tasks: " + err.message);
+        toast.error("Error loading tasks: " + err.message); // Use react-hot-toast for error handling
         setLoading(false);
       }
     };
@@ -43,24 +39,12 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="container mx-auto p-4">
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
-          <p className="font-bold">Error:</p>
-          <p>{error}</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
       className={`min-h-screen ${
-        darkMode ? "bg-gray-900 text-white" : "text-gray-900"
+        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
       } py-10`}
     >
-      <ToastContainer />
       <div className="flex justify-between mx-16">
         <h2 className="text-3xl font-bold mb-6 text-center">Tasks Overview</h2>
 
@@ -98,14 +82,15 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
         >
           {isEditing ? (
             <EditTask
+            darkMode={darkMode}
+            setTasks={setTasks}
               eventId={eventId}
               selectedTaskId={selectedTaskId}
               setSelectedTaskId={setSelectedTaskId}
-              taskId={selectedTaskId}
               onClose={handleCloseModal}
             />
           ) : (
-            <CreateTask onClose={handleCloseModal} eventId={eventId} />
+            <CreateTask onClose={handleCloseModal} eventId={eventId} setTasks={setTasks} darkMode={darkMode} />
           )}
         </Modal>
       </div>
@@ -141,34 +126,10 @@ const EventTasks = ({ tasks, darkMode, eventId }) => {
                     <span
                       className={`text-sm ${
                         darkMode ? "text-gray-400" : "text-gray-700"
-                      } cursor-pointer`}
-                      onMouseEnter={() => setHoveredMember(members)} // Show member details
-                      onMouseLeave={() => setHoveredMember(null)} // Hide member details
+                      }`}
                     >
                       {memberNames}
                     </span>
-
-                    {/* Show member details in a tooltip with animation */}
-                    {hoveredMember && (
-                      <div
-                        className={`absolute bg-black text-white p-3 rounded-lg shadow-lg transition-opacity duration-300 ease-in-out ${
-                          hoveredMember === members
-                            ? "opacity-100"
-                            : "opacity-0"
-                        } z-10`}
-                      >
-                        <p className="text-sm">
-                          <strong>Name:</strong>{" "}
-                          {members.map((member) => member.name).join(", ")}
-                        </p>
-                        <p className="text-sm">
-                          <strong>Number:</strong>{" "}
-                          {members
-                            .map((member) => member.phoneNumber || "N/A")
-                            .join(", ")}
-                        </p>
-                      </div>
-                    )}
                   </div>
                 );
               });

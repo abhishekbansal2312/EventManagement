@@ -6,12 +6,12 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode"; // Use default import for jwt-decode
 import Modal from "../Modal"; // Import your modal component
 import EditFaculty from "./EditFaculty"; // Import your EditFaculty form component
+import { toast } from 'react-hot-toast'; // Import toast
 
 const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false); // Track if the user is admin
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Control modal visibility
-  const [errorMessage, setErrorMessage] = useState(""); // State for error messages
 
   useEffect(() => {
     const token = Cookies.get("authtoken");
@@ -48,16 +48,16 @@ const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
         const updatedFacultyData = await response.json(); // Get updated data from the response
         console.log("Faculty updated successfully.");
         setIsEditModalOpen(false); // Close the modal after successful save
-        alert("Faculty details updated successfully.");
+        toast.success("Faculty details updated successfully."); // Show success toast
         onUpdate(updatedFacultyData); // Call onUpdate to update the state in parent component
       } else {
         const errorText = await response.text();
         console.error("Failed to update faculty:", errorText);
-        setErrorMessage("Failed to update faculty. Please try again.");
+        toast.error("Failed to update faculty. Please try again."); // Show error toast
       }
     } catch (error) {
       console.error("Error updating faculty:", error);
-      setErrorMessage("An error occurred while updating the faculty.");
+      toast.error("An error occurred while updating the faculty."); // Show error toast
     }
   };
 
@@ -165,13 +165,9 @@ const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
             faculty={faculty}
             onSave={handleUpdateFaculty} // Use the updated handleUpdateFaculty function
             onCancel={handleCloseModal}
-            setErrorMessage={setErrorMessage}
           />
         </Modal>
       )}
-
-      {/* Error Message */}
-      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
     </div>
   );
 };

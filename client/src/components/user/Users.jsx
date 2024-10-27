@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-hot-toast"; 
 import UserForm from "./UserForm";
 import UserList from "./UserList";
 import Modal from "../Modal";
@@ -21,6 +20,10 @@ const Users = ({ darkMode }) => {
   const [events, setEvents] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 25; // Set the number of items per page
 
   useEffect(() => {
     fetchUsers();
@@ -57,6 +60,7 @@ const Users = ({ darkMode }) => {
 
   const handleSearchChange = (value) => {
     setSearchQuery(value);
+    setCurrentPage(1); // Reset to the first page on search
   };
 
   const handleSubmit = async (e) => {
@@ -91,7 +95,6 @@ const Users = ({ darkMode }) => {
       }
     } catch (error) {
       console.error("Error saving user:", error);
-      toast.error("Failed to save user.");
     }
   };
 
@@ -129,7 +132,6 @@ const Users = ({ darkMode }) => {
       }
     } catch (error) {
       console.error("Error deleting user:", error);
-      toast.error("Failed to delete user.");
     }
   };
 
@@ -175,6 +177,17 @@ const Users = ({ darkMode }) => {
       user.studentId.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const currentUsers = filteredUsers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   if (loading) {
     return (
       <p className="min-h-screen flex justify-center items-center dark:bg-gray-900 dark:text-white">
@@ -188,43 +201,36 @@ const Users = ({ darkMode }) => {
 
   return (
     <div className="px-16 py-8 dark:bg-gray-900 dark:text-white bg-white text-black">
-      <ToastContainer />
-
       <div className="flex flex-row sm:flex-row justify-between items-center max-w-full pb-4">
-  <h2 className="text-lg sm:text-2xl font-semibold">Users Management</h2>
-  
-  <button
-    onClick={() => {
-      resetForm();
-      setShowForm(true);
-    }}
-    className={commonButtonClass}
-  >
-    Add User
-  </button>
-</div>
-
-
-
+        <h2 className="text-lg sm:text-2xl font-semibold">Users Management</h2>
+        
+        <button
+          onClick={() => {
+            resetForm();
+            setShowForm(true);
+          }}
+          className={commonButtonClass}
+        >
+          Add User
+        </button>
+      </div>
 
       {showForm && (
-        <>
-          <Modal
-            isOpen={showForm}
+        <Modal
+          isOpen={showForm}
+          onClose={() => setShowForm(false)}
+          title={"Add User"}
+        >
+          <UserForm
+            formData={formData}
+            isEditing={isEditing}
+            handleChange={handleChange}
+            handleSubmit={handleSubmit}
+            resetForm={resetForm}
+            darkMode={darkMode}
             onClose={() => setShowForm(false)}
-            title={"Add User"}
-          >
-            <UserForm
-              formData={formData}
-              isEditing={isEditing}
-              handleChange={handleChange}
-              handleSubmit={handleSubmit}
-              resetForm={resetForm}
-              darkMode={darkMode}
-              onClose={() => setShowForm(false)}
-            />
-          </Modal>
-        </>
+          />
+        </Modal>
       )}
 
       <div className="mb-4">
@@ -238,13 +244,30 @@ const Users = ({ darkMode }) => {
       </div>
 
       <UserList
-        users={filteredUsers}
+        users={currentUsers} // Use currentUsers for pagination
         handleEdit={handleEdit}
         handleDelete={handleDelete}
         handleParticipatedEvents={handleParticipatedEvents}
         events={events}
         darkMode={darkMode}
       />
+
+      {/* Pagination Controls */}
+      <div className="flex justify-center mt-4">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => handlePageChange(index + 1)}
+            className={`mx-1 p-2 rounded-lg ${
+              currentPage === index + 1
+                ? "bg-blue-500 text-white"
+                : "bg-gray-300 dark:bg-gray-700 dark:text-white"
+            }`}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

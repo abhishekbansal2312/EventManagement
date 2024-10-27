@@ -15,15 +15,15 @@ const authenticateAdmin = require("../middlewares/authenticateAdmin");
 router.get("/:eventId", getAllTasks); // Get all tasks for a specific event
 
 // Route to add a new task to a specific event
-router.post("/:eventId",authenticateAdmin, addTask); // Add a new task to a specific event
+router.post("/:eventId",addTask); // Add a new task to a specific event
 
 // Route to get a specific task by ID under a specific event
-router.get("/:eventId/:taskId",authenticateToken, getTask); // Get a specific task by ID for a specific event
+router.get("/:eventId/:taskId", getTask); // Get a specific task by ID for a specific event
 
 // Route to update a specific task by ID under a specific event
-router.put("/:eventId/:taskId",authenticateAdmin, updateTask); // Update a specific task for a specific event
+router.put("/:eventId/:taskId", updateTask); // Update a specific task for a specific event
 
 // Route to delete a specific task by ID under a specific event
-router.delete("/:eventId/:taskId",authenticateAdmin, deleteTask); // Delete a specific task for a specific event
+router.delete("/:eventId/:taskId", deleteTask); // Delete a specific task for a specific event
 
 module.exports = router;

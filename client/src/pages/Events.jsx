@@ -6,12 +6,12 @@ import { jwtDecode } from "jwt-decode"; // Correct import
 import Radio from "../components/Radio"; // Import Radio component
 import Modal from "../components/Modal";
 import CreateEvent from "../components/event/CreateEvent";
+import { toast } from 'react-hot-toast'; // Import toast from react-hot-toast
 
 const Events = ({ darkMode }) => {
   const [events, setEvents] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [filter, setFilter] = useState("all");
   const [showAddEvent, setShowAddEvent] = useState(false); // Initialize showAddEvent state
@@ -41,7 +41,7 @@ const Events = ({ darkMode }) => {
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
-        setError(error.message);
+        toast.error("Error fetching user data."); // Use toast for error
       }
     };
 
@@ -66,7 +66,7 @@ const Events = ({ darkMode }) => {
         setEvents(sortedEvents);
       } catch (err) {
         console.error("Error fetching events:", err);
-        setError(err.message);
+        toast.error("Error fetching events."); // Use toast for error
       } finally {
         setLoading(false);
       }
@@ -124,8 +124,6 @@ const Events = ({ darkMode }) => {
           title="Add Event"
         >
           <CreateEvent
-            setError={setError}
-            darkMode={darkMode}
             setEvents={setEvents}
           />
         </Modal>
@@ -139,13 +137,6 @@ const Events = ({ darkMode }) => {
               <div className="h-5 bg-gray-400 rounded w-2/4 mb-4"></div>
               <div className="h-5 bg-gray-400 rounded w-1/4"></div>
             </div>
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
-            <p className="font-bold">Error:</p>
-            <p>{error}</p>
           </div>
         )}
 

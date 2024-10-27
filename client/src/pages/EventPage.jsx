@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import {toast } from "react-hot-toast"; // Updated to use react-hot-toast
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode"; // Corrected to default import
 import EventTask from "../components/event/EventTask.jsx";
 import Participants from "../components/Participants.jsx";
 import { FaTrash } from "react-icons/fa"; // Import the trash icon
-import EventEdit from "../components/event/EventEdit.jsx"
+import EventEdit from "../components/event/EventEdit.jsx";
 import Modal from "../components/Modal.jsx";
 
 const EventPage = ({ darkMode }) => {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [participantIds, setParticipantIds] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [tasks, setTasks] = useState([]);
-  const [showEditEvent,setShowEditEvent]=useState(false)
+  const [showEditEvent, setShowEditEvent] = useState(false);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -35,9 +33,8 @@ const EventPage = ({ darkMode }) => {
 
         const data = await response.json();
         setTasks(data);
-        setError(null);
       } catch (error) {
-        setError(error.message);
+        toast.error(error.message); // Toast error message
       }
     };
 
@@ -55,9 +52,8 @@ const EventPage = ({ darkMode }) => {
 
         const data = await response.json();
         setEvent(data);
-        setError(null);
       } catch (error) {
-        setError(error.message);
+        toast.error(error.message); // Toast error message
       } finally {
         setLoading(false);
       }
@@ -102,7 +98,7 @@ const EventPage = ({ darkMode }) => {
       toast.success("Participants added successfully!");
       setParticipantIds("");
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message); // Toast error message
     }
   };
 
@@ -126,23 +122,12 @@ const EventPage = ({ darkMode }) => {
       setEvent(updatedEvent.event);
       toast.success("Participant removed successfully!");
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message); // Toast error message
     }
   };
 
   if (loading) {
     return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto p-4">
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
-          <p className="font-bold">Error:</p>
-          <p>{error}</p>
-        </div>
-      </div>
-    );
   }
 
   if (!event) {
@@ -163,7 +148,7 @@ const EventPage = ({ darkMode }) => {
         darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
       } px-16 py-8`}
     >
-      <ToastContainer />
+      
       <div className="container mx-auto flex flex-col md:flex-row gap-4">
         {/* Left Side: Event Details */}
         <div className="flex-1 mb-4 md:mb-0">
@@ -230,7 +215,7 @@ const EventPage = ({ darkMode }) => {
 
           {isAdmin && (
             <div
-            onClick={() => setShowEditEvent(true)}
+              onClick={() => setShowEditEvent(true)}
               className="bg-blue-500 hover:bg-blue-700 text-[12px] sm:text-sm text-white font-normal py-2 px-4 rounded-md transition-colors duration-300"
             >
               Edit Event
@@ -244,17 +229,18 @@ const EventPage = ({ darkMode }) => {
           title="Edit Event"
         >
           <EventEdit
-          event={event}
+            event={event}
             setEvent={setEvent}
-            setError={setError}
             darkMode={darkMode}
+            onClose={() => setShowEditEvent(false)}
           />
         </Modal>
 
-
         {/* Right Side: Participants */}
+
         <div className="flex-1">
-          <EventTask tasks={tasks} darkMode={darkMode} eventId={id} />
+          <EventTask tasks={tasks} setTasks={setTasks} darkMode={darkMode} eventId={id} />
+
           <Participants
             participantIds={participantIds}
             setParticipantIds={setParticipantIds}

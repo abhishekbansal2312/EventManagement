@@ -1,4 +1,5 @@
 import React from "react";
+import { toast } from "react-hot-toast"; // Added this line
 
 const UserForm = ({
   formData,
@@ -91,15 +92,17 @@ const UserForm = ({
           User Role
         </label>
         <select
-          name="role"
-          value={formData.role || "student"}
-          onChange={handleChange}
-          required
-          className={`w-full mt-1 p-2 h-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
-        >
-          <option value="student">Student</option>
-          <option value="admin">Admin</option>
-        </select>
+  name="role"
+  value={formData.role || "student"}
+  onChange={handleChange}
+  required
+  className={`w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white`}
+>
+  <option value="student" className="dark:bg-gray-800 dark:text-white">Student</option>
+  <option value="member" className="dark:bg-gray-800 dark:text-white">Member</option>
+  <option value="admin" className="dark:bg-gray-800 dark:text-white">Admin</option>
+</select>
+
       </div>
 
       {/* Submit Button */}

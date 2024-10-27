@@ -1,5 +1,6 @@
 import React from 'react';
 import UserItem from './UserItem';
+import { toast } from 'react-hot-toast'; // Added this line
 
 const UserList = ({ users, handleEdit, handleDelete, handleParticipatedEvents, darkMode, events }) => {
   return (

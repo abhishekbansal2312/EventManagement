@@ -1,7 +1,7 @@
 // src/components/Participants.jsx
 import React, { useState } from "react";
 import { FaTrash } from "react-icons/fa"; // Import the trash icon
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-hot-toast"; // Import from react-hot-toast
 
 const Participants = ({ event, handleAddParticipants, setParticipantIds, handleRemoveParticipant, isAdmin, darkMode, participantIds }) => {
 
@@ -15,19 +15,20 @@ const Participants = ({ event, handleAddParticipants, setParticipantIds, handleR
 
   return (
     <div className="flex-1 pl-0 md:pl-4">
-      <ToastContainer />
+
       <div>
         <h2 className="text-2xl font-semibold mt-6 mb-4">Participants</h2>
 
         {isAdmin && (
           <form onSubmit={handleAddParticipants} className="mt-6 flex flex-col md:flex-row items-center mb-2">
-            <input
-              type="text"
-              placeholder="Enter participant IDs separated by commas"
-              value={participantIds}
-              onChange={handleParticipantChange}
-              className="border rounded-md px-4 py-2 mb-2 md:mb-0 md:mr-2 flex-grow"
-            />
+          <input
+  type="text"
+  placeholder="Enter participant IDs separated by commas"
+  value={participantIds}
+  onChange={handleParticipantChange}
+  className={`border rounded-md px-4 py-2 mb-2 md:mb-0 md:mr-2 flex-grow ${darkMode ? 'bg-gray-800 text-gray-300 placeholder-gray-500' : 'bg-white text-gray-800 placeholder-gray-400'}`}
+/>
+
             <button
               type="submit"
               className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-all"

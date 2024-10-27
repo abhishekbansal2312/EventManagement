@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase";
+import { toast } from 'react-hot-toast'; // Import toast
 
-const UpdateMember = ({ member, setMembers, onCancel, setError }) => {
+const UpdateMember = ({ member, setMembers, onCancel }) => {
   const [updatedMember, setUpdatedMember] = useState({
     name: member.name || "",
     email: member.email || "",
@@ -53,9 +54,10 @@ const UpdateMember = ({ member, setMembers, onCancel, setError }) => {
         : member.pictureURL;
 
       await updateMemberData(pictureURL);
+      toast.success("Member updated successfully!"); // Display success toast
     } catch (err) {
       console.error("Error updating member: ", err);
-      setError(err.message); // Set error message
+      toast.error("Error updating member: " + err.message); // Display error toast
     }
   };
 
@@ -73,7 +75,6 @@ const UpdateMember = ({ member, setMembers, onCancel, setError }) => {
         },
         (error) => {
           console.error("Error during upload: ", error);
-          setError(error.message);
           setUploading(false);
           reject(error);
         },
@@ -262,7 +263,7 @@ const UpdateMember = ({ member, setMembers, onCancel, setError }) => {
         </label>
         <input
           type="text"
-          placeholder="Enter hobbies (comma-separated)"
+          placeholder="Enter hobbies"
           value={updatedMember.hobbies}
           onChange={(e) =>
             setUpdatedMember({ ...updatedMember, hobbies: e.target.value })
@@ -270,7 +271,22 @@ const UpdateMember = ({ member, setMembers, onCancel, setError }) => {
           className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
         />
       </div>
-
+      <div className="mb-2 col-span-2 flex items-center">
+        <input
+          type="checkbox"
+          checked={updatedMember.isActive}
+          onChange={() =>
+            setUpdatedMember((prev) => ({
+              ...prev,
+              isActive: !prev.isActive,
+            }))
+          }
+          className="mr-2"
+        />
+        <label className="text-gray-700 dark:text-gray-300 font-semibold">
+          Active
+        </label>
+      </div>
       <div className="mb-2">
         <label
           htmlFor="joinDate"
@@ -280,59 +296,27 @@ const UpdateMember = ({ member, setMembers, onCancel, setError }) => {
         </label>
         <input
           type="date"
-          placeholder="Select join date"
-          value={updatedMember.joinDate}
+          value={updatedMember.joinDate.split("T")[0]} // Format to YYYY-MM-DD
           onChange={(e) =>
             setUpdatedMember({ ...updatedMember, joinDate: e.target.value })
           }
           className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
         />
       </div>
-
-      <div className="mb-2">
-        <label
-          htmlFor="isActive"
-          className="block text-gray-700 dark:text-gray-300 font-semibold mb-3"
-        >
-          Is Active
-        </label>
-        <div
-          className="relative inline-block w-10 h-6"
-          onClick={(e) =>
-            setUpdatedMember({
-              ...updatedMember,
-              isActive: !updatedMember.isActive,
-            })
-          }
-        >
-          {/* Background of the toggle */}
-          <div
-            className={`w-10 h-6 rounded-full cursor-pointer transition-colors duration-300 ${
-              updatedMember.isActive
-                ? "bg-blue-500"
-                : "bg-gray-300 dark:bg-gray-600"
-            }`}
-          ></div>
-
-          {/* Toggle handle */}
-          <div
-            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
-              updatedMember.isActive ? "translate-x-4" : ""
-            }`}
-          ></div>
-        </div>
-      </div>
-      <div className="col-span-2 flex justify-end gap-2">
+      <div className="col-span-2 flex justify-end">
         <button
           type="button"
           onClick={onCancel}
-          className="bg-gray-500 hover:bg-gray-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg mr-2"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
+          disabled={uploading} // Disable the button while uploading
+          className={`${
+            uploading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+          } text-white font-semibold py-2 px-4 rounded-lg`}
         >
           {uploading ? "Updating..." : "Update Member"}
         </button>

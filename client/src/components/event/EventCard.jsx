@@ -4,7 +4,8 @@ import { FaTrash } from "react-icons/fa"; // Import icon for delete
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { Link } from 'react-router-dom';
-import Register  from '../../pages/Register';
+import Register from '../../pages/Register';
+import { toast } from 'react-hot-toast'; // Import toast from react-hot-toast
 
 const EventCard = ({ event, darkMode, onDelete }) => {
   const navigate = useNavigate(); // For navigating to the event page
@@ -43,19 +44,17 @@ const EventCard = ({ event, darkMode, onDelete }) => {
       if (response.ok) {
         console.log("Event deleted successfully:", event._id); // Debug log
         onDelete(event._id); // Notify parent component that event is deleted
-        alert("Event deleted successfully."); // Inform user about successful deletion
+        toast.success("Event deleted successfully."); // Inform user about successful deletion
       } else {
         const errorText = await response.text();
         console.error("Error deleting event:", errorText);
-        alert("Failed to delete event. Please try again.");
+        toast.error("Failed to delete event. Please try again."); // Updated to use toast
       }
     } catch (error) {
       console.error("Error deleting event:", error);
-      alert("An error occurred while deleting the event.");
+      toast.error("An error occurred while deleting the event."); // Updated to use toast
     }
   };
-
-  
 
   return (
     <div
@@ -125,35 +124,32 @@ const EventCard = ({ event, darkMode, onDelete }) => {
           </div>
         </div>
 
-
-
-       <div className="flex justify-between items-center">
-  {event.isLive ? (
-    <Link
-      to={`/event/${event._id}/register`} // Use the correct ID property
-      state={{ link: event.link }} // Pass event.link using state
-      className="text-blue-600 dark:text-blue-400 font-normal text-[12px]"
-      onClick={(e) => e.stopPropagation()} // Prevent card click on link click
-    >
-      Register Here
-    </Link>
-  ) : (
-    <span className="text-yellow-800 dark:text-yellow-400 font-normal text-[12px]">
-      Registrations Closed
-    </span>
-  )}
-  {/* Delete Event Icon (only shown for admins) */}
-  {isAdmin && (
-    <div className="cursor-pointer" onClick={handleDeleteEvent}>
-      <FaTrash
-        size={12}
-        className="text-red-500 dark:text-red-700 hover:text-red-700 "
-      />
-    </div>
-  )}
-  {/* Live Status */}
-</div>
-
+        <div className="flex justify-between items-center">
+          {event.isLive ? (
+            <Link
+              to={`/event/${event._id}/register`} // Use the correct ID property
+              state={{ link: event.link }} // Pass event.link using state
+              className="text-blue-600 dark:text-blue-400 font-normal text-[12px]"
+              onClick={(e) => e.stopPropagation()} // Prevent card click on link click
+            >
+              Register Here
+            </Link>
+          ) : (
+            <span className="text-yellow-800 dark:text-yellow-400 font-normal text-[12px]">
+              Registrations Closed
+            </span>
+          )}
+          {/* Delete Event Icon (only shown for admins) */}
+          {isAdmin && (
+            <div className="cursor-pointer" onClick={handleDeleteEvent}>
+              <FaTrash
+                size={12}
+                className="text-red-500 dark:text-red-700 hover:text-red-700 "
+              />
+            </div>
+          )}
+          {/* Live Status */}
+        </div>
       </div>
     </div>
   );
