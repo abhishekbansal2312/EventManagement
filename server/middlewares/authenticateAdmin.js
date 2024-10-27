@@ -3,7 +3,9 @@ const jwt = require("jsonwebtoken");
 const authenticateAdmin = (req, res, next) => {
   const token = req.cookies.authtoken; // Ensure the token is coming from the correct cookie
   if (!token) {
-    return res.status(401).json({ error: "Access denied. No token provided." });
+    return res
+      .status(401)
+      .json({ error: "Access denied for you. No token provided." });
   }
 
   try {
@@ -29,7 +31,10 @@ const authenticateAdmin = (req, res, next) => {
       const expirationDate = new Date(expTimestamp * 1000); // Convert UNIX timestamp to date
       const options = { timeZone: "Asia/Kolkata" }; // Log expiration date in IST
       if (process.env.NODE_ENV !== "production") {
-        console.log("Token Expiration Date:", expirationDate.toLocaleString("en-US", options));
+        console.log(
+          "Token Expiration Date:",
+          expirationDate.toLocaleString("en-US", options)
+        );
       }
     } else {
       console.log("Token does not have an expiration timestamp.");
