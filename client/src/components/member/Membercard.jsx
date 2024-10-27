@@ -69,7 +69,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
 
   return (
     <div
-      className="overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 dark:text-white profile-card flex flex-col group transition-all duration-1000 cursor-pointer border"
+      className="overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 dark:text-white profile-card flex flex-col group transition-all duration-1000 cursor-pointer border h-[300px]"
       onMouseEnter={() => {
         setHoverActive(true);
         setActivateSection(false);
