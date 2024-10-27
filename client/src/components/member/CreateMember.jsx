@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Firebase storage functions
 import { storage } from "../../firebase"; // Firebase configuration
+import { toast } from 'react-hot-toast'; // Importing toast
 
-const CreateMember = ({ setMembers, setError, darkMode, onSave, onCancel }) => {
+const CreateMember = ({ setMembers, darkMode, onSave, onCancel }) => {
   const [newMember, setNewMember] = useState({
     name: "",
     email: "",
@@ -23,7 +24,7 @@ const CreateMember = ({ setMembers, setError, darkMode, onSave, onCancel }) => {
     event.preventDefault();
 
     if (!newMember.pictureURL) {
-      setError("Please upload a picture.");
+      toast.error("Please upload a picture."); // Using toast for error
       return;
     }
 
@@ -39,6 +40,7 @@ const CreateMember = ({ setMembers, setError, darkMode, onSave, onCancel }) => {
           console.error("Upload error: ", error);
           setUploadError(error.message);
           setUploading(false);
+          toast.error(error.message); // Using toast for upload error
         },
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
@@ -58,6 +60,7 @@ const CreateMember = ({ setMembers, setError, darkMode, onSave, onCancel }) => {
             const errorData = await response.json();
             setUploadError(errorData.message || "Failed to add member");
             setUploading(false);
+            toast.error(errorData.message || "Failed to add member"); // Using toast for API error
             return;
           }
 
@@ -81,11 +84,13 @@ const CreateMember = ({ setMembers, setError, darkMode, onSave, onCancel }) => {
           });
 
           setUploading(false);
+          toast.success("Member added successfully!"); // Success toast
         }
       );
     } catch (err) {
       setUploadError(err.message);
       setUploading(false);
+      toast.error(err.message); // Using toast for catch error
     }
   };
 
@@ -104,6 +109,10 @@ const CreateMember = ({ setMembers, setError, darkMode, onSave, onCancel }) => {
   };
 
   const handleDragLeave = () => setDragging(false);
+
+  const handleToggleActive = () => {
+    setNewMember((prev) => ({ ...prev, isActive: !prev.isActive }));
+  };
 
   return (
     <div className="text-sm">
@@ -256,60 +265,42 @@ const CreateMember = ({ setMembers, setError, darkMode, onSave, onCancel }) => {
             className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
           />
         </div>
-        <div className="mb-2">
-          <label
-            htmlFor="joinDate"
-            className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
-          >
-            Join Date
-          </label>
+
+        <div className="mb-2 md:col-span-2 flex items-center">
           <input
-            type="date"
-            value={newMember.joinDate}
-            onChange={(e) =>
-              setNewMember({ ...newMember, joinDate: e.target.value })
-            }
-            required
-            className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+            type="checkbox"
+            id="isActive"
+            checked={newMember.isActive}
+            onChange={handleToggleActive}
+            className="mr-2 h-5 w-5"
           />
-        </div>
-        <div className="mb-2">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={newMember.isActive}
-              onChange={(e) =>
-                setNewMember({ ...newMember, isActive: e.target.checked })
-              }
-              className="mr-2"
-            />
-            Active
+          <label
+            htmlFor="isActive"
+            className="text-gray-700 dark:text-gray-300 font-semibold"
+          >
+            Active Member
           </label>
         </div>
 
-        <div className="flex justify-between md:col-span-2">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="bg-red-500 text-white rounded-lg px-4 py-2"
-          >
-            Cancel
-          </button>
+        <div className="mb-2 md:col-span-2 flex justify-between">
           <button
             type="submit"
+            className={`p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg focus:outline-none ${uploading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             disabled={uploading}
-            className={`${
-              uploading ? "bg-gray-400" : "bg-blue-500"
-            } text-white rounded-lg px-4 py-2`}
           >
             {uploading ? "Uploading..." : "Add Member"}
           </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg focus:outline-none"
+          >
+            Cancel
+          </button>
         </div>
-
-        {uploadError && (
-          <div className="col-span-2 text-red-600">{uploadError}</div>
-        )}
       </form>
+      {uploadError && <p className="text-red-500">{uploadError}</p>} {/* Display upload errors */}
     </div>
   );
 };

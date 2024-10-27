@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+// import { ToastContainer } from "react-toastify"; // You can remove this if you're not using it elsewhere
+import { toast } from 'react-hot-toast'; // Updated import
 import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-const EditEventPage = ({ darkMode, event, setEvent }) => {
+const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -79,15 +79,13 @@ const EditEventPage = ({ darkMode, event, setEvent }) => {
 
       if (!response.ok) throw new Error("Error updating event");
 
-      toast.success("Event updated successfully!");
+      toast.success("Event updated successfully!"); // Success toast
       setEvent(updatedEvent); // Update event context
       setLoading(false); // Stop loading
       setFormData({ title: "", description: "", date: "", time: "", location: "", link: "", onlinePoster: "", offlinePoster: "", isLive: false }); // Reset form
-
+      onClose()
       // Optionally redirect
-      window.location.href = `/event/${event._id}`;
     } catch (error) {
-      toast.error(error.message);
       setLoading(false); // Stop loading in case of error
     }
   };
@@ -116,7 +114,7 @@ const EditEventPage = ({ darkMode, event, setEvent }) => {
         onlinePoster: URL.createObjectURL(file),
       }));
     } else {
-      toast.error("Only image files are allowed for the online poster.");
+      toast.error("Only image files are allowed for the online poster."); // Kept for error handling
     }
   };
 
@@ -144,13 +142,12 @@ const EditEventPage = ({ darkMode, event, setEvent }) => {
         offlinePoster: URL.createObjectURL(file),
       }));
     } else {
-      toast.error("Only image files are allowed for the offline poster.");
+      toast.error("Only image files are allowed for the offline poster."); // Kept for error handling
     }
   };
 
   return (
     <div className={`min-h-screen ${darkMode ? " text-white" : "text-gray-900"}`}>
-      <ToastContainer />
       <div className="text-sm">
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[14px]">
           <div className="mb-2">
@@ -245,9 +242,7 @@ const EditEventPage = ({ darkMode, event, setEvent }) => {
                 }}
                 className="hidden"
               />
-              {formData.onlinePoster && (
-                <img src={formData.onlinePoster} alt="Online Poster" className="mt-2 max-h-40 mx-auto" />
-              )}
+              {formData.onlinePoster && <img src={formData.onlinePoster} alt="Online Poster" className="mx-auto h-32" />}
             </div>
           </div>
 
@@ -276,28 +271,26 @@ const EditEventPage = ({ darkMode, event, setEvent }) => {
                 }}
                 className="hidden"
               />
-              {formData.offlinePoster && (
-                <img src={formData.offlinePoster} alt="Offline Poster" className="mt-2 max-h-40 mx-auto" />
-              )}
+              {formData.offlinePoster && <img src={formData.offlinePoster} alt="Offline Poster" className="mx-auto h-32" />}
             </div>
           </div>
 
-          <div className="flex items-center mb-4 md:col-span-2">
+          <div className="flex items-center">
             <input
               type="checkbox"
               name="isLive"
               checked={formData.isLive}
               onChange={handleChange}
-              className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="mr-2"
             />
-            <label className="ml-2 block text-gray-700 dark:text-gray-300">Is Live</label>
+            <label className="text-gray-700 dark:text-gray-300">Is Live</label>
           </div>
 
           <div className="md:col-span-2">
             <button
               type="submit"
-              className={`w-full py-2 rounded-lg ${loading ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-700"} text-white`}
               disabled={loading}
+              className={`w-full py-2 mt-4 font-bold text-white rounded-lg ${loading ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-700"}`}
             >
               {loading ? "Updating..." : "Update Event"}
             </button>

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Firebase imports
 import { storage } from "../../firebase"; // Import Firebase Storage
+import { toast } from 'react-hot-toast'; // Import toast from react-hot-toast
 
-const CreateFaculty = ({ setFaculty, setError, onSave, onCancel }) => {
+const CreateFaculty = ({ setFaculty, onSave, onClose }) => {
   const [newFaculty, setNewFaculty] = useState({
     name: "",
     email: "",
@@ -58,7 +59,7 @@ const CreateFaculty = ({ setFaculty, setError, onSave, onCancel }) => {
     e.preventDefault();
 
     if (!newPicture) {
-      setError("Please upload a picture.");
+      toast.error("Please upload a picture."); // Use toast for error
       return;
     }
 
@@ -73,7 +74,7 @@ const CreateFaculty = ({ setFaculty, setError, onSave, onCancel }) => {
         () => {},
         (error) => {
           console.error("Error during upload: ", error);
-          setError(error.message);
+          toast.error(error.message); // Use toast for error
           setUploading(false);
         },
         async () => {
@@ -115,12 +116,13 @@ const CreateFaculty = ({ setFaculty, setError, onSave, onCancel }) => {
           });
           setNewPicture(null);
           setUploading(false);
+          toast.success("Faculty added successfully!"); // Success toast
           window.location.reload();
         }
       );
     } catch (err) {
       console.error("Error adding faculty: ", err);
-      setError(err.message);
+      toast.error(err.message); // Use toast for error
       setUploading(false);
     }
   };
@@ -275,6 +277,10 @@ const CreateFaculty = ({ setFaculty, setError, onSave, onCancel }) => {
           />
         </div>
 
+        {/* Is Active Checkbox */}
+        
+
+        {/* Join Date Field */}
         <div className="mb-2">
           <label
             htmlFor="joinDate"
@@ -283,7 +289,7 @@ const CreateFaculty = ({ setFaculty, setError, onSave, onCancel }) => {
             Join Date
           </label>
           <input
-            type="date" // assuming joinDate is a date field
+            type="date"
             id="joinDate"
             name="joinDate"
             value={newFaculty.joinDate}
@@ -291,36 +297,35 @@ const CreateFaculty = ({ setFaculty, setError, onSave, onCancel }) => {
             className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
           />
         </div>
-
-        {/* Active Status */}
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="isActive"
-            name="isActive"
-            checked={newFaculty.isActive}
-            onChange={handleCheckboxChange}
-          />
-          <label htmlFor="isActive" className="font-semibold">
+        <div className="mb-2">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={newFaculty.isActive}
+              onChange={handleCheckboxChange}
+              className="mr-2"
+            />
             Active
           </label>
         </div>
 
-        {/* Form Buttons */}
-        <div className="flex justify-end gap-2 mt-4 col-span-2">
+        {/* Action Buttons */}
+        <div className="mb-2 md:col-span-2 flex justify-end space-x-2">
           <button
             type="button"
-            onClick={onCancel}
-            className="bg-gray-500 hover:bg-gray-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            onClick={onClose}
           >
             Cancel
           </button>
           <button
             type="submit"
+            className={`px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 ${
+              uploading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             disabled={uploading}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
           >
-            {uploading ? "Uploading..." : "Add Faculty"}
+            {uploading ? "Adding..." : "Add Faculty"}
           </button>
         </div>
       </form>

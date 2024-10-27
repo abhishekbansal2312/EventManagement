@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import { toast } from 'react-hot-toast'; // Import toast
 import MemberCard from "../components/member/Membercard";
 import CreateMember from "../components/member/CreateMember";
 import UpdateMemberForm from "../components/member/UpdateMemberForm";
@@ -13,7 +14,6 @@ const Members = ({ darkMode }) => {
   const [members, setMembers] = useState([]);
   const [faculty, setFaculty] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [showCreateMember, setShowCreateMember] = useState(false);
   const [showEditMember, setShowEditMember] = useState(false);
   const [showCreateFaculty, setShowCreateFaculty] = useState(false);
@@ -28,7 +28,7 @@ const Members = ({ darkMode }) => {
   
         if (!token) {
           console.error("No token found. Redirecting to login page...");
-          setError("No token found. Redirecting to login page...");
+          toast.error("No token found. Redirecting to login page..."); // Use toast
           window.location.href = "/login";
           return;
         }
@@ -64,8 +64,6 @@ const Members = ({ darkMode }) => {
           facultyResponse.json(),
         ]);
   
-        // Sort members by join date (assuming joinDate is a valid date string)
-
         const sortedFaculties = facultyData.sort((a, b) => 
           new Date(b.joinDate) - new Date(a.joinDate)  // Reverse order
         );
@@ -76,7 +74,7 @@ const Members = ({ darkMode }) => {
         setMembers(sortedMembers);
         setFaculty(sortedFaculties);
       } catch (err) {
-        setError(err.message);
+        toast.error(err.message); // Use toast for errors
       } finally {
         setLoading(false);
       }
@@ -92,10 +90,6 @@ const Members = ({ darkMode }) => {
         <div className="loader"></div> {/* Add loader animation */}
       </div>
     );
-  }
-
-  if (error) {
-    return <p className="text-red-500">{error}</p>;
   }
 
   const handleDelete = async (url, id, setState) => {
@@ -114,8 +108,9 @@ const Members = ({ darkMode }) => {
         }
 
         setState((prev) => prev.filter((item) => item._id !== id));
+        toast.success("Item deleted successfully!"); // Use toast for success
       } catch (err) {
-        setError(err.message);
+        toast.error(err.message); // Use toast for errors
       }
     }
   };
@@ -157,33 +152,35 @@ const Members = ({ darkMode }) => {
           title={"Add Faculty Member"}
           onClose={() => setShowCreateFaculty(false)}
         >
-          <CreateFaculty setFaculty={setFaculty} setError={setError} />
+          <CreateFaculty setFaculty={setFaculty} onClose={() => setShowCreateFaculty(false)}
+            
+          />
         </Modal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {faculty.map((facultyMember) => (
             <FacultyCard
-  key={facultyMember._id}
-  faculty={facultyMember}
-  darkMode={darkMode}
-  setFaculty={setFaculty}
-  isAdmin={isAdmin}
-  onUpdate={handleUpdateFaculty} 
-  onEdit={isAdmin ? () => {
-      setEditingFaculty(facultyMember);
-    } : null}
-  onDelete={
-    isAdmin
-      ? () =>
-          handleDelete(
-            "http://localhost:4600/api/faculty",
-            facultyMember._id,
-            setFaculty
-          )
-      : () => {}
-  }
-/>
+              key={facultyMember._id}
+              faculty={facultyMember}
+              darkMode={darkMode}
+              setFaculty={setFaculty}
+              isAdmin={isAdmin}
+              onUpdate={handleUpdateFaculty} 
 
+              onEdit={isAdmin ? () => {
+                  setEditingFaculty(facultyMember);
+                } : null}
+              onDelete={
+                isAdmin
+                  ? () =>
+                      handleDelete(
+                        "http://localhost:4600/api/faculty",
+                        facultyMember._id,
+                        setFaculty
+                      )
+                  : () => {}
+              }
+            />
           ))}
         </div>
 
@@ -207,22 +204,21 @@ const Members = ({ darkMode }) => {
         >
           <CreateMember
             setMembers={setMembers}
-            setError={setError}
             darkMode={darkMode}
+            onCancel={()=>setShowCreateMember(false)}
+            
           />
         </Modal>
 
         <Modal
           isOpen={showEditMember}
           onClose={() => setShowEditMember(false)}
-          title="Edit                                      Member"
+          title="Edit Member"
         >
           <UpdateMemberForm
-            setError={setError}
             member={editingMember}
             onCancel={() => {
               setEditingMember(null);
-              console.log(darkMode);
             }}
             setMembers={setMembers}
             darkMode={true}
@@ -238,7 +234,6 @@ const Members = ({ darkMode }) => {
                 <MemberCard
                   key={member._id}
                   setMembers={setMembers}
-                  setError={setError}
                   isAdmin={isAdmin}
                   member={member}
                   darkMode={darkMode}

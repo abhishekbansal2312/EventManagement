@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+// Removed ToastContainer import since it's not used
+import { toast } from 'react-hot-toast'; // Import from react-hot-toast
 import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -69,8 +69,7 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
 
       if (!response.ok) throw new Error("Error creating event");
 
-      toast.success("Event created successfully!");
-       // Update event context
+      toast.success("Event created successfully!"); // Success toast
       setLoading(false); // Stop loading
       setFormData({ title: "", description: "", date: "", time: "", location: "", link: "", onlinePoster: "", offlinePoster: "", isLive: false }); // Reset form
 
@@ -78,7 +77,7 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
       setEvents(newEvent);
       window.location.href = `/events`;
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Error creating event"); // Error toast, simplified message
       setLoading(false); // Stop loading in case of error
     }
   };
@@ -141,7 +140,6 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
 
   return (
     <div className={`min-h-screen ${darkMode ? " text-white" : "text-gray-900"}`}>
-      <ToastContainer />
       <div className="text-sm">
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[14px]">
           <div className="mb-2">
@@ -213,100 +211,113 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
             />
           </div>
-{/* Online Poster Upload */}
-<div className="md:col-span-2">
-  <label className="block text-gray-700 dark:text-gray-300 mb-1">Online Poster</label>
-  <div
-    className={`border-2 border-dashed ${draggingOnline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center relative`}
-    onDragOver={handleDragOver}
-    onDragLeave={handleDragLeave}
-    onDrop={handleDrop}
-  >
-    <p className="mb-2">Drag & Drop Online Poster Here</p>
-    <input
-      type="file"
-      accept="image/*"
-      onChange={(e) => {
-        const file = e.target.files[0];
-        if (file) {
-          setOnlinePosterFile(file);
-          setFormData((prev) => ({
-            ...prev,
-            onlinePoster: URL.createObjectURL(file),
-          }));
-        }
-      }}
-      className="hidden"
-    />
-    <button
-      onClick={() => document.querySelector('input[type="file"]').click()}
-      className="mt-2 bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 focus:outline-none"
-    >
-      Browse Files
-    </button>
-    {formData.onlinePoster && (
-      <img src={formData.onlinePoster} alt="Online Poster" className="mt-2 max-h-40 mx-auto rounded-lg shadow-md" />
-    )}
-  </div>
-</div>
 
-{/* Offline Poster Upload */}
-<div className="md:col-span-2">
-  <label className="block text-gray-700 dark:text-gray-300 mb-1">Offline Poster</label>
-  <div
-    className={`border-2 border-dashed ${draggingOffline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center relative`}
-    onDragOver={handleDragOverOffline}
-    onDragLeave={handleDragLeaveOffline}
-    onDrop={handleDropOffline}
-  >
-    <p className="mb-2">Drag & Drop Offline Poster Here</p>
-    <input
-      type="file"
-      accept="image/*"
-      onChange={(e) => {
-        const file = e.target.files[0];
-        if (file) {
-          setOfflinePosterFile(file);
-          setFormData((prev) => ({
-            ...prev,
-            offlinePoster: URL.createObjectURL(file),
-          }));
-        }
-      }}
-      className="hidden"
-    />
-    <button
-      onClick={() => document.querySelector('input[type="file"]').click()}
-      className="mt-2 bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 focus:outline-none"
-    >
-      Browse Files
-    </button>
-    {formData.offlinePoster && (
-      <img src={formData.offlinePoster} alt="Offline Poster" className="mt-2 max-h-40 mx-auto rounded-lg shadow-md" />
-    )}
-  </div>
-</div>
-
+          {/* Online Poster Upload */}
           <div className="md:col-span-2">
-            <label className="flex items-center mb-2">
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">Online Poster</label>
+            <div
+              className={`border-2 border-dashed ${draggingOnline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center relative`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <p className="mb-2">Drag & Drop Online Poster Here</p>
               <input
-                type="checkbox"
-                name="isLive"
-                checked={formData.isLive}
-                onChange={handleChange}
-                className="mr-2 h-4 w-4 border-gray-300 rounded focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600"
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setOnlinePosterFile(file);
+                    setFormData((prev) => ({
+                      ...prev,
+                      onlinePoster: URL.createObjectURL(file),
+                    }));
+                  }
+                }}
+                className="hidden"
+                id="online-poster-upload"
               />
-              Is Live
-            </label>
+              <label
+                htmlFor="online-poster-upload"
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer"
+              >
+                Upload Online Poster
+              </label>
+              {formData.onlinePoster && (
+                <div className="mt-2">
+                  <img
+                    src={formData.onlinePoster}
+                    alt="Online Poster Preview"
+                    className="h-32 w-auto object-cover rounded-lg"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Offline Poster Upload */}
+          <div className="md:col-span-2">
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">Offline Poster</label>
+            <div
+              className={`border-2 border-dashed ${draggingOffline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center relative`}
+              onDragOver={handleDragOverOffline}
+              onDragLeave={handleDragLeaveOffline}
+              onDrop={handleDropOffline}
+            >
+              <p className="mb-2">Drag & Drop Offline Poster Here</p>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setOfflinePosterFile(file);
+                    setFormData((prev) => ({
+                      ...prev,
+                      offlinePoster: URL.createObjectURL(file),
+                    }));
+                  }
+                }}
+                className="hidden"
+                id="offline-poster-upload"
+              />
+              <label
+                htmlFor="offline-poster-upload"
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer"
+              >
+                Upload Offline Poster
+              </label>
+              {formData.offlinePoster && (
+                <div className="mt-2">
+                  <img
+                    src={formData.offlinePoster}
+                    alt="Offline Poster Preview"
+                    className="h-32 w-auto object-cover rounded-lg"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center mb-4">
+            <input
+              type="checkbox"
+              name="isLive"
+              checked={formData.isLive}
+              onChange={handleChange}
+              className="mr-2"
+            />
+            <label className="text-gray-700 dark:text-gray-300">Is Live</label>
           </div>
 
           <div className="md:col-span-2">
             <button
               type="submit"
               disabled={loading}
-              className={`w-full p-2 mt-4 text-white rounded-lg ${loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"}`}
+              className={`w-full h-10 bg-blue-500 text-white rounded-lg ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              {loading ? "Creating..." : "Create Event"}
+              {loading ? "Creating Event..." : "Create Event"}
             </button>
           </div>
         </form>

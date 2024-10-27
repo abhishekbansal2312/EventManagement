@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import Modal from "../Modal";
 import EditMember from "./UpdateMemberForm";
+import { toast } from 'react-hot-toast'; // Added import for toast
 
-const MemberCard = ({ member, onDelete, setError, setMembers }) => {
+const MemberCard = ({ member, onDelete, setMembers }) => { // Removed setError
   const [isAdmin, setIsAdmin] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [bgColor, setBgColor] = useState("#ffffff");
@@ -42,8 +43,6 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
     setBgColor(getRandomColor());
   }, []);
 
-  useEffect(() => {}, []);
-
   const handleEditClick = (e) => {
     e.stopPropagation();
     setIsEditModalOpen(true);
@@ -69,7 +68,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
 
   return (
     <div
-      className="overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 dark:text-white profile-card flex flex-col group transition-all duration-1000 cursor-pointer border"
+      className="overflow-hidden rounded-lg shadow-lg bg-white dark:bg-gray-800 dark:text-white profile-card flex flex-col group transition-all duration-1000 cursor-pointer border h-[300px]"
       onMouseEnter={() => {
         setHoverActive(true);
         setActivateSection(false);
@@ -186,7 +185,7 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
               e.stopPropagation();
               onDelete(member._id);
             }}
-            className="flex justify-center items-center bg-red-500 text-white px-4 py-2 rounded-md shadow hover:bg-red-600"
+            className="flex justify-center items-center bg-red-500 text-white px-4 py-2 rounded-md shadow hover:bg-red-600 "
           >
             <FaTrash className="mr-2" /> Delete
           </button>
@@ -202,7 +201,6 @@ const MemberCard = ({ member, onDelete, setError, setMembers }) => {
             member={member}
             setMembers={setMembers}
             onCancel={handleCloseModal}
-            setError={setError}
           />
         </Modal>
       )}
@@ -225,7 +223,7 @@ MemberCard.propTypes = {
     hobbies: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   onDelete: PropTypes.func.isRequired,
-  setError: PropTypes.func.isRequired,
+  setMembers: PropTypes.func.isRequired, // Updated prop validation
 };
 
 export default MemberCard;

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Import storage functions
 import { storage } from "../../firebase"; // Import Firebase Storage
+import { toast } from 'react-hot-toast'; // Import toast
 
-const EditFaculty = ({ faculty, onSave, onCancel, setErrorMessage }) => {
+const EditFaculty = ({ faculty, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     _id: faculty._id || "",
     name: faculty.name || "",
@@ -75,7 +76,7 @@ const EditFaculty = ({ faculty, onSave, onCancel, setErrorMessage }) => {
         pictureURL = await getDownloadURL(uploadTask.snapshot.ref);
       } catch (error) {
         console.error("Error uploading picture: ", error);
-        setErrorMessage(error.message);
+        toast.error(error.message); // Show error toast
         setUploading(false);
         return;
       }
@@ -235,68 +236,48 @@ const EditFaculty = ({ faculty, onSave, onCancel, setErrorMessage }) => {
         </div>
 
         <div className="mb-2">
-  <label
-    htmlFor="joinDate"
-    className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
-  >
-    Join Date
-  </label>
-  <input
-    type="date" // assuming joinDate is a date field
-    id="joinDate"
-    name="joinDate"
-    value={formData.joinDate || formatDate(faculty.joinDate)} // Format the date
-    onChange={handleInputChange}
-    className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-  />
-</div>
-
-
-        {/* Is Active Toggle Switch */}
-        <div className="mb-2">
           <label
-            htmlFor="isActive"
-            className="block text-gray-700 dark:text-gray-300 font-semibold mb-3"
+            htmlFor="joinDate"
+            className="block text-gray-700 dark:text-gray-300 font-semibold mb-1"
           >
-            Is Active
+            Join Date
           </label>
-          <div
-            className="relative inline-block w-10 h-6"
-            onClick={(e) => handleCheckboxChange(e)}
-          >
-            {/* Background of the toggle */}
-            <div
-              className={`w-10 h-6 rounded-full cursor-pointer transition-colors duration-300 ${
-                formData.isActive
-                  ? "bg-blue-500"
-                  : "bg-gray-300 dark:bg-gray-600"
-              }`}
-            ></div>
-
-            {/* Toggle handle */}
-            <div
-              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
-                formData.isActive ? "translate-x-4" : ""
-              }`}
-            ></div>
-          </div>
+          <input
+            type="date" // assuming joinDate is a date field
+            id="joinDate"
+            name="joinDate"
+            value={formData.joinDate || formatDate(faculty.joinDate)} // Format the date
+            onChange={handleInputChange}
+            className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+          />
         </div>
 
-        {/* Buttons */}
-        <div className="flex justify-end gap-2 mt-4 col-span-2">
+        <div className="mb-2">
+          <label className="inline-flex items-center">
+            <input
+              type="checkbox"
+              checked={formData.isActive}
+              onChange={handleCheckboxChange}
+              className="form-checkbox text-blue-600"
+            />
+            <span className="ml-2">Is Active</span>
+          </label>
+        </div>
+
+        <div className="flex justify-between md:col-span-2">
           <button
             type="button"
             onClick={onCancel}
-            className="bg-gray-500 hover:bg-gray-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 rounded-md transition-colors duration-300 text-[12px]"
-            disabled={uploading}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            disabled={uploading} // Disable button during upload
           >
-            {uploading ? "Uploading..." : "Save Changes"}
+            {uploading ? "Uploading..." : "Save"}
           </button>
         </div>
       </form>
