@@ -5,6 +5,7 @@ import {
   faTwitter,
   faInstagram,
 } from "@fortawesome/free-brands-svg-icons";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 import { useAuth } from "../provider/AuthProvider";
 
 const Footer = () => {
@@ -27,8 +28,8 @@ const Footer = () => {
           </h3>
           <ul className="space-y-2 md:space-y-0 md:space-x-8 flex flex-col md:flex-row justify-center md:justify-start">
             <li>
-              <a
-                href="/about"
+              <Link
+                to="/about"
                 className={`hover:underline transition-colors duration-300 ${
                   darkMode
                     ? "text-gray-400 hover:text-gray-200"
@@ -36,11 +37,11 @@ const Footer = () => {
                 }`}
               >
                 About Us
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="/contact"
+              <Link
+                to="/contact"
                 className={`hover:underline transition-colors duration-300 ${
                   darkMode
                     ? "text-gray-400 hover:text-gray-200"
@@ -48,11 +49,11 @@ const Footer = () => {
                 }`}
               >
                 Contact Us
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="/privacy"
+              <Link
+                to="/privacy"
                 className={`hover:underline transition-colors duration-300 ${
                   darkMode
                     ? "text-gray-400 hover:text-gray-200"
@@ -60,19 +61,19 @@ const Footer = () => {
                 }`}
               >
                 Privacy Policy
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="/reviews"
+              <Link
+                to="/reviews"
                 className={`hover:underline transition-colors duration-300 ${
                   darkMode
                     ? "text-gray-400 hover:text-gray-200"
                     : "text-gray-300 hover:text-white"
                 }`}
               >
-              Reviews
-              </a>
+                Reviews
+              </Link>
             </li>
           </ul>
         </div>
