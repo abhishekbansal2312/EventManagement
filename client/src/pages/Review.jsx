@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
-import {jwtDecode} from "jwt-decode"; // Ensure proper import here
+import { jwtDecode } from "jwt-decode"; // Ensure proper import here
 import ReviewItem from "../components/ReviewItem";
 import ReviewForm from "../components/ReviewForm";
 
-const Review = ({ darkMode }) => { // Destructure darkMode prop
+const Review = ({ darkMode }) => {
+  // Destructure darkMode prop
   const [reviews, setReviews] = useState([]);
   const [studentId, setStudentId] = useState("");
   const [studentName, setStudentName] = useState(""); // Add state for student name
@@ -49,7 +50,9 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
   };
   const calculateAverageRating = (data) => {
     // Use approved reviews for calculation
-    const approvedReviews = isAdmin ? data : data.filter((review) => review.approved);
+    const approvedReviews = isAdmin
+      ? data
+      : data.filter((review) => review.approved);
     const totalRatings = approvedReviews.reduce(
       (acc, review) => acc + review.rating,
       0
@@ -86,7 +89,6 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
       setError(error.message);
     }
   };
-
 
   // Delete review function
   const handleDelete = async (reviewId) => {
@@ -141,7 +143,6 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
     }
   };
 
-  
   const handleDislike = async (reviewId) => {
     try {
       const response = await fetch(
@@ -168,7 +169,6 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
     }
   };
 
-
   const handleApprove = async (reviewId) => {
     try {
       const response = await fetch(
@@ -193,7 +193,6 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
       console.error("Error approving review:", error);
     }
   };
-
 
   const handleDisapprove = async (reviewId) => {
     try {
@@ -220,7 +219,6 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
     }
   };
 
-
   useEffect(() => {
     const studentDetailsFromToken = getStudentDetailsFromToken();
     setStudentId(studentDetailsFromToken ? studentDetailsFromToken.id : "");
@@ -238,63 +236,78 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
     <div
       className={`w-full mx-0 p-8 flex flex-col ${
         darkMode ? "dark:bg-gray-900 dark:text-white" : "bg-white text-black"
-      }`}
+      } transition-colors duration-300`}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         {/* First Column: Two Rows */}
         <div className="flex flex-col gap-6">
           {/* Row 1: Average Rating Display */}
           <div
-            className={`p-6 rounded-lg shadow-sm flex flex-col justify-center items-center text-center ${
+            className={`p-6 rounded-lg shadow-lg flex flex-col justify-center items-center text-center transition-all duration-300 ${
               darkMode ? "bg-gray-800" : "bg-yellow-100"
             }`}
           >
             <h3
-              className={`text-2xl font-semibold mb-2 ${
+              className={`text-2xl font-bold mb-2 ${
                 darkMode ? "text-white" : "text-gray-800"
               }`}
             >
               Average Rating
             </h3>
             <div
-              className={`text-4xl font-bold ${
+              className={`text-5xl font-extrabold ${
                 darkMode ? "text-yellow-400" : "text-yellow-500"
               }`}
             >
               {averageRating} / 5
             </div>
-  
+
             {/* Display Total Number of Ratings */}
-            <p className={`mt-2 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-              {isAdmin ? reviews.length : reviews.filter((r) => r.approved).length}{" "}
+            <p
+              className={`mt-2 ${darkMode ? "text-gray-400" : "text-gray-700"}`}
+            >
+              {isAdmin
+                ? reviews.length
+                : reviews.filter((r) => r.approved).length}{" "}
               {isAdmin ? "Total Ratings" : "Ratings"}
             </p>
           </div>
-  
+
           {/* Row 2: Rating Distribution Chart */}
           <div
-            className={`p-6 rounded-lg shadow-sm ${
+            className={`p-6 rounded-lg shadow-lg transition-all duration-300 ${
               darkMode ? "bg-gray-800" : "bg-gray-100"
             }`}
           >
             <h3
-              className={`text-2xl font-semibold mb-4 ${
+              className={`text-2xl font-bold mb-4 ${
                 darkMode ? "text-white" : "text-gray-800"
               }`}
             >
               Rating Distribution
             </h3>
-            <div className={`space-y-2 ${darkMode ? "text-white" : "text-gray-800"}`}>
+            <div
+              className={`space-y-2 ${
+                darkMode ? "text-white" : "text-gray-800"
+              }`}
+            >
               {Object.entries(ratingCounts).map(([rating, count]) => {
-                const totalReviews = isAdmin ? reviews.length : reviews.filter(review => review.approved).length;
-                const approvedCount = isAdmin ? count : reviews.filter(review => review.rating === parseInt(rating) && review.approved).length;
-  
+                const totalReviews = isAdmin
+                  ? reviews.length
+                  : reviews.filter((review) => review.approved).length;
+                const approvedCount = isAdmin
+                  ? count
+                  : reviews.filter(
+                      (review) =>
+                        review.rating === parseInt(rating) && review.approved
+                    ).length;
+
                 return (
                   <div
                     key={rating}
-                    className="flex items-center justify-between p-2 rounded-lg shadow-sm transition-all duration-300 hover:shadow-lg"
+                    className="flex items-center justify-between p-3 rounded-lg shadow-md transition-transform duration-300 hover:scale-105"
                   >
-                    <span className="font-medium flex items-center">
+                    <span className="font-semibold flex items-center">
                       {/* Star Icons */}
                       {Array.from({ length: parseInt(rating) }, (_, i) => (
                         <svg
@@ -312,7 +325,9 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
                       <div
                         className="bg-yellow-500 text-xs font-medium text-yellow-100 text-center p-0.5 leading-none rounded-full"
                         style={{
-                          width: `${(approvedCount / totalReviews) * 100 || 0}%`, // Calculate the percentage based on approved ratings
+                          width: `${
+                            (approvedCount / totalReviews) * 100 || 0
+                          }%`, // Calculate the percentage based on approved ratings
                         }}
                       >
                         {approvedCount}
@@ -324,22 +339,24 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
             </div>
           </div>
         </div>
-  
+
         {/* Second Column: Review Form */}
         <div>
           <ReviewForm onSubmit={handleSubmit} darkMode={darkMode} />
         </div>
       </div>
-  
+
       <h2 className="text-2xl font-bold mb-4">Reviews</h2>
-  
+
       <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4`}>
         {reviews.length === 0 ? (
-          <p>No reviews yet. Be the first to leave a review!</p>
+          <p className="text-center text-gray-500">
+            No reviews yet. Be the first to leave a review!
+          </p>
         ) : (
           // Filter reviews based on user role
           reviews
-            .filter(review => isAdmin || review.approved) // Show all reviews if admin, otherwise only approved
+            .filter((review) => isAdmin || review.approved) // Show all reviews if admin, otherwise only approved
             .map((review) => (
               <ReviewItem
                 key={review._id}
@@ -348,22 +365,25 @@ const Review = ({ darkMode }) => { // Destructure darkMode prop
                 onDelete={() => handleDelete(review._id)}
                 onLike={() => handleLike(review._id)}
                 onDislike={() => handleDislike(review._id)}
-                onApprove={isAdmin ? () => handleApprove(review._id) : undefined} // Only allow approve if admin
-                onDisapprove={isAdmin ? () => handleDisapprove(review._id) : undefined} // Only allow disapprove if admin
+                onApprove={
+                  isAdmin ? () => handleApprove(review._id) : undefined
+                } // Only allow approve if admin
+                onDisapprove={
+                  isAdmin ? () => handleDisapprove(review._id) : undefined
+                } // Only allow disapprove if admin
                 darkMode={darkMode} // Pass darkMode to ReviewItem
               />
             ))
         )}
       </div>
-  
+
       {error && (
-        <div className="bg-red-500 text-white px-4 py-2 mt-4 rounded">
+        <div className="bg-red-500 text-white px-4 py-2 mt-4 rounded-lg shadow-md">
           {error}
         </div>
       )}
     </div>
   );
-  
 };
 
 export default Review;
