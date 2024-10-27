@@ -1,35 +1,36 @@
 const jwt = require("jsonwebtoken");
 
 const authenticateAdmin = (req, res, next) => {
-  const token = req.cookies.authtoken; // Ensure the token is coming from the correct cookie
+  // Retrieve the token from the cookie named 'authtoken'
+  const token = req.cookies.authtoken;
+
+  // If no token is found, return a 401 status
   if (!token) {
-    return res
-      .status(401)
-      .json({ error: "Access denied for you. No token provided." });
+    return res.status(401).json({ error: "Access denied. No token provided." });
   }
 
   try {
-    // Verify the token
+    // Verify the token using the JWT secret from environment variables
     const verified = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Check if the user has the "admin" role
+    // Ensure the user has the 'admin' role
     if (verified.role !== "admin") {
       return res.status(403).json({ error: "Access denied. Admins only." });
     }
 
-    // Attach the decoded token to req.user for further use
+    // Attach the decoded token data to req.user for further use
     req.user = verified;
 
-    // Optional: Log the verified user only in development or non-production environments
+    // Log the verified user if in a non-production environment
     if (process.env.NODE_ENV !== "production") {
       console.log("Verified Admin:", verified);
     }
 
-    // Check and log the token expiration time
+    // Optional: Log token expiration date in IST
     const expTimestamp = verified.exp;
     if (expTimestamp) {
       const expirationDate = new Date(expTimestamp * 1000); // Convert UNIX timestamp to date
-      const options = { timeZone: "Asia/Kolkata" }; // Log expiration date in IST
+      const options = { timeZone: "Asia/Kolkata" }; // Use IST timezone
       if (process.env.NODE_ENV !== "production") {
         console.log(
           "Token Expiration Date:",
