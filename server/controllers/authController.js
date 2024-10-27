@@ -23,7 +23,7 @@ exports.registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role
+      role,
     });
 
     res.status(201).json({ message: "User registered successfully", user });
@@ -53,16 +53,19 @@ exports.loginUser = async (req, res) => {
 
     // Generate the token with user data
     const token = jwt.sign(
-      { id: user._id, role: user.role, name: user.name ,studentId: user.studentId },
+      {
+        id: user._id,
+        role: user.role,
+        name: user.name,
+        studentId: user.studentId,
+      },
       process.env.JWT_SECRET || "nobodyknows",
       { expiresIn: "7d" }
     );
 
     // Set the cookie with the token
     res.cookie("authtoken", token, {
-      secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite: "Strict" 
     });
 
     res.json({ token, message: "Login successful" });
