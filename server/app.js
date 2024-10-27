@@ -22,7 +22,7 @@ mongoose
 
 // CORS options
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "https://roaring-sfogliatella-264d98.netlify.app",
   credentials: true,
 };
 
