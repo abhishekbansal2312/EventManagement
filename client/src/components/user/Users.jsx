@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { toast } from "react-hot-toast"; 
+import { toast } from "react-hot-toast";
 import UserForm from "./UserForm";
 import UserList from "./UserList";
 import Modal from "../Modal";
@@ -20,7 +20,7 @@ const Users = ({ darkMode }) => {
   const [events, setEvents] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
-  
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 25; // Set the number of items per page
@@ -33,14 +33,17 @@ const Users = ({ darkMode }) => {
     try {
       setLoading(true);
       const token = Cookies.get("authtoken");
-      const response = await fetch("http://localhost:4600/api/users", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
+      const response = await fetch(
+        "https://eventmanagement-b7vf.onrender.com/api/users",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
       const data = await response.json();
       if (response.ok) {
         setUsers(data);
@@ -68,8 +71,8 @@ const Users = ({ darkMode }) => {
     const token = Cookies.get("authtoken");
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
-      ? `http://localhost:4600/api/users/${selectedUser}`
-      : "http://localhost:4600/api/users";
+      ? `https://eventmanagement-b7vf.onrender.com/api/users/${selectedUser}`
+      : "https://eventmanagement-b7vf.onrender.com/api/users";
 
     try {
       const response = await fetch(url, {
@@ -115,14 +118,17 @@ const Users = ({ darkMode }) => {
   const handleDelete = async (id) => {
     const token = Cookies.get("authtoken");
     try {
-      const response = await fetch(`http://localhost:4600/api/users/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
+      const response = await fetch(
+        `https://eventmanagement-b7vf.onrender.com/api/users/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
       if (response.ok) {
         fetchUsers();
         toast.success("User deleted successfully!");
@@ -142,7 +148,7 @@ const Users = ({ darkMode }) => {
       const token = Cookies.get("authtoken");
       try {
         const response = await fetch(
-          `http://localhost:4600/api/users/${id}/participated-events`,
+          `https://eventmanagement-b7vf.onrender.com/api/users/${id}/participated-events`,
           {
             method: "GET",
             headers: {
@@ -203,7 +209,7 @@ const Users = ({ darkMode }) => {
     <div className="px-16 py-8 dark:bg-gray-900 dark:text-white bg-white text-black">
       <div className="flex flex-row sm:flex-row justify-between items-center max-w-full pb-4">
         <h2 className="text-lg sm:text-2xl font-semibold">Users Management</h2>
-        
+
         <button
           onClick={() => {
             resetForm();

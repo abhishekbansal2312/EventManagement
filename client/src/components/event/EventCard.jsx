@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { FaTrash } from "react-icons/fa"; // Import icon for delete
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { Link } from 'react-router-dom';
-import Register from '../../pages/Register';
-import { toast } from 'react-hot-toast'; // Import toast from react-hot-toast
+import { Link } from "react-router-dom";
+import Register from "../../pages/Register";
+import { toast } from "react-hot-toast"; // Import toast from react-hot-toast
 
 const EventCard = ({ event, darkMode, onDelete }) => {
   const navigate = useNavigate(); // For navigating to the event page
@@ -32,7 +32,7 @@ const EventCard = ({ event, darkMode, onDelete }) => {
     console.log("Delete button clicked for event:", event._id); // Debug log
     try {
       const response = await fetch(
-        `http://localhost:4600/api/events/${event._id}`,
+        `https://eventmanagement-b7vf.onrender.com/api/events/${event._id}`,
         {
           method: "DELETE",
           credentials: "include",

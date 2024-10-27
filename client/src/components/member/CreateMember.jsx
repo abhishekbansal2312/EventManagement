@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Firebase storage functions
 import { storage } from "../../firebase"; // Firebase configuration
-import { toast } from 'react-hot-toast'; // Importing toast
+import { toast } from "react-hot-toast"; // Importing toast
 
 const CreateMember = ({ setMembers, darkMode, onSave, onCancel }) => {
   const [newMember, setNewMember] = useState({
@@ -45,16 +45,19 @@ const CreateMember = ({ setMembers, darkMode, onSave, onCancel }) => {
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
 
-          const response = await fetch("http://localhost:4600/api/members", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              ...newMember,
-              pictureURL: downloadURL,
-              joinDate: newMember.joinDate || new Date().toISOString(), // Use the joinDate from state or current date
-            }),
-            credentials: "include",
-          });
+          const response = await fetch(
+            "https://eventmanagement-b7vf.onrender.com/api/members",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ...newMember,
+                pictureURL: downloadURL,
+                joinDate: newMember.joinDate || new Date().toISOString(), // Use the joinDate from state or current date
+              }),
+              credentials: "include",
+            }
+          );
 
           if (!response.ok) {
             const errorData = await response.json();
@@ -211,7 +214,7 @@ const CreateMember = ({ setMembers, darkMode, onSave, onCancel }) => {
             className="w-full mt-1 p-2 h-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
           />
         </div>
-        
+
         <div className="mb-2">
           <label
             htmlFor="phoneNumber"
@@ -285,8 +288,9 @@ const CreateMember = ({ setMembers, darkMode, onSave, onCancel }) => {
         <div className="mb-2 md:col-span-2 flex justify-between">
           <button
             type="submit"
-            className={`p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg focus:outline-none ${uploading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+            className={`p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg focus:outline-none ${
+              uploading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             disabled={uploading}
           >
             {uploading ? "Uploading..." : "Add Member"}
@@ -300,7 +304,8 @@ const CreateMember = ({ setMembers, darkMode, onSave, onCancel }) => {
           </button>
         </div>
       </form>
-      {uploadError && <p className="text-red-500">{uploadError}</p>} {/* Display upload errors */}
+      {uploadError && <p className="text-red-500">{uploadError}</p>}{" "}
+      {/* Display upload errors */}
     </div>
   );
 };

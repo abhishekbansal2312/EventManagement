@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Firebase imports
 import { storage } from "../../firebase"; // Import Firebase Storage
-import { toast } from 'react-hot-toast'; // Import toast from react-hot-toast
+import { toast } from "react-hot-toast"; // Import toast from react-hot-toast
 
 const CreateFaculty = ({ setFaculty, onSave, onClose }) => {
   const [newFaculty, setNewFaculty] = useState({
@@ -79,19 +79,22 @@ const CreateFaculty = ({ setFaculty, onSave, onClose }) => {
         },
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          const response = await fetch("http://localhost:4600/api/faculty", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              ...newFaculty,
-              pictureURL: downloadURL,
-              specializations: newFaculty.specializations.split(","),
-              joinDate: newFaculty.joinDate, // Use the selected join date
-            }),
-            credentials: "include",
-          });
+          const response = await fetch(
+            "https://eventmanagement-b7vf.onrender.com/api/faculty",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                ...newFaculty,
+                pictureURL: downloadURL,
+                specializations: newFaculty.specializations.split(","),
+                joinDate: newFaculty.joinDate, // Use the selected join date
+              }),
+              credentials: "include",
+            }
+          );
 
           if (!response.ok) {
             const errorData = await response.json();
@@ -278,7 +281,6 @@ const CreateFaculty = ({ setFaculty, onSave, onClose }) => {
         </div>
 
         {/* Is Active Checkbox */}
-        
 
         {/* Join Date Field */}
         <div className="mb-2">

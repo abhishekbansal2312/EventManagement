@@ -31,13 +31,16 @@ const Review = ({ darkMode }) => {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch("http://localhost:4600/api/reviews", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json", // Added content type
-        },
-        credentials: "include", // Include credentials
-      });
+      const response = await fetch(
+        "https://eventmanagement-b7vf.onrender.com/api/reviews",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json", // Added content type
+          },
+          credentials: "include", // Include credentials
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to fetch reviews");
       const data = await response.json();
@@ -71,14 +74,22 @@ const Review = ({ darkMode }) => {
     const { rating, comment } = reviewData;
 
     try {
-      const response = await fetch("http://localhost:4600/api/reviews", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json", // Added content type
-        },
-        body: JSON.stringify({ studentId, name: studentName, rating, comment }), // Include name
-        credentials: "include", // Include credentials
-      });
+      const response = await fetch(
+        "https://eventmanagement-b7vf.onrender.com/api/reviews",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json", // Added content type
+          },
+          body: JSON.stringify({
+            studentId,
+            name: studentName,
+            rating,
+            comment,
+          }), // Include name
+          credentials: "include", // Include credentials
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to create review");
       const newReview = await response.json();
@@ -95,7 +106,7 @@ const Review = ({ darkMode }) => {
     if (window.confirm("Are you sure you want to delete this review?")) {
       try {
         const response = await fetch(
-          `http://localhost:4600/api/reviews/${reviewId}`,
+          `https://eventmanagement-b7vf.onrender.com/api/reviews/${reviewId}`,
           {
             method: "DELETE",
             headers: {
@@ -120,7 +131,7 @@ const Review = ({ darkMode }) => {
   const handleLike = async (reviewId) => {
     try {
       const response = await fetch(
-        `http://localhost:4600/api/reviews/${reviewId}/like`,
+        `https://eventmanagement-b7vf.onrender.com/api/reviews/${reviewId}/like`,
         {
           method: "POST",
           headers: {
@@ -146,7 +157,7 @@ const Review = ({ darkMode }) => {
   const handleDislike = async (reviewId) => {
     try {
       const response = await fetch(
-        `http://localhost:4600/api/reviews/${reviewId}/dislike`,
+        `https://eventmanagement-b7vf.onrender.com/api/reviews/${reviewId}/dislike`,
         {
           method: "POST",
           headers: {
@@ -172,7 +183,7 @@ const Review = ({ darkMode }) => {
   const handleApprove = async (reviewId) => {
     try {
       const response = await fetch(
-        `http://localhost:4600/api/reviews/${reviewId}/approve`,
+        `https://eventmanagement-b7vf.onrender.com/api/reviews/${reviewId}/approve`,
         {
           method: "PATCH",
           headers: {
@@ -197,7 +208,7 @@ const Review = ({ darkMode }) => {
   const handleDisapprove = async (reviewId) => {
     try {
       const response = await fetch(
-        `http://localhost:4600/api/reviews/${reviewId}/disapprove`,
+        `https://eventmanagement-b7vf.onrender.com/api/reviews/${reviewId}/disapprove`,
         {
           method: "PATCH",
           headers: {

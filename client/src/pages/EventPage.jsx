@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import {toast } from "react-hot-toast"; // Updated to use react-hot-toast
+import { toast } from "react-hot-toast"; // Updated to use react-hot-toast
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode"; // Corrected to default import
 import EventTask from "../components/event/EventTask.jsx";
@@ -21,13 +21,16 @@ const EventPage = ({ darkMode }) => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch(`http://localhost:4600/api/tasks/${id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
+        const response = await fetch(
+          `https://eventmanagement-b7vf.onrender.com/api/tasks/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) throw new Error("Error fetching tasks");
 
@@ -40,13 +43,16 @@ const EventPage = ({ darkMode }) => {
 
     const fetchEvent = async () => {
       try {
-        const response = await fetch(`http://localhost:4600/api/events/${id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
+        const response = await fetch(
+          `https://eventmanagement-b7vf.onrender.com/api/events/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) throw new Error("Event not found");
 
@@ -80,7 +86,7 @@ const EventPage = ({ darkMode }) => {
     e.preventDefault();
     try {
       const response = await fetch(
-        `http://localhost:4600/api/events/${id}/participants`,
+        `https://eventmanagement-b7vf.onrender.com/api/events/${id}/participants`,
         {
           method: "POST",
           headers: {
@@ -105,7 +111,7 @@ const EventPage = ({ darkMode }) => {
   const handleRemoveParticipant = async (participantId) => {
     try {
       const response = await fetch(
-        `http://localhost:4600/api/events/${id}/participants`,
+        `https://eventmanagement-b7vf.onrender.com/api/events/${id}/participants`,
         {
           method: "DELETE",
           headers: {
@@ -148,12 +154,15 @@ const EventPage = ({ darkMode }) => {
         darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
       } px-16 py-8`}
     >
-      
       <div className="container mx-auto flex flex-col md:flex-row gap-4">
         {/* Left Side: Event Details */}
         <div className="flex-1 mb-4 md:mb-0">
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-4">{event.title}</h1>
-          <p className="text-base md:text-lg leading-relaxed mb-4">{event.description}</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-4">
+            {event.title}
+          </h1>
+          <p className="text-base md:text-lg leading-relaxed mb-4">
+            {event.description}
+          </p>
 
           <div className="mb-2">
             <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
@@ -239,7 +248,12 @@ const EventPage = ({ darkMode }) => {
         {/* Right Side: Participants */}
 
         <div className="flex-1">
-          <EventTask tasks={tasks} setTasks={setTasks} darkMode={darkMode} eventId={id} />
+          <EventTask
+            tasks={tasks}
+            setTasks={setTasks}
+            darkMode={darkMode}
+            eventId={id}
+          />
 
           <Participants
             participantIds={participantIds}

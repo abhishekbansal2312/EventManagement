@@ -32,7 +32,7 @@ const Navbar = ({ darkMode }) => {
 
   const handleLogout = () => {
     Cookies.remove("authtoken");
-    fetch("http://localhost:4600/api/auth/logout", {
+    fetch("https://eventmanagement-b7vf.onrender.com/api/auth/logout", {
       method: "DELETE",
       credentials: "include",
     })
@@ -62,11 +62,10 @@ const Navbar = ({ darkMode }) => {
                 : "text-gray-900 hover:text-blue-500"
             } transition-all duration-300`}
           >
-<p className="flex items-center space-x-2">
-  {/* <img src="logo.jpg" alt="Logo" className="w-12 h-12 rounded-3xl" /> */}
-  <span>Hobbies Club</span>
-</p>
-
+            <p className="flex items-center space-x-2">
+              {/* <img src="logo.jpg" alt="Logo" className="w-12 h-12 rounded-3xl" /> */}
+              <span>Hobbies Club</span>
+            </p>
           </Link>
         </div>
 
@@ -85,7 +84,6 @@ const Navbar = ({ darkMode }) => {
           </Link>
           {isAuthenticated ? (
             <>
-           
               <Link
                 to="/members"
                 className={`transition-all duration-300 relative group ${

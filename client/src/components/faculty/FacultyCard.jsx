@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode"; // Use default import for jwt-decode
 import Modal from "../Modal"; // Import your modal component
 import EditFaculty from "./EditFaculty"; // Import your EditFaculty form component
-import { toast } from 'react-hot-toast'; // Import toast
+import { toast } from "react-hot-toast"; // Import toast
 
 const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
     try {
       // Call the API to update faculty details using _id
       const response = await fetch(
-        `http://localhost:4600/api/faculty/${updatedFaculty._id}`, // Use _id here
+        `https://eventmanagement-b7vf.onrender.com/api/faculty/${updatedFaculty._id}`, // Use _id here
         {
           method: "PUT", // Use PUT method for updating
           headers: {

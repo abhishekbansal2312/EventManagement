@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { storage } from '../firebase'; 
+import { storage } from "../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode"; 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { jwtDecode } from "jwt-decode";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 const GalleryPage = ({ darkMode }) => {
   const { id } = useParams();
@@ -28,13 +28,16 @@ const GalleryPage = ({ darkMode }) => {
           setIsAdmin(decodedToken.role === "admin");
         }
 
-        const response = await fetch(`http://localhost:4600/api/events/${id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
+        const response = await fetch(
+          `https://eventmanagement-b7vf.onrender.com/api/events/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) throw new Error("Event not found");
 
@@ -51,7 +54,7 @@ const GalleryPage = ({ darkMode }) => {
   }, [id]);
 
   const validateFile = (file) => {
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const validTypes = ["image/jpeg", "image/png", "image/gif"];
     return validTypes.includes(file.type) && file.size <= 5 * 1024 * 1024; // 5 MB
   };
 
@@ -60,13 +63,15 @@ const GalleryPage = ({ darkMode }) => {
     const validFiles = selectedFiles.filter(validateFile);
 
     if (validFiles.length < selectedFiles.length) {
-      setErrorMessage("Some files are invalid. Ensure they are images and less than 5MB.");
+      setErrorMessage(
+        "Some files are invalid. Ensure they are images and less than 5MB."
+      );
     } else {
       setErrorMessage(null);
     }
 
     setImages(validFiles);
-    setImageNames(validFiles.map(file => file.name)); // Store the names of valid files
+    setImageNames(validFiles.map((file) => file.name)); // Store the names of valid files
   };
 
   const handleUpload = async (e) => {
@@ -74,21 +79,26 @@ const GalleryPage = ({ darkMode }) => {
     setLoading(true);
     try {
       const token = Cookies.get("authtoken");
-      const imageUrls = await Promise.all(images.map(async (imageFile) => {
-        const imageRef = ref(storage, `gallery/${id}/${imageFile.name}`);
-        await uploadBytes(imageRef, imageFile);
-        return await getDownloadURL(imageRef);
-      }));
+      const imageUrls = await Promise.all(
+        images.map(async (imageFile) => {
+          const imageRef = ref(storage, `gallery/${id}/${imageFile.name}`);
+          await uploadBytes(imageRef, imageFile);
+          return await getDownloadURL(imageRef);
+        })
+      );
 
-      const response = await fetch(`http://localhost:4600/api/events/${id}/gallery`, {
-        method: "PUT",
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: 'include',
-        body: JSON.stringify({ newImages: imageUrls }),
-      });
+      const response = await fetch(
+        `https://eventmanagement-b7vf.onrender.com/api/events/${id}/gallery`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ newImages: imageUrls }),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to update gallery");
 
@@ -107,15 +117,18 @@ const GalleryPage = ({ darkMode }) => {
     setLoading(true);
     try {
       const token = Cookies.get("authtoken");
-      const response = await fetch(`http://localhost:4600/api/events/${id}/gallery`, {
-        method: "DELETE",
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: 'include',
-        body: JSON.stringify({ imageUrl }),
-      });
+      const response = await fetch(
+        `https://eventmanagement-b7vf.onrender.com/api/events/${id}/gallery`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ imageUrl }),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to delete image");
 
@@ -124,7 +137,7 @@ const GalleryPage = ({ darkMode }) => {
 
       setEvent((prevEvent) => ({
         ...prevEvent,
-        gallery: prevEvent.gallery.filter((url) => url !== imageUrl)
+        gallery: prevEvent.gallery.filter((url) => url !== imageUrl),
       }));
     } catch (error) {
       setErrorMessage(error.message);
@@ -142,22 +155,36 @@ const GalleryPage = ({ darkMode }) => {
   };
 
   return (
-    <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"}`}>
+    <div
+      className={`min-h-screen ${
+        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+      }`}
+    >
       <div className="container mx-auto p-4">
         {loading ? (
           <div className="text-center">Loading...</div>
         ) : (
           <>
             <h1 className="text-2xl font-semibold mb-4">
-              Gallery - {event ? event.title : 'Event Not Found'}
+              Gallery - {event ? event.title : "Event Not Found"}
             </h1>
-  
-            {successMessage && <p className="bg-green-100 text-green-700 p-2 rounded mb-4">{successMessage}</p>}
-            {errorMessage && <p className="bg-red-100 text-red-700 p-2 rounded mb-4">{errorMessage}</p>}
-  
+
+            {successMessage && (
+              <p className="bg-green-100 text-green-700 p-2 rounded mb-4">
+                {successMessage}
+              </p>
+            )}
+            {errorMessage && (
+              <p className="bg-red-100 text-red-700 p-2 rounded mb-4">
+                {errorMessage}
+              </p>
+            )}
+
             {isAdmin && (
               <form onSubmit={handleUpload} className="mb-4">
-                <label htmlFor="imageUpload" className="block text-gray-700">Upload Images</label>
+                <label htmlFor="imageUpload" className="block text-gray-700">
+                  Upload Images
+                </label>
                 <div className="relative flex items-center">
                   <input
                     id="imageUpload"
@@ -168,26 +195,32 @@ const GalleryPage = ({ darkMode }) => {
                     className="opacity-0 absolute w-full h-full cursor-pointer z-10"
                   />
                   <div className="flex justify-center items-center w-full h-12 bg-gray-200 border border-gray-300 rounded transition duration-300 ease-in-out hover:bg-gray-300 focus:outline-none">
-                    <span className="text-gray-700">Drag and drop your files here or click to upload</span>
+                    <span className="text-gray-700">
+                      Drag and drop your files here or click to upload
+                    </span>
                   </div>
                 </div>
                 <button
                   type="submit"
-                  className={`mt-4 w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                  className={`mt-4 w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${
+                    loading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                   disabled={loading}
                 >
                   {loading ? "Uploading..." : "Upload"}
                 </button>
               </form>
             )}
-            
+
             {/* Display names of selected images */}
             {imageNames.length > 0 && (
               <div className="mb-4">
                 <h2 className="text-lg font-semibold">Selected Images:</h2>
                 <ul className="list-disc pl-5">
                   {imageNames.map((name, index) => (
-                    <li key={index} className="text-gray-700">{name}</li>
+                    <li key={index} className="text-gray-700">
+                      {name}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -202,7 +235,7 @@ const GalleryPage = ({ darkMode }) => {
                       alt={`Gallery Image ${index}`}
                       className="w-full h-full object-cover rounded cursor-pointer aspect-square"
                       onClick={() => handleImageClick(imageUrl)}
-                      style={{ aspectRatio: '1 / 1' }} // Ensuring square aspect ratio
+                      style={{ aspectRatio: "1 / 1" }} // Ensuring square aspect ratio
                     />
                     {isAdmin && (
                       <button
@@ -215,7 +248,9 @@ const GalleryPage = ({ darkMode }) => {
                   </div>
                 ))
               ) : (
-                <p className="col-span-full text-center text-gray-500">No images available in the gallery.</p>
+                <p className="col-span-full text-center text-gray-500">
+                  No images available in the gallery.
+                </p>
               )}
             </div>
 
@@ -223,12 +258,15 @@ const GalleryPage = ({ darkMode }) => {
             {selectedImage && (
               <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
                 <div className="relative">
-                  <img 
-                    src={selectedImage} 
-                    alt="Full Size" 
-                    className="max-h-[100vh] max-w-[100vw] object-contain" 
+                  <img
+                    src={selectedImage}
+                    alt="Full Size"
+                    className="max-h-[100vh] max-w-[100vw] object-contain"
                   />
-                  <button onClick={closeModal} className="absolute top-4 right-4 text-white text-2xl">
+                  <button
+                    onClick={closeModal}
+                    className="absolute top-4 right-4 text-white text-2xl"
+                  >
                     &times;
                   </button>
                 </div>

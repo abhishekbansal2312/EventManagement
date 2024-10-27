@@ -15,17 +15,17 @@ const Login = ({ darkMode }) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-  
+
     if (password.length < 6) {
       setError("Password must be at least 6 characters.");
       setLoading(false);
       return;
     }
-  
-    const url = `http://localhost:4600/api/auth/login`;
+
+    const url = `https://eventmanagement-b7vf.onrender.com/api/auth/login`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
-  
+
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -36,21 +36,21 @@ const Login = ({ darkMode }) => {
         credentials: "include", // Include credentials to handle cookies
         signal: controller.signal,
       });
-  
+
       clearTimeout(timeoutId);
       setLoading(false);
-  
+
       if (!response.ok) {
         throw new Error("Login failed. Please check your credentials.");
       }
-  
+
       const data = await response.json();
       console.log(data);
-  
+
       // Set the cookie (though the token will expire in 1 minute)
       Cookies.set("authtoken", data.token, { expires: 7, path: "" }); // Still sets the cookie for 7 days, but JWT will expire in 1 minute
       setIsAuthenticated(true);
-  
+
       navigate("/"); // Redirect to home page on successful login
     } catch (err) {
       setLoading(false);
@@ -61,7 +61,6 @@ const Login = ({ darkMode }) => {
       }
     }
   };
-  
 
   return (
     <div className={`${darkMode ? "dark" : ""}`}>

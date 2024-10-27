@@ -15,7 +15,9 @@ const AllMails = () => {
   useEffect(() => {
     const fetchMails = async () => {
       try {
-        const response = await fetch("http://localhost:4600/api/contact");
+        const response = await fetch(
+          "https://eventmanagement-b7vf.onrender.com/api/contact"
+        );
         const data = await response.json();
         setMails(data);
         setFilteredMails(data);
@@ -76,7 +78,9 @@ const AllMails = () => {
         </ul>
 
         {/* Sort */}
-        <h3 className="text-xl font-semibold mb-4 dark:text-white">Sort by Date</h3>
+        <h3 className="text-xl font-semibold mb-4 dark:text-white">
+          Sort by Date
+        </h3>
         <button
           onClick={() => {
             setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -89,7 +93,9 @@ const AllMails = () => {
       </aside>
 
       {/* Main content */}
-      <main className="w-3/4 p-0 overflow-hidden"> {/* Set padding to 0 */}
+      <main className="w-3/4 p-0 overflow-hidden">
+        {" "}
+        {/* Set padding to 0 */}
         <section className="py-12 bg-white dark:bg-gray-900 rounded-lg shadow-lg h-full border border-gray-200">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-6">
@@ -97,10 +103,10 @@ const AllMails = () => {
             </h2>
 
             {selectedMail ? (
-              <motion.div 
+              <motion.div
                 className="mail-details p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg"
-                initial={{ opacity: 0, y: -20 }} 
-                animate={{ opacity: 1, y: 0 }} 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
                 <button
@@ -126,17 +132,23 @@ const AllMails = () => {
               </motion.div>
             ) : (
               <div className="overflow-y-auto h-96">
-                <motion.table 
+                <motion.table
                   className="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow-md"
-                  initial={{ opacity: 0 }} 
-                  animate={{ opacity: 1 }} 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{ duration: 0.5 }}
                 >
                   <thead>
                     <tr className="bg-gray-200 dark:bg-gray-700">
-                      <th className="px-4 py-3 text-left dark:text-gray-300">Subject</th>
-                      <th className="px-4 py-3 text-left dark:text-gray-300">From</th>
-                      <th className="px-4 py-3 text-left dark:text-gray-300">Sent At</th>
+                      <th className="px-4 py-3 text-left dark:text-gray-300">
+                        Subject
+                      </th>
+                      <th className="px-4 py-3 text-left dark:text-gray-300">
+                        From
+                      </th>
+                      <th className="px-4 py-3 text-left dark:text-gray-300">
+                        Sent At
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -145,12 +157,16 @@ const AllMails = () => {
                         key={mail._id}
                         className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300 cursor-pointer"
                         onClick={() => setSelectedMail(mail)}
-                        initial={{ opacity: 0 }} 
-                        animate={{ opacity: 1 }} 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         transition={{ duration: 0.3 }}
                       >
-                        <td className="border px-4 py-3 dark:border-gray-600">{mail.subject}</td>
-                        <td className="border px-4 py-3 dark:border-gray-600">{mail.email}</td>
+                        <td className="border px-4 py-3 dark:border-gray-600">
+                          {mail.subject}
+                        </td>
+                        <td className="border px-4 py-3 dark:border-gray-600">
+                          {mail.email}
+                        </td>
                         <td className="border px-4 py-3 dark:border-gray-600">
                           {new Date(mail.sentAt).toLocaleString()}
                         </td>
