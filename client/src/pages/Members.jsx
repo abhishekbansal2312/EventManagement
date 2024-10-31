@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { toast } from 'react-hot-toast'; // Import toast
+import { toast } from "react-hot-toast"; // Import toast
 import MemberCard from "../components/member/Membercard";
 import CreateMember from "../components/member/CreateMember";
 import UpdateMemberForm from "../components/member/UpdateMemberForm";
@@ -25,17 +25,17 @@ const Members = ({ darkMode }) => {
     const fetchMembersAndFaculty = async () => {
       try {
         const token = Cookies.get("authtoken");
-  
+
         if (!token) {
           console.error("No token found. Redirecting to login page...");
           toast.error("No token found. Redirecting to login page..."); // Use toast
           window.location.href = "/login";
           return;
         }
-  
+
         const decodedToken = jwtDecode(token);
         setIsAdmin(decodedToken.role === "admin");
-  
+
         // Fetch members and faculty concurrently
         const [membersResponse, facultyResponse] = await Promise.all([
           fetch("http://localhost:4600/api/members", {
@@ -55,22 +55,22 @@ const Members = ({ darkMode }) => {
             credentials: "include",
           }),
         ]);
-  
+
         if (!membersResponse.ok) throw new Error("Failed to fetch members");
         if (!facultyResponse.ok) throw new Error("Failed to fetch faculty");
-  
+
         const [membersData, facultyData] = await Promise.all([
           membersResponse.json(),
           facultyResponse.json(),
         ]);
-  
-        const sortedFaculties = facultyData.sort((a, b) => 
-          new Date(b.joinDate) - new Date(a.joinDate)  // Reverse order
+
+        const sortedFaculties = facultyData.sort(
+          (a, b) => new Date(b.joinDate) - new Date(a.joinDate) // Reverse order
         );
-        const sortedMembers = membersData.sort((a, b) => 
-          new Date(b.joinDate) - new Date(a.joinDate)  // Reverse order
+        const sortedMembers = membersData.sort(
+          (a, b) => new Date(b.joinDate) - new Date(a.joinDate) // Reverse order
         );
-  
+
         setMembers(sortedMembers);
         setFaculty(sortedFaculties);
       } catch (err) {
@@ -79,10 +79,9 @@ const Members = ({ darkMode }) => {
         setLoading(false);
       }
     };
-  
+
     fetchMembersAndFaculty();
   }, []);
-  
 
   if (loading) {
     return (
@@ -132,7 +131,7 @@ const Members = ({ darkMode }) => {
   };
 
   return (
-    <div className="px-16 py-8 dark:bg-gray-900 dark:text-white bg-white text-black">
+    <div className="min-h-screen px-4 md:px-8 lg:px-16 pb-4 dark:bg-gray-900 dark:text-white bg-white text-black">
       <div className="min-h-screen transition duration-500">
         {/* Faculty Section */}
         <div className="flex justify-between items-center mb-4">
@@ -152,8 +151,9 @@ const Members = ({ darkMode }) => {
           title={"Add Faculty Member"}
           onClose={() => setShowCreateFaculty(false)}
         >
-          <CreateFaculty setFaculty={setFaculty} onClose={() => setShowCreateFaculty(false)}
-            
+          <CreateFaculty
+            setFaculty={setFaculty}
+            onClose={() => setShowCreateFaculty(false)}
           />
         </Modal>
 
@@ -165,11 +165,14 @@ const Members = ({ darkMode }) => {
               darkMode={darkMode}
               setFaculty={setFaculty}
               isAdmin={isAdmin}
-              onUpdate={handleUpdateFaculty} 
-
-              onEdit={isAdmin ? () => {
-                  setEditingFaculty(facultyMember);
-                } : null}
+              onUpdate={handleUpdateFaculty}
+              onEdit={
+                isAdmin
+                  ? () => {
+                      setEditingFaculty(facultyMember);
+                    }
+                  : null
+              }
               onDelete={
                 isAdmin
                   ? () =>
@@ -205,8 +208,7 @@ const Members = ({ darkMode }) => {
           <CreateMember
             setMembers={setMembers}
             darkMode={darkMode}
-            onCancel={()=>setShowCreateMember(false)}
-            
+            onCancel={() => setShowCreateMember(false)}
           />
         </Modal>
 

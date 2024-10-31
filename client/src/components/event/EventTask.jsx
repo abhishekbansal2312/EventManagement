@@ -14,7 +14,6 @@ const EventTasks = ({ tasks, setTasks, darkMode, eventId }) => {
     const fetchTasks = async () => {
       try {
         // Simulate data fetching
-        // Update the tasks state only if tasks prop is available
         setLoading(false);
       } catch (err) {
         toast.error("Error loading tasks: " + err.message); // Use react-hot-toast for error handling
@@ -82,15 +81,19 @@ const EventTasks = ({ tasks, setTasks, darkMode, eventId }) => {
         >
           {isEditing ? (
             <EditTask
-            darkMode={darkMode}
-            setTasks={setTasks}
+              taskId={selectedTaskId} // Correctly pass the selectedTaskId
+              darkMode={darkMode}
+              setTasks={setTasks}
               eventId={eventId}
-              selectedTaskId={selectedTaskId}
-              setSelectedTaskId={setSelectedTaskId}
               onClose={handleCloseModal}
             />
           ) : (
-            <CreateTask onClose={handleCloseModal} eventId={eventId} setTasks={setTasks} darkMode={darkMode} />
+            <CreateTask
+              onClose={handleCloseModal}
+              eventId={eventId}
+              setTasks={setTasks}
+              darkMode={darkMode}
+            />
           )}
         </Modal>
       </div>
