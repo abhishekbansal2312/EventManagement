@@ -85,20 +85,20 @@ const Home = ({ darkMode }) => {
           darkMode
             ? "from-gray-400 via-gray-500 to-gray-600 text-white"
             : "from-purple-600 to-blue-600 text-white"
-        } p-16 text-center shadow-lg`}
+        } p-8 md:p-16 text-center shadow-lg`}
       >
-        <h1 className="text-9xl font-normal mb-4 bg-gradient-to-t to-blue-100 from-white bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-6xl lg:text-9xl font-normal mb-4 bg-gradient-to-t to-blue-100 from-white bg-clip-text text-transparent">
           HOBBIES CLUB
         </h1>
-        <p className="text-2xl mx-auto mb-2 text-gray-200">
+        <p className="text-lg md:text-2xl mx-auto mb-2 text-gray-200">
           We plan and organize exciting events tailored for our college's needs.
         </p>
-        <p className="text-md max-w-2xl mx-auto mb-8 text-gray-300">
+        <p className="text-sm md:text-md max-w-2xl mx-auto mb-8 text-gray-300">
           Join us for thrilling games, events, and competitions. Experience the
           fun!
         </p>
         <button
-          className={`py-3 px-10 rounded-full shadow-lg transition duration-300 ${
+          className={`py-2 md:py-3 px-6 md:px-10 rounded-full shadow-lg transition duration-300 ${
             darkMode
               ? "bg-gray-800 text-white hover:bg-gray-700"
               : "bg-white text-indigo-600 hover:bg-gray-100"
@@ -112,39 +112,41 @@ const Home = ({ darkMode }) => {
       </div>
 
       {/* Services Section */}
-      <div className="p-16 bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
-        <h2 className="text-2xl dark:text-gray-400 font-normal text-center mb-12">
+      <div className="p-8 md:p-16 bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+        <h2 className="text-xl md:text-2xl dark:text-gray-400 font-normal text-center mb-12">
           WHAT WE OFFER
         </h2>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center transform transition duration-300 hover:shadow-lg flex flex-col items-center justify-center relative">
-            <div className="p-2 border rounded-full flex justify-center items-center w-20 h-20 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-150%] bg-indigo-600">
-              <FaGamepad className="text-3xl text-white" />
+            <div className="p-2 border rounded-full flex justify-center items-center w-16 h-16 md:w-20 md:h-20 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-150%] bg-indigo-600">
+              <FaGamepad className="text-2xl md:text-3xl text-white" />
             </div>
-            <h3 className="text-lg font-normal uppercase pt-8">
+            <h3 className="text-md md:text-lg font-normal uppercase pt-8">
               Exciting Games
             </h3>
-            <p className="text-[14px] text-slate-500 dark:text-gray-300 leading-relaxed">
+            <p className="text-[12px] md:text-[14px] text-slate-500 dark:text-gray-300 leading-relaxed">
               Engaging and mind-refreshing games and fun activities.
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center transform transition duration-300 hover:shadow-lg flex flex-col items-center justify-center relative">
-            <div className="p-2 border rounded-full flex justify-center items-center w-20 h-20 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-150%] bg-indigo-600">
-              <FaCalendarAlt className="text-3xl text-white" />
+            <div className="p-2 border rounded-full flex justify-center items-center w-16 h-16 md:w-20 md:h-20 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-150%] bg-indigo-600">
+              <FaCalendarAlt className="text-2xl md:text-3xl text-white" />
             </div>
-            <h3 className="text-lg font-normal uppercase pt-8">Events</h3>
-            <p className="text-[14px] text-slate-500 dark:text-gray-300 leading-relaxed">
+            <h3 className="text-md md:text-lg font-normal uppercase pt-8">
+              Events
+            </h3>
+            <p className="text-[12px] md:text-[14px] text-slate-500 dark:text-gray-300 leading-relaxed">
               Monthly events and gatherings for students and fun lovers.
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center transform transition duration-300 hover:shadow-lg flex flex-col items-center justify-center relative">
-            <div className="p-2 border rounded-full flex justify-center items-center w-20 h-20 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-150%] bg-indigo-600">
-              <FaTrophy className="text-3xl text-white" />
+            <div className="p-2 border rounded-full flex justify-center items-center w-16 h-16 md:w-20 md:h-20 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-150%] bg-indigo-600">
+              <FaTrophy className="text-2xl md:text-3xl text-white" />
             </div>
-            <h3 className="text-lg font-normal uppercase pt-8 ">
+            <h3 className="text-md md:text-lg font-normal uppercase pt-8">
               Competitions
             </h3>
-            <p className="text-[14px] text-slate-500 dark:text-gray-300 leading-relaxed">
+            <p className="text-[12px] md:text-[14px] text-slate-500 dark:text-gray-300 leading-relaxed">
               Competitions related to various areas from dance to singing.
             </p>
           </div>
@@ -153,18 +155,18 @@ const Home = ({ darkMode }) => {
 
       {/* Image Carousel */}
       <div
-        className={`py-16 ${
+        className={`py-8 md:py-16 ${
           darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
         }`}
       >
-        <h2 className="text-2xl dark:text-gray-400 font-normal text-center mb-12 uppercase">
+        <h2 className="text-xl md:text-2xl dark:text-gray-400 font-normal text-center mb-12 uppercase">
           Our Previous Events
         </h2>
-        <div className=" flex">
+        <div className="flex overflow-hidden">
           <Marquee velocity={40} minScale={1} resetAfterTries={200}>
             {events.map((image, index) => (
               <div key={index} className="px-2">
-                <div className="w-48 h-auto aspect-[1/1.41] bg-gray-200 overflow-hidden rounded-lg shadow-md">
+                <div className="w-32 h-48 md:w-48 md:h-auto bg-gray-200 overflow-hidden rounded-lg shadow-md">
                   <img
                     src={image.offlinePoster}
                     alt={image.alt}
@@ -178,17 +180,19 @@ const Home = ({ darkMode }) => {
       </div>
 
       {/* Reviews Section */}
-      <div className="bg-gray-50 dark:bg-gray-800 p-16">
-        <h2 className="text-2xl font-normal text-center mb-12 dark:text-gray-400">
+      <div className="bg-gray-50 dark:bg-gray-800 p-8 md:p-16">
+        <h2 className="text-xl md:text-2xl font-normal text-center mb-12 dark:text-gray-400">
           What Our Members Say
         </h2>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {reviews.length === 0 ? (
             <div className="text-center text-gray-400">
               No reviews available
             </div>
           ) : (
-            reviews.map((review, index) => <Card key={index} review={review} />)
+            reviews.map((review, index) => (
+              <Card key={index} review={review} darkMode={darkMode} />
+            ))
           )}
         </div>
       </div>
