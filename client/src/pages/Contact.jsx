@@ -79,11 +79,7 @@ const Contact = () => {
               </button>
             </Link>
           )}
-          <Link to="/contact/mymails">
-            <button className="mb-4 text-white bg-green-600 px-4 py-2 rounded-md shadow hover:bg-green-800 transition">
-              My Mails
-            </button>
-          </Link>
+
           <div className="grid lg:grid-cols-2 grid-cols-1 gap-x-16 lg:gap-x-24">
             <div className="flex items-center lg:mb-0 mb-10 px-4 sm:px-0">
               <div className="w-full">
@@ -155,29 +151,6 @@ const Contact = () => {
                       789 Greenhill Way, Atlanta, GA 30339
                     </h5>
                   </a>
-                  <h4 className="text-indigo-600 text-base font-medium leading-6 mb-4 lg:text-left text-center dark:text-indigo-400">
-                    Social Links
-                  </h4>
-                  <div className="flex items-center">
-                    <a
-                      href="#"
-                      className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-                    >
-                      {/* Facebook icon */}
-                    </a>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 ml-4"
-                    >
-                      {/* Twitter icon */}
-                    </a>
-                    <a
-                      href="#"
-                      className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 ml-4"
-                    >
-                      {/* Instagram icon */}
-                    </a>
-                  </div>
                 </div>
               </div>
             </div>
