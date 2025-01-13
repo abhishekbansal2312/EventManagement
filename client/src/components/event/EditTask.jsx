@@ -36,13 +36,16 @@ const EditTask = ({ eventId, taskId, onClose }) => {
 
   const fetchMembers = async () => {
     try {
-      const response = await fetch("http://localhost:4600/api/members", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
+      const response = await fetch(
+        "https://hobbiesclub-my9i.onrender.com/api/members",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to fetch members");
 
@@ -56,7 +59,7 @@ const EditTask = ({ eventId, taskId, onClose }) => {
   const fetchTaskDetails = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4600/api/tasks/${eventId}/${taskId}`,
+        `https://hobbiesclub-my9i.onrender.com/api/tasks/${eventId}/${taskId}`,
         {
           method: "GET",
           headers: {
@@ -156,7 +159,7 @@ const EditTask = ({ eventId, taskId, onClose }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:4600/api/tasks/${eventId}/${taskId}`,
+        `https://hobbiesclub-my9i.onrender.com/api/tasks/${eventId}/${taskId}`,
         {
           method: "PUT",
           headers: {

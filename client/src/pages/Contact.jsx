@@ -34,14 +34,17 @@ const Contact = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:4600/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ message, subject }),
-      });
+      const response = await fetch(
+        "https://hobbiesclub-my9i.onrender.com/api/contact",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ message, subject }),
+        }
+      );
 
       const data = await response.json();
 

@@ -38,7 +38,7 @@ const Members = ({ darkMode }) => {
 
         // Fetch members and faculty concurrently
         const [membersResponse, facultyResponse] = await Promise.all([
-          fetch("http://localhost:4600/api/members", {
+          fetch("https://hobbiesclub-my9i.onrender.com/api/members", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -46,7 +46,7 @@ const Members = ({ darkMode }) => {
             },
             credentials: "include",
           }),
-          fetch("http://localhost:4600/api/faculty", {
+          fetch("https://hobbiesclub-my9i.onrender.com/api/faculty", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -177,7 +177,7 @@ const Members = ({ darkMode }) => {
                 isAdmin
                   ? () =>
                       handleDelete(
-                        "http://localhost:4600/api/faculty",
+                        "https://hobbiesclub-my9i.onrender.com/api/faculty",
                         facultyMember._id,
                         setFaculty
                       )
@@ -242,7 +242,7 @@ const Members = ({ darkMode }) => {
                   onUpdate={handleUpdateMember}
                   onDelete={() =>
                     handleDelete(
-                      "http://localhost:4600/api/members",
+                      "https://hobbiesclub-my9i.onrender.com/api/members",
                       member._id,
                       setMembers
                     )

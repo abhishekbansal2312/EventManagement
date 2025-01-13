@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import { ToastContainer } from "react-toastify"; // You can remove this if you're not using it elsewhere
-import { toast } from 'react-hot-toast'; // Updated import
+import { toast } from "react-hot-toast"; // Updated import
 import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -68,22 +68,35 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
         offlinePoster: offlinePosterUrl,
       };
 
-      const response = await fetch(`http://localhost:4600/api/events/${event._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(updatedEvent),
-      });
+      const response = await fetch(
+        `https://hobbiesclub-my9i.onrender.com/api/events/${event._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(updatedEvent),
+        }
+      );
 
       if (!response.ok) throw new Error("Error updating event");
 
       toast.success("Event updated successfully!"); // Success toast
       setEvent(updatedEvent); // Update event context
       setLoading(false); // Stop loading
-      setFormData({ title: "", description: "", date: "", time: "", location: "", link: "", onlinePoster: "", offlinePoster: "", isLive: false }); // Reset form
-      onClose()
+      setFormData({
+        title: "",
+        description: "",
+        date: "",
+        time: "",
+        location: "",
+        link: "",
+        onlinePoster: "",
+        offlinePoster: "",
+        isLive: false,
+      }); // Reset form
+      onClose();
       // Optionally redirect
     } catch (error) {
       setLoading(false); // Stop loading in case of error
@@ -107,7 +120,8 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
     e.stopPropagation();
     setDraggingOnline(false);
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) { // Check if file is an image
+    if (file && file.type.startsWith("image/")) {
+      // Check if file is an image
       setOnlinePosterFile(file);
       setFormData((prev) => ({
         ...prev,
@@ -135,7 +149,8 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
     e.stopPropagation();
     setDraggingOffline(false);
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) { // Check if file is an image
+    if (file && file.type.startsWith("image/")) {
+      // Check if file is an image
       setOfflinePosterFile(file);
       setFormData((prev) => ({
         ...prev,
@@ -147,11 +162,18 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
   };
 
   return (
-    <div className={`min-h-screen ${darkMode ? " text-white" : "text-gray-900"}`}>
+    <div
+      className={`min-h-screen ${darkMode ? " text-white" : "text-gray-900"}`}
+    >
       <div className="text-sm">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[14px]">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[14px]"
+        >
           <div className="mb-2">
-            <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">Event Title</label>
+            <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">
+              Event Title
+            </label>
             <input
               type="text"
               name="title"
@@ -163,7 +185,9 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
           </div>
 
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Date</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Date
+            </label>
             <input
               type="date"
               name="date"
@@ -174,7 +198,9 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
           </div>
 
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Time</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Time
+            </label>
             <input
               type="time"
               name="time"
@@ -185,7 +211,9 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
           </div>
 
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Location</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Location
+            </label>
             <input
               type="text"
               name="location"
@@ -196,7 +224,9 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Description</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Description
+            </label>
             <textarea
               name="description"
               value={formData.description}
@@ -207,7 +237,9 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
           </div>
 
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Event Link</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Event Link
+            </label>
             <input
               type="url"
               name="link"
@@ -219,9 +251,13 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
 
           {/* Online Poster Upload */}
           <div className="md:col-span-2">
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Online Poster</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Online Poster
+            </label>
             <div
-              className={`border-2 border-dashed ${draggingOnline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center`}
+              className={`border-2 border-dashed ${
+                draggingOnline ? "border-blue-500" : "border-gray-300"
+              } rounded-lg p-4 text-center`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
@@ -242,15 +278,25 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
                 }}
                 className="hidden"
               />
-              {formData.onlinePoster && <img src={formData.onlinePoster} alt="Online Poster" className="mx-auto h-32" />}
+              {formData.onlinePoster && (
+                <img
+                  src={formData.onlinePoster}
+                  alt="Online Poster"
+                  className="mx-auto h-32"
+                />
+              )}
             </div>
           </div>
 
           {/* Offline Poster Upload */}
           <div className="md:col-span-2">
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Offline Poster</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Offline Poster
+            </label>
             <div
-              className={`border-2 border-dashed ${draggingOffline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center`}
+              className={`border-2 border-dashed ${
+                draggingOffline ? "border-blue-500" : "border-gray-300"
+              } rounded-lg p-4 text-center`}
               onDragOver={handleDragOverOffline}
               onDragLeave={handleDragLeaveOffline}
               onDrop={handleDropOffline}
@@ -271,7 +317,13 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
                 }}
                 className="hidden"
               />
-              {formData.offlinePoster && <img src={formData.offlinePoster} alt="Offline Poster" className="mx-auto h-32" />}
+              {formData.offlinePoster && (
+                <img
+                  src={formData.offlinePoster}
+                  alt="Offline Poster"
+                  className="mx-auto h-32"
+                />
+              )}
             </div>
           </div>
 
@@ -290,7 +342,9 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-2 mt-4 font-bold text-white rounded-lg ${loading ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-700"}`}
+              className={`w-full py-2 mt-4 font-bold text-white rounded-lg ${
+                loading ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-700"
+              }`}
             >
               {loading ? "Updating..." : "Update Event"}
             </button>

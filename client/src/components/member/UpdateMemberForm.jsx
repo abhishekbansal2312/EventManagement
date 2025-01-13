@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase";
-import { toast } from 'react-hot-toast'; // Import toast
+import { toast } from "react-hot-toast"; // Import toast
 
 const UpdateMember = ({ member, setMembers, onCancel }) => {
   const [updatedMember, setUpdatedMember] = useState({
@@ -90,7 +90,7 @@ const UpdateMember = ({ member, setMembers, onCancel }) => {
 
   const updateMemberData = async (pictureURL) => {
     const response = await fetch(
-      `http://localhost:4600/api/members/${member._id}`,
+      `https://hobbiesclub-my9i.onrender.com/api/members/${member._id}`,
       {
         method: "PUT",
         headers: {

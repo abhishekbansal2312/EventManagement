@@ -45,16 +45,19 @@ const CreateMember = ({ setMembers, darkMode, onSave, onCancel }) => {
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
 
-          const response = await fetch("http://localhost:4600/api/members", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              ...newMember,
-              pictureURL: downloadURL,
-              joinDate: newMember.joinDate || new Date().toISOString(),
-            }),
-            credentials: "include",
-          });
+          const response = await fetch(
+            "https://hobbiesclub-my9i.onrender.com/api/members",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ...newMember,
+                pictureURL: downloadURL,
+                joinDate: newMember.joinDate || new Date().toISOString(),
+              }),
+              credentials: "include",
+            }
+          );
 
           if (!response.ok) {
             const errorData = await response.json();

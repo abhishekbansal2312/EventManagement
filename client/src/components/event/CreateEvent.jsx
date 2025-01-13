@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 // Removed ToastContainer import since it's not used
-import { toast } from 'react-hot-toast'; // Import from react-hot-toast
+import { toast } from "react-hot-toast"; // Import from react-hot-toast
 import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -58,20 +58,33 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
         offlinePoster: offlinePosterUrl,
       };
 
-      const response = await fetch(`http://localhost:4600/api/events`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(newEvent),
-      });
+      const response = await fetch(
+        `https://hobbiesclub-my9i.onrender.com/api/events`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(newEvent),
+        }
+      );
 
       if (!response.ok) throw new Error("Error creating event");
 
       toast.success("Event created successfully!"); // Success toast
       setLoading(false); // Stop loading
-      setFormData({ title: "", description: "", date: "", time: "", location: "", link: "", onlinePoster: "", offlinePoster: "", isLive: false }); // Reset form
+      setFormData({
+        title: "",
+        description: "",
+        date: "",
+        time: "",
+        location: "",
+        link: "",
+        onlinePoster: "",
+        offlinePoster: "",
+        isLive: false,
+      }); // Reset form
 
       // Optionally redirect
       setEvents(newEvent);
@@ -139,11 +152,18 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
   };
 
   return (
-    <div className={`min-h-screen ${darkMode ? " text-white" : "text-gray-900"}`}>
+    <div
+      className={`min-h-screen ${darkMode ? " text-white" : "text-gray-900"}`}
+    >
       <div className="text-sm">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[14px]">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[14px]"
+        >
           <div className="mb-2">
-            <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">Event Title</label>
+            <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">
+              Event Title
+            </label>
             <input
               type="text"
               name="title"
@@ -155,7 +175,9 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
           </div>
 
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Date</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Date
+            </label>
             <input
               type="date"
               name="date"
@@ -167,7 +189,9 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
           </div>
 
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Time</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Time
+            </label>
             <input
               type="time"
               name="time"
@@ -179,7 +203,9 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
           </div>
 
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Location</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Location
+            </label>
             <input
               type="text"
               name="location"
@@ -191,7 +217,9 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Description</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Description
+            </label>
             <textarea
               name="description"
               value={formData.description}
@@ -202,7 +230,9 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
           </div>
 
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Event Link</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Event Link
+            </label>
             <input
               type="url"
               name="link"
@@ -214,9 +244,13 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
 
           {/* Online Poster Upload */}
           <div className="md:col-span-2">
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Online Poster</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Online Poster
+            </label>
             <div
-              className={`border-2 border-dashed ${draggingOnline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center relative`}
+              className={`border-2 border-dashed ${
+                draggingOnline ? "border-blue-500" : "border-gray-300"
+              } rounded-lg p-4 text-center relative`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
@@ -258,9 +292,13 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
 
           {/* Offline Poster Upload */}
           <div className="md:col-span-2">
-            <label className="block text-gray-700 dark:text-gray-300 mb-1">Offline Poster</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Offline Poster
+            </label>
             <div
-              className={`border-2 border-dashed ${draggingOffline ? "border-blue-500" : "border-gray-300"} rounded-lg p-4 text-center relative`}
+              className={`border-2 border-dashed ${
+                draggingOffline ? "border-blue-500" : "border-gray-300"
+              } rounded-lg p-4 text-center relative`}
               onDragOver={handleDragOverOffline}
               onDragLeave={handleDragLeaveOffline}
               onDrop={handleDropOffline}
@@ -315,7 +353,9 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full h-10 bg-blue-500 text-white rounded-lg ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`w-full h-10 bg-blue-500 text-white rounded-lg ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               {loading ? "Creating Event..." : "Create Event"}
             </button>
