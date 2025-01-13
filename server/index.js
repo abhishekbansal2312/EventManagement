@@ -11,13 +11,13 @@ const app = express();
 const MongoDB = process.env.MONGO_URL;
 
 mongoose
-  .connect(MongoDB) // Improved options for mongoose connection
+  .connect(MongoDB)
   .then(() => {
     console.log("Connected to MongoDB");
   })
   .catch((err) => {
     console.error("Error connecting to MongoDB:", err.message);
-    process.exit(1); // Exit the process on failure
+    process.exit(1);
   });
 
 // CORS options
