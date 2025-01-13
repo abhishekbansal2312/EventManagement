@@ -59,11 +59,11 @@ const Home = ({ darkMode }) => {
       if (!response.ok) throw new Error("Failed to fetch reviews");
 
       const data = await response.json();
+      console.log(data);
 
       // Filter to get only reviews with a rating of 5 and a comment length greater than 50
-      const filteredReviews = data.filter(
-        (review) => review.rating === 5 && review.comment.length > 50
-      );
+      const filteredReviews = data.filter((review) => review.rating === 5 || 4);
+      console.log(filteredReviews);
 
       // Limit to the first 3 reviews
       setReviews(filteredReviews.slice(0, 3));

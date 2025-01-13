@@ -10,6 +10,8 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "firebase": "^10.14.0",
@@ -28,6 +30,7 @@
     "react-slick": "^0.30.2",
     "react-toastify": "^10.0.5",
     "slick-carousel": "^1.8.1",
+    "stream-browserify": "^3.0.0",
     "util": "^0.12.5",
     "web-vitals": "^2.1.4"
   },

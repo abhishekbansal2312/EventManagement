@@ -6,7 +6,7 @@ import { jwtDecode } from "jwt-decode"; // Correct import
 import Radio from "../components/Radio"; // Import Radio component
 import Modal from "../components/Modal";
 import CreateEvent from "../components/event/CreateEvent";
-import { toast } from 'react-hot-toast'; // Import toast from react-hot-toast
+import { toast } from "react-hot-toast"; // Import toast from react-hot-toast
 
 const Events = ({ darkMode }) => {
   const [events, setEvents] = useState([]);
@@ -23,7 +23,7 @@ const Events = ({ darkMode }) => {
         if (token) {
           const decodedToken = jwtDecode(token);
           setIsAdmin(decodedToken.role === "admin");
-
+          console.log(decodedToken.id);
           const response = await fetch(
             `http://localhost:4600/api/users/${decodedToken.id}`,
             {
@@ -37,11 +37,11 @@ const Events = ({ darkMode }) => {
 
           if (!response.ok) throw new Error("Failed to fetch user data");
           const userData = await response.json();
-          setUser(userData); // Set user data
+          setUser(userData);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
-        toast.error("Error fetching user data."); // Use toast for error
+        toast.error("Error fetching user data.");
       }
     };
 
@@ -79,9 +79,11 @@ const Events = ({ darkMode }) => {
   // Function to filter events based on the selected option
   const filteredEvents = () => {
     if (filter === "participated" && user) {
-      return events.filter(event => user.participatedEvents.includes(event._id.toString()));
+      return events.filter((event) =>
+        user.participatedEvents.includes(event._id.toString())
+      );
     } else if (filter === "live") {
-      return events.filter(event => event.isLive);
+      return events.filter((event) => event.isLive);
     }
     return events; // Return all events if "all" is selected
   };
@@ -92,9 +94,9 @@ const Events = ({ darkMode }) => {
     { value: "participated", label: "Participated Events" },
     { value: "live", label: "Live Events" },
   ];
-  
-  const handleDeleteEvent = id => {
-    setEvents(prevEvents => prevEvents.filter(event => event._id !== id));
+
+  const handleDeleteEvent = (id) => {
+    setEvents((prevEvents) => prevEvents.filter((event) => event._id !== id));
   };
 
   return (
@@ -117,15 +119,13 @@ const Events = ({ darkMode }) => {
             Add Event
           </button>
         )}
-        
+
         <Modal
           isOpen={showAddEvent}
           onClose={() => setShowAddEvent(false)}
           title="Add Event"
         >
-          <CreateEvent
-            setEvents={setEvents}
-          />
+          <CreateEvent setEvents={setEvents} />
         </Modal>
       </div>
 
@@ -142,7 +142,7 @@ const Events = ({ darkMode }) => {
 
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 mt-4">
           {filteredEvents().length > 0 ? (
-            filteredEvents().map(event => (
+            filteredEvents().map((event) => (
               <EventCard
                 key={event._id}
                 event={event}

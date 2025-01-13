@@ -28,18 +28,6 @@ const Footer = () => {
           <ul className="space-y-2 md:space-y-0 md:space-x-8 flex flex-col md:flex-row justify-center md:justify-start">
             <li>
               <a
-                href="/about"
-                className={`hover:underline transition-colors duration-300 ${
-                  darkMode
-                    ? "text-gray-400 hover:text-gray-200"
-                    : "text-gray-300 hover:text-white"
-                }`}
-              >
-                About Us
-              </a>
-            </li>
-            <li>
-              <a
                 href="/contact"
                 className={`hover:underline transition-colors duration-300 ${
                   darkMode
@@ -50,18 +38,7 @@ const Footer = () => {
                 Contact Us
               </a>
             </li>
-            <li>
-              <a
-                href="/privacy"
-                className={`hover:underline transition-colors duration-300 ${
-                  darkMode
-                    ? "text-gray-400 hover:text-gray-200"
-                    : "text-gray-300 hover:text-white"
-                }`}
-              >
-                Privacy Policy
-              </a>
-            </li>
+
             <li>
               <a
                 href="/reviews"
@@ -71,7 +48,7 @@ const Footer = () => {
                     : "text-gray-300 hover:text-white"
                 }`}
               >
-              Reviews
+                Reviews
               </a>
             </li>
           </ul>

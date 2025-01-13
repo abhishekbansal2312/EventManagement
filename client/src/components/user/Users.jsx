@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { toast } from "react-hot-toast"; 
+import { toast } from "react-hot-toast";
 import UserForm from "./UserForm";
 import UserList from "./UserList";
 import Modal from "../Modal";
@@ -20,7 +20,7 @@ const Users = ({ darkMode }) => {
   const [events, setEvents] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
-  
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 25; // Set the number of items per page
@@ -203,7 +203,7 @@ const Users = ({ darkMode }) => {
     <div className="px-16 py-8 dark:bg-gray-900 dark:text-white bg-white text-black">
       <div className="flex flex-row sm:flex-row justify-between items-center max-w-full pb-4">
         <h2 className="text-lg sm:text-2xl font-semibold">Users Management</h2>
-        
+
         <button
           onClick={() => {
             resetForm();
@@ -252,7 +252,6 @@ const Users = ({ darkMode }) => {
         darkMode={darkMode}
       />
 
-      {/* Pagination Controls */}
       <div className="flex justify-center mt-4">
         {Array.from({ length: totalPages }, (_, index) => (
           <button

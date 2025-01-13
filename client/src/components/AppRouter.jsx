@@ -8,9 +8,9 @@ import Members from "../pages/Members";
 import Gallery from "../pages/Gallery";
 import GalleryPage from "../pages/GalleryPage";
 import Events from "../pages/Events";
-import CreateEvent from "./event/CreateEvent";
+
 import EventPage from "../pages/EventPage";
-import EventEdit from "../components/event/EventEdit";
+
 import DarkMode from "../components/DarkMode";
 import Footer from "./Footer";
 import Users from "./user/Users";
@@ -19,9 +19,11 @@ import Review from "../pages/Review";
 import Contact from "../pages/Contact";
 import Register from "../pages/Register";
 import AllMails from "./contact/AllMails";
+import Profile from "../pages/Profile";
 
 const AppRouter = () => {
-  const { isAuthenticated, setIsAuthenticated, darkMode, setDarkMode } = useAuth();
+  const { isAuthenticated, setIsAuthenticated, darkMode, setDarkMode } =
+    useAuth();
   const location = useLocation();
 
   // Pages where we don't want the Header and Footer
@@ -31,13 +33,14 @@ const AppRouter = () => {
     <div>
       <div className={`flex flex-col min-h-screen`}>
         {/* Conditionally render the Header */}
-        {isAuthenticated && !noHeaderFooterRoutes.includes(location.pathname) && (
-          <Header
-            isAuthenticated={isAuthenticated}
-            setIsAuthenticated={setIsAuthenticated}
-            darkMode={darkMode}
-          />
-        )}
+        {isAuthenticated &&
+          !noHeaderFooterRoutes.includes(location.pathname) && (
+            <Header
+              isAuthenticated={isAuthenticated}
+              setIsAuthenticated={setIsAuthenticated}
+              darkMode={darkMode}
+            />
+          )}
 
         {/* Main content with routes */}
         <main className="flex-grow main-content">
@@ -153,6 +156,14 @@ const AppRouter = () => {
                 </ProtectedRouteAdminOnly>
               }
             />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile darkMode={darkMode} />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
@@ -160,9 +171,10 @@ const AppRouter = () => {
 
         {/* Dark mode toggle and footer */}
         <DarkMode darkMode={darkMode} setDarkMode={setDarkMode} />
-        {isAuthenticated && !noHeaderFooterRoutes.includes(location.pathname) && (
-          <Footer darkMode={darkMode} />
-        )}
+        {isAuthenticated &&
+          !noHeaderFooterRoutes.includes(location.pathname) && (
+            <Footer darkMode={darkMode} />
+          )}
       </div>
     </div>
   );

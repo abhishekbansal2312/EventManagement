@@ -131,7 +131,7 @@ const Members = ({ darkMode }) => {
   };
 
   return (
-    <div className="min-h-screen px-4 md:px-8 lg:px-16 pb-4 dark:bg-gray-900 dark:text-white bg-white text-black">
+    <div className="min-h-screen px-4 md:px-8 lg:px-16 pb-4 pt-5 dark:bg-gray-900 dark:text-white bg-white text-black">
       <div className="min-h-screen transition duration-500">
         {/* Faculty Section */}
         <div className="flex justify-between items-center mb-4">
