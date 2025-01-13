@@ -22,7 +22,7 @@ mongoose
 
 // CORS options
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "https://mellow-moxie-f15ef2.netlify.app",
   credentials: true,
 };
 
@@ -33,7 +33,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(morgan("dev"));
 app.use(cookieParser());
-
 
 // Root endpoint
 app.get("/", (req, res) => {
@@ -46,9 +45,9 @@ const userRoutes = require("./routes/userRoutes");
 const membersRoute = require("./routes/membersRoute");
 const contactRoute = require("./routes/contactRoute");
 const eventsRoute = require("./routes/eventsRoutes");
-const facultyRoutes =  require("./routes/facultyRoutes");
-const taskRoutes =  require("./routes/taskRoutes");
-const reviewRoutes =   require("./routes/reviewRoutes");
+const facultyRoutes = require("./routes/facultyRoutes");
+const taskRoutes = require("./routes/taskRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 // Use routes
 app.use("/api/auth", authRoutes);
@@ -57,14 +56,15 @@ app.use("/api/members", membersRoute);
 app.use("/api/contact", contactRoute);
 app.use("/api/events", eventsRoute);
 app.use("/api/faculty", facultyRoutes);
-app.use("/api/tasks", taskRoutes)
+app.use("/api/tasks", taskRoutes);
 app.use("/api/reviews", reviewRoutes);
-
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error("Error occurred:", err); // Log the error for debugging
-  res.status(500).json({ message: "Internal Server Error", error: err.message });
+  res
+    .status(500)
+    .json({ message: "Internal Server Error", error: err.message });
 });
 
 // Start the server
