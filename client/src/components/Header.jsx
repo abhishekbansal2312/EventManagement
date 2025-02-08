@@ -1,45 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode"; // Ensure package is installed
+
 import { MenuIcon, XIcon } from "@heroicons/react/solid"; // For modern icons
-import { useAuth } from "../provider/AuthProvider";
+import { useSelector } from "react-redux";
+import useAxios from "../utils/useAxios";
 
 const Navbar = ({ darkMode }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false); // State for admin check
+
   const navigate = useNavigate();
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
-
-  useEffect(() => {
-    const token = Cookies.get("authtoken");
-    setIsAuthenticated(!!token);
-
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        setIsAdmin(decodedToken.role === "admin"); // Check if the user is an admin
-      } catch (error) {
-        console.error("Invalid token", error);
-        setIsAdmin(false); // Reset admin state if token is invalid
-      }
-    }
-  }, []);
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  const user = useSelector((state) => state.user.user);
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
   };
+  const makeRequest = useAxios();
 
   const handleLogout = () => {
-    Cookies.remove("authtoken");
-    fetch("http://localhost:4600/api/auth/logout", {
-      method: "DELETE",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("Logout failed");
-        setIsAuthenticated(false);
-        setIsAdmin(false); // Reset admin state on logout
+    makeRequest("http://localhost:4600/api/auth/logout", "DELETE", null, true)
+      .then(() => {
+        localStorage.removeItem("authtoken");
         navigate("/login");
       })
       .catch((error) => console.error("Logout error:", error));
@@ -82,7 +63,7 @@ const Navbar = ({ darkMode }) => {
             Home
             <span className="absolute h-0.5 w-full bg-gradient-to-r from-blue-500 to-purple-500 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
           </Link>
-          {isAuthenticated ? (
+          {isLoggedIn ? (
             <>
               <Link
                 to="/members"
@@ -95,7 +76,7 @@ const Navbar = ({ darkMode }) => {
                 Members
                 <span className="absolute h-0.5 w-full bg-gradient-to-r from-blue-500 to-purple-500 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
               </Link>
-              {isAdmin && (
+              {user?.role === "admin" && (
                 <Link
                   to="/users"
                   className={`transition-all duration-300 relative group ${
@@ -190,7 +171,7 @@ const Navbar = ({ darkMode }) => {
         >
           Home
         </Link>
-        {isAuthenticated ? (
+        {isLoggedIn ? (
           <>
             <Link
               to="/members"
@@ -202,7 +183,7 @@ const Navbar = ({ darkMode }) => {
             >
               Members
             </Link>
-            {isAdmin && (
+            {user?.role === "admin" && (
               <Link
                 to="/users"
                 className={`block px-4 py-2 transition-all duration-300 ${
