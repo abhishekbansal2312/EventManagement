@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { registerUser, loginUser } = require("../controllers/authController");
+const {
+  registerUser,
+  loginUser,
+  getMe,
+} = require("../controllers/authController");
+const authenticateToken = require("../middlewares/verifyToken");
 
 // Register a new user
 router.post("/register", registerUser);
@@ -8,6 +13,7 @@ router.post("/register", registerUser);
 // Login a user
 router.post("/login", loginUser);
 
+router.get("/me", authenticateToken, getMe);
 // Logout route (GET request)
 router.delete("/logout", (req, res) => {
   res.clearCookie("authtoken", {
@@ -19,4 +25,3 @@ router.delete("/logout", (req, res) => {
 });
 
 module.exports = router;
-

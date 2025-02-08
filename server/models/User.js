@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-// Define the schema for the User model
 const UserSchema = new mongoose.Schema({
-  studentId: {
+  p: {
     type: String,
     required: true,
-    unique: true, // Ensures studentId is unique
+    unique: true,
     trim: true,
   },
   name: {
@@ -17,7 +16,7 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true, // Ensures email is unique
+    unique: true,
     lowercase: true,
     trim: true,
   },
@@ -25,18 +24,19 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  role:{
-    type:String,
-    enum:["admin", "student", "member"],
-    default:"student"
+  role: {
+    type: String,
+    enum: ["admin", "student", "member"],
+    default: "student",
   },
-  participatedEvents: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Event",
-  }],
+  participatedEvents: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Event",
+    },
+  ],
 });
 
-// Create the User model
 const User = mongoose.model("User", UserSchema);
 
 module.exports = User;
