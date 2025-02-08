@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { MenuIcon, XIcon } from "@heroicons/react/solid"; // For modern icons
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import useAxios from "../utils/useAxios";
+import { logoutUser } from "../redux/slices/userSlice";
 
 const Navbar = ({ darkMode }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   const user = useSelector((state) => state.user.user);
@@ -21,6 +22,7 @@ const Navbar = ({ darkMode }) => {
     makeRequest("http://localhost:4600/api/auth/logout", "DELETE", null, true)
       .then(() => {
         localStorage.removeItem("authtoken");
+        dispatch(logoutUser());
         navigate("/login");
       })
       .catch((error) => console.error("Logout error:", error));
