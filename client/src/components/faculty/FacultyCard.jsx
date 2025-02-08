@@ -33,7 +33,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
       console.log("Faculty updated successfully.");
       setIsEditModalOpen(false);
       toast.success("Faculty details updated successfully.");
-      onUpdate(updatedFacultyData); // Update parent state
+      onUpdate(updatedFacultyData);
     } catch (error) {
       console.error("Error updating faculty:", error);
       toast.error("Failed to update faculty. Please try again.");

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Firebase imports
 import { storage } from "../../firebase"; // Import Firebase Storage
 import { toast } from "react-hot-toast"; // Import toast from react-hot-toast
+import useAxios from "../../utils/useAxios";
 
 const CreateFaculty = ({ setFaculty, onSave, onClose }) => {
   const [newFaculty, setNewFaculty] = useState({
@@ -55,74 +56,82 @@ const CreateFaculty = ({ setFaculty, onSave, onClose }) => {
   };
 
   // Submit form handler
+  const makeRequest = useAxios();
   const handleAddFaculty = async (e) => {
     e.preventDefault();
 
     if (!newPicture) {
-      toast.error("Please upload a picture."); // Use toast for error
+      toast.error("Please upload a picture.");
       return;
     }
 
     try {
-      // Upload to Firebase Storage
       const storageRef = ref(storage, `faculty/${newPicture.name}`);
       const uploadTask = uploadBytesResumable(storageRef, newPicture);
       setUploading(true);
 
       uploadTask.on(
         "state_changed",
-        () => {},
+        () => {}, // No need to track progress in this case
         (error) => {
           console.error("Error during upload: ", error);
-          toast.error(error.message); // Use toast for error
+          toast.error(error.message);
           setUploading(false);
         },
         async () => {
+          // Get Image URL after upload
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          const response = await fetch("http://localhost:4600/api/faculty", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              ...newFaculty,
-              pictureURL: downloadURL,
-              specializations: newFaculty.specializations.split(","),
-              joinDate: newFaculty.joinDate, // Use the selected join date
-            }),
-            credentials: "include",
-          });
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            console.error("Error response from server: ", errorData);
-            throw new Error(errorData.message || "Failed to add faculty");
+          // Prepare faculty data
+          const facultyData = {
+            ...newFaculty,
+            pictureURL: downloadURL,
+            specializations: newFaculty.specializations
+              .split(",")
+              .map((s) => s.trim()),
+            joinDate: newFaculty.joinDate, // Ensure proper date format
+          };
+
+          try {
+            // Use makeRequest instead of fetch
+            const response = await makeRequest(
+              "http://localhost:4600/api/faculty",
+              "POST",
+              facultyData,
+              true
+            );
+
+            // Update faculty list
+            setFaculty((prevFaculty) => [
+              ...prevFaculty,
+              response.facultyConvener,
+            ]);
+
+            // Reset form fields
+            setNewFaculty({
+              name: "",
+              email: "",
+              facultyId: "",
+              pictureURL: null,
+              specializations: "",
+              description: "",
+              phoneNumber: "",
+              isActive: true,
+              joinDate: "",
+            });
+            setNewPicture(null);
+            setUploading(false);
+            toast.success("Faculty added successfully!");
+          } catch (error) {
+            console.error("Error adding faculty:", error);
+            toast.error(error.message || "Failed to add faculty");
+            setUploading(false);
           }
-
-          const data = await response.json();
-          setFaculty((prevFaculty) => [...prevFaculty, data.facultyConvener]);
-
-          // Reset fields after submission
-          setNewFaculty({
-            name: "",
-            email: "",
-            facultyId: "",
-            pictureURL: null,
-            specializations: "",
-            description: "",
-            phoneNumber: "",
-            isActive: true,
-            joinDate: "", // Reset joinDate properly
-          });
-          setNewPicture(null);
-          setUploading(false);
-          toast.success("Faculty added successfully!"); // Success toast
-          window.location.reload();
         }
       );
     } catch (err) {
-      console.error("Error adding faculty: ", err);
-      toast.error(err.message); // Use toast for error
+      console.error("Error uploading image:", err);
+      toast.error(err.message);
       setUploading(false);
     }
   };
@@ -277,9 +286,6 @@ const CreateFaculty = ({ setFaculty, onSave, onClose }) => {
           />
         </div>
 
-        {/* Is Active Checkbox */}
-
-        {/* Join Date Field */}
         <div className="mb-2">
           <label
             htmlFor="joinDate"
