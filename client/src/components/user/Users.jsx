@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import UserForm from "./UserForm";
 import UserList from "./UserList";
 import Modal from "../Modal";
+import useAxios from "../../utils/useAxios";
 
 const Users = ({ darkMode }) => {
   const [users, setUsers] = useState([]);
@@ -20,6 +21,7 @@ const Users = ({ darkMode }) => {
   const [events, setEvents] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const makeRequest = useAxios();
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,31 +30,6 @@ const Users = ({ darkMode }) => {
   useEffect(() => {
     fetchUsers();
   }, []);
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const token = Cookies.get("authtoken");
-      const response = await fetch("http://localhost:4600/api/users", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setUsers(data);
-      } else {
-        console.error(data.message);
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -63,38 +40,76 @@ const Users = ({ darkMode }) => {
     setCurrentPage(1); // Reset to the first page on search
   };
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const data = await makeRequest(
+        "http://localhost:4600/api/users",
+        "GET",
+        null,
+        true
+      );
+      setUsers(data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = Cookies.get("authtoken");
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
       ? `http://localhost:4600/api/users/${selectedUser}`
       : "http://localhost:4600/api/users";
 
     try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-        credentials: "include",
-      });
-      if (response.ok) {
-        fetchUsers();
-        resetForm();
-        toast.success(
-          isEditing
-            ? "User updated successfully!"
-            : "User created successfully!"
-        );
-      } else {
-        const data = await response.json();
-        console.error(data.message);
-      }
+      await makeRequest(url, method, formData, true);
+      fetchUsers();
+      resetForm();
+      toast.success(
+        isEditing ? "User updated successfully!" : "User created successfully!"
+      );
     } catch (error) {
       console.error("Error saving user:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await makeRequest(
+        `http://localhost:4600/api/users/${id}`,
+        "DELETE",
+        null,
+        true
+      );
+      fetchUsers();
+      toast.success("User deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
+  const handleParticipatedEvents = async (id) => {
+    if (events[id]) {
+      setEvents({ ...events, [id]: undefined });
+    } else {
+      try {
+        const fetchedEvents = await makeRequest(
+          `http://localhost:4600/api/users/${id}/participated-events`,
+          "GET",
+          null,
+          true
+        );
+        setEvents({ ...events, [id]: fetchedEvents });
+      } catch (error) {
+        console.error("Error fetching participated events:", error);
+      }
     }
   };
 
@@ -110,58 +125,6 @@ const Users = ({ darkMode }) => {
     setIsEditing(true);
     setShowForm(true);
     window.scrollTo(0, 0);
-  };
-
-  const handleDelete = async (id) => {
-    const token = Cookies.get("authtoken");
-    try {
-      const response = await fetch(`http://localhost:4600/api/users/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-      if (response.ok) {
-        fetchUsers();
-        toast.success("User deleted successfully!");
-      } else {
-        const data = await response.json();
-        console.error(data.message);
-      }
-    } catch (error) {
-      console.error("Error deleting user:", error);
-    }
-  };
-
-  const handleParticipatedEvents = async (id) => {
-    if (events[id]) {
-      setEvents({ ...events, [id]: undefined });
-    } else {
-      const token = Cookies.get("authtoken");
-      try {
-        const response = await fetch(
-          `http://localhost:4600/api/users/${id}/participated-events`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          }
-        );
-        const fetchedEvents = await response.json();
-        if (response.ok) {
-          setEvents({ ...events, [id]: fetchedEvents });
-        } else {
-          console.error(fetchedEvents.message);
-        }
-      } catch (error) {
-        console.error("Error fetching participated events:", error);
-      }
-    }
   };
 
   const resetForm = () => {

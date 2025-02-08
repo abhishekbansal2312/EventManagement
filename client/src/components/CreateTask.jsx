@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { FaPlus, FaChevronDown } from "react-icons/fa";
-
+import useAxios from "../utils/useAxios";
 const CreateTask = ({ eventId, onClose, darkMode }) => {
   const [formData, setFormData] = useState({
     deadline: "",
     status: "",
-    // Task categories with assignedTo
     OnlinePoster: { assignedTo: [] },
     OfflinePoster: { assignedTo: [] },
     CaptionToBeShared: { assignedTo: [] },
@@ -23,7 +22,7 @@ const CreateTask = ({ eventId, onClose, darkMode }) => {
     Coordinators: { assignedTo: [] },
     CoCoordinators: { assignedTo: [] },
   });
-
+  const makeRequest = useAxios();
   const [members, setMembers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState({});
@@ -31,19 +30,7 @@ const CreateTask = ({ eventId, onClose, darkMode }) => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await fetch("http://localhost:4600/api/members", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch members");
-        }
-
-        const data = await response.json();
+        const data = await makeRequest("http://localhost:4600/api/members");
         setMembers(data);
       } catch (error) {
         toast.error("Error fetching members: " + error.message);
@@ -98,21 +85,11 @@ const CreateTask = ({ eventId, onClose, darkMode }) => {
     }
 
     try {
-      const response = await fetch(
+      await makeRequest(
         `http://localhost:4600/api/tasks/${eventId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
+        "POST",
+        formData
       );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Network response was not ok");
-      }
 
       toast.success("Task created successfully!");
       onClose();
@@ -120,7 +97,6 @@ const CreateTask = ({ eventId, onClose, darkMode }) => {
       toast.error("Error creating task: " + error.message);
     }
   };
-
   // Sort members by dateJoined
   const sortedMembers = members.sort(
     (a, b) => new Date(b.dateJoined) - new Date(a.dateJoined)

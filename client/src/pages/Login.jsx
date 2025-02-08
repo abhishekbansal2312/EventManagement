@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie"; // Import js-cookie to manage cookies
-import { useAuth } from "../provider/AuthProvider";
-
+import useAxios from "../utils/useAxios";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../redux/slices/userSlice";
 const Login = ({ darkMode }) => {
   const navigate = useNavigate();
   const [studentId, setStudentId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { setIsAuthenticated } = useAuth();
-
+  const dispatch = useDispatch();
+  const makeRequest = useAxios();
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -21,44 +21,25 @@ const Login = ({ darkMode }) => {
       setLoading(false);
       return;
     }
-
     const url = `http://localhost:4600/api/auth/login`;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
-
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ studentId, password }),
-        credentials: "include", // Include credentials to handle cookies
-        signal: controller.signal,
-      });
+      const data = await makeRequest(
+        url,
+        "POST",
+        { studentId, password },
+        true
+      );
 
-      clearTimeout(timeoutId);
-      setLoading(false);
-
-      if (!response.ok) {
-        throw new Error("Login failed. Please check your credentials.");
+      if (data.token) {
+        localStorage.setItem("authtoken", data.token);
       }
-
-      const data = await response.json();
-      console.log(data);
-
-      // Set the cookie (though the token will expire in 1 minute)
-      Cookies.set("authtoken", data.token, { expires: 7, path: "" }); // Still sets the cookie for 7 days, but JWT will expire in 1 minute
-      setIsAuthenticated(true);
-
-      navigate("/"); // Redirect to home page on successful login
+      dispatch(loginUser(data.user));
+      console.log("Login successful:", data);
+      navigate("/");
     } catch (err) {
+      setError(err.message);
+    } finally {
       setLoading(false);
-      if (err.name === "AbortError") {
-        setError("Request timed out. Please try again.");
-      } else {
-        setError(err.message);
-      }
     }
   };
 
@@ -71,7 +52,7 @@ const Login = ({ darkMode }) => {
           className="absolute top-4 left-4 bg-white dark:bg-gray-800 text-gray-800 dark:text-white p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shadow-md"
           title="Back to Home"
         >
-          &#8592; {/* Back Arrow */} Home
+          &#8592; Home
         </Link>
         <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md relative overflow-hidden border border-gray-300 dark:border-gray-600">
           <h2 className="text-3xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
