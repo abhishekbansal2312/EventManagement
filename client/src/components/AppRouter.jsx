@@ -21,51 +21,29 @@ import Register from "../pages/Register";
 import AllMails from "./contact/AllMails";
 import Profile from "../pages/Profile";
 import useUserSession from "../utils/useUserSession";
+import { useSelector } from "react-redux";
 
 const AppRouter = () => {
-  const { isAuthenticated, setIsAuthenticated, darkMode, setDarkMode } =
-    useAuth();
+  const { darkMode, setDarkMode } = useAuth();
   const location = useLocation();
   useUserSession();
-
-  // Pages where we don't want the Header and Footer
+  const { isLoggedIn } = useSelector((state) => state.user);
   const noHeaderFooterRoutes = ["/login"];
 
   return (
     <div>
-      <div className={`flex flex-col min-h-screen`}>
+      <div className="flex flex-col min-h-screen">
         {/* Conditionally render the Header */}
-        {isAuthenticated &&
-          !noHeaderFooterRoutes.includes(location.pathname) && (
-            <Header
-              isAuthenticated={isAuthenticated}
-              setIsAuthenticated={setIsAuthenticated}
-              darkMode={darkMode}
-            />
-          )}
+        {isLoggedIn && !noHeaderFooterRoutes.includes(location.pathname) && (
+          <Header isLoggedIn={isLoggedIn} darkMode={darkMode} />
+        )}
 
         <main className="flex-grow main-content">
           <Routes>
-            <Route
-              path="/"
-              element={
-                <Home
-                  setIsAuthenticated={setIsAuthenticated}
-                  darkMode={darkMode}
-                />
-              }
-            />
+            <Route path="/" element={<Home darkMode={darkMode} />} />
 
             {/* Login and Register are public routes */}
-            <Route
-              path="/login"
-              element={
-                <Login
-                  setIsAuthenticated={setIsAuthenticated}
-                  darkMode={darkMode}
-                />
-              }
-            />
+            <Route path="/login" element={<Login darkMode={darkMode} />} />
             <Route
               path="/register"
               element={<Register darkMode={darkMode} />}
@@ -76,10 +54,7 @@ const AppRouter = () => {
               path="/gallery"
               element={
                 <ProtectedRoute>
-                  <Gallery
-                    setIsAuthenticated={setIsAuthenticated}
-                    darkMode={darkMode}
-                  />
+                  <Gallery darkMode={darkMode} />
                 </ProtectedRoute>
               }
             />
@@ -111,7 +86,6 @@ const AppRouter = () => {
                 </ProtectedRoute>
               }
             />
-
             <Route path="/users" element={<Users darkMode={darkMode} />} />
             <Route
               path="/reviews"
@@ -145,16 +119,15 @@ const AppRouter = () => {
                 </ProtectedRoute>
               }
             />
-
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
 
         <DarkMode darkMode={darkMode} setDarkMode={setDarkMode} />
-        {isAuthenticated &&
-          !noHeaderFooterRoutes.includes(location.pathname) && (
-            <Footer darkMode={darkMode} />
-          )}
+
+        {isLoggedIn && !noHeaderFooterRoutes.includes(location.pathname) && (
+          <Footer darkMode={darkMode} />
+        )}
       </div>
     </div>
   );

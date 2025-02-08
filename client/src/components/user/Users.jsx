@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
+
 import { toast } from "react-hot-toast";
 import UserForm from "./UserForm";
 import UserList from "./UserList";

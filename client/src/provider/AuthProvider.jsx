@@ -1,16 +1,10 @@
 import React, { createContext, useEffect, useState, useContext } from "react";
-import Cookies from "js-cookie";
 
 // Create AuthContext
 const AuthContext = createContext();
 
 // AuthProvider component
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    const token = Cookies.get("authtoken");
-    return !!token;
-  });
-
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("darkMode") === "true";
   });
@@ -25,9 +19,7 @@ export const AuthProvider = ({ children }) => {
   }, [darkMode]);
 
   return (
-    <AuthContext.Provider
-      value={{ isAuthenticated, setIsAuthenticated, darkMode, setDarkMode }}
-    >
+    <AuthContext.Provider value={{ darkMode, setDarkMode }}>
       {children}
     </AuthContext.Provider>
   );
