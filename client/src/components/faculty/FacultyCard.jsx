@@ -1,68 +1,43 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
+
 import { FaTrash, FaEdit } from "react-icons/fa";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode"; // Use default import for jwt-decode
+
 import Modal from "../Modal"; // Import your modal component
 import EditFaculty from "./EditFaculty"; // Import your EditFaculty form component
 import { toast } from "react-hot-toast"; // Import toast
+import useAxios from "../../utils/useAxios"; // Import useAxios hook
+import { useSelector } from "react-redux";
 
 const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
-  const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(false); // Track if the user is admin
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Control modal visibility
+  const makeRequest = useAxios();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { user } = useSelector((state) => state.user);
 
-  useEffect(() => {
-    const token = Cookies.get("authtoken");
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      setIsAdmin(decodedToken.role === "admin"); // Set isAdmin based on role
-    }
-  }, []);
-
-  // Toggle edit modal
   const handleEditClick = (e) => {
-    e.stopPropagation(); // Prevent card click
-    setIsEditModalOpen(true); // Open edit modal
+    e.stopPropagation();
+    setIsEditModalOpen(true);
   };
 
   const handleUpdateFaculty = async (updatedFaculty) => {
-    console.log("Updated faculty:", updatedFaculty); // Debugging
+    console.log("Updated faculty:", updatedFaculty);
 
     try {
-      // Call the API to update faculty details using _id
-      const response = await fetch(
-        `http://localhost:4600/api/faculty/${updatedFaculty._id}`, // Use _id here
-        {
-          method: "PUT", // Use PUT method for updating
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(updatedFaculty), // Convert updatedFaculty to JSON
-        }
+      const updatedFacultyData = await makeRequest(
+        `http://localhost:4600/api/faculty/${updatedFaculty._id}`,
+        "PUT",
+        updatedFaculty,
+        true // Auth required
       );
 
-      if (response.ok) {
-        const updatedFacultyData = await response.json(); // Get updated data from the response
-        console.log("Faculty updated successfully.");
-        setIsEditModalOpen(false); // Close the modal after successful save
-        toast.success("Faculty details updated successfully."); // Show success toast
-        onUpdate(updatedFacultyData); // Call onUpdate to update the state in parent component
-      } else {
-        const errorText = await response.text();
-        console.error("Failed to update faculty:", errorText);
-        toast.error("Failed to update faculty. Please try again."); // Show error toast
-      }
+      console.log("Faculty updated successfully.");
+      setIsEditModalOpen(false);
+      toast.success("Faculty details updated successfully.");
+      onUpdate(updatedFacultyData); // Update parent state
     } catch (error) {
       console.error("Error updating faculty:", error);
-      toast.error("An error occurred while updating the faculty."); // Show error toast
+      toast.error("Failed to update faculty. Please try again.");
     }
-  };
-
-  const handleCloseModal = () => {
-    setIsEditModalOpen(false); // Close the modal
   };
 
   return (
@@ -74,7 +49,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
             src={faculty.pictureURL}
             alt={faculty.name}
             className="w-24 h-24 object-cover rounded-full border-2 border-gray-300 dark:border-gray-800"
-            onClick={(e) => e.stopPropagation()} // Prevent card click on image click
+            onClick={(e) => e.stopPropagation()}
           />
         )}
       </div>
@@ -82,7 +57,6 @@ const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
       {/* Faculty Information */}
       <div className="flex-1 flex flex-col justify-between">
         <div>
-          {/* Faculty Name */}
           <div className="p-2">
             <div className="flex justify-between items-center">
               <h2 className="text-lg text-gray-700 dark:text-gray-100 font-semibold">
@@ -103,29 +77,23 @@ const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
           <hr />
 
           <div className="text-[12px] mt-2 p-2">
-            {/* Faculty Specializations */}
             {faculty.specializations && faculty.specializations.length > 0 && (
               <div className="mb-1">
                 <strong>Specializations:</strong>{" "}
                 {faculty.specializations.join(", ")}
               </div>
             )}
-
-            {/* Faculty Phone */}
             {faculty.phoneNumber && (
               <div className="mb-1">
                 <strong>Phone:</strong> {faculty.phoneNumber || "N/A"}
               </div>
             )}
-
-            {/* Faculty Join Date */}
             {faculty.joinDate && (
               <div className="mb-2">
                 <strong>Join Date:</strong>{" "}
                 {new Date(faculty.joinDate).toLocaleDateString() || "N/A"}
               </div>
             )}
-            {/* Faculty Bio */}
             <div className="mt-2">
               <strong className="text-gray-700 dark:text-gray-400">Bio</strong>
               <p className="text-gray-500 dark:text-gray-300 mb-4">
@@ -135,8 +103,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
           </div>
         </div>
 
-        {/* Edit/Delete Buttons for Admins */}
-        {isAdmin && (
+        {user?.role == "admin" && (
           <div className="flex justify-between items-center mt-4 p-2">
             <div className="cursor-pointer" onClick={handleEditClick}>
               <FaEdit
@@ -158,13 +125,13 @@ const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
       {isEditModalOpen && (
         <Modal
           isOpen={isEditModalOpen}
-          onClose={handleCloseModal}
+          onClose={() => setIsEditModalOpen(false)}
           title="Edit Faculty"
         >
           <EditFaculty
             faculty={faculty}
-            onSave={handleUpdateFaculty} // Use the updated handleUpdateFaculty function
-            onCancel={handleCloseModal}
+            onSave={handleUpdateFaculty}
+            onCancel={() => setIsEditModalOpen(false)}
           />
         </Modal>
       )}
@@ -175,10 +142,10 @@ const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
 // Prop validation
 FacultyCard.propTypes = {
   faculty: PropTypes.shape({
-    _id: PropTypes.string.isRequired, // Use _id as required
+    _id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     email: PropTypes.string.isRequired,
-    specializations: PropTypes.arrayOf(PropTypes.string), // Array of specializations
+    specializations: PropTypes.arrayOf(PropTypes.string),
     description: PropTypes.string,
     phoneNumber: PropTypes.string,
     isActive: PropTypes.bool.isRequired,
@@ -187,7 +154,7 @@ FacultyCard.propTypes = {
   }).isRequired,
   darkMode: PropTypes.bool.isRequired,
   onDelete: PropTypes.func.isRequired,
-  onUpdate: PropTypes.func.isRequired, // Add onUpdate prop validation
+  onUpdate: PropTypes.func.isRequired,
 };
 
 export default FacultyCard;

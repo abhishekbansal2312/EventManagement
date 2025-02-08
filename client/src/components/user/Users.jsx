@@ -43,7 +43,6 @@ const Users = ({ darkMode }) => {
   useEffect(() => {
     fetchUsers();
   }, []);
-
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -56,6 +55,7 @@ const Users = ({ darkMode }) => {
       setUsers(data);
     } catch (error) {
       console.error("Error fetching users:", error);
+      toast.error("Failed to fetch users.");
     } finally {
       setLoading(false);
     }
@@ -77,10 +77,13 @@ const Users = ({ darkMode }) => {
       );
     } catch (error) {
       console.error("Error saving user:", error);
+      toast.error("Failed to save user.");
     }
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+
     try {
       await makeRequest(
         `http://localhost:4600/api/users/${id}`,
@@ -92,6 +95,7 @@ const Users = ({ darkMode }) => {
       toast.success("User deleted successfully!");
     } catch (error) {
       console.error("Error deleting user:", error);
+      toast.error("Failed to delete user.");
     }
   };
 
@@ -109,6 +113,7 @@ const Users = ({ darkMode }) => {
         setEvents({ ...events, [id]: fetchedEvents });
       } catch (error) {
         console.error("Error fetching participated events:", error);
+        toast.error("Failed to load participated events.");
       }
     }
   };
