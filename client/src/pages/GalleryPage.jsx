@@ -28,16 +28,13 @@ const GalleryPage = ({ darkMode }) => {
           setIsAdmin(decodedToken.role === "admin");
         }
 
-        const response = await fetch(
-          `https://hobbiesclub-my9i.onrender.com/api/events/${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`http://localhost:4600/api/events/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
 
         if (!response.ok) throw new Error("Event not found");
 
@@ -88,7 +85,7 @@ const GalleryPage = ({ darkMode }) => {
       );
 
       const response = await fetch(
-        `https://hobbiesclub-my9i.onrender.com/api/events/${id}/gallery`,
+        `http://localhost:4600/api/events/${id}/gallery`,
         {
           method: "PUT",
           headers: {
@@ -118,7 +115,7 @@ const GalleryPage = ({ darkMode }) => {
     try {
       const token = Cookies.get("authtoken");
       const response = await fetch(
-        `https://hobbiesclub-my9i.onrender.com/api/events/${id}/gallery`,
+        `http://localhost:4600/api/events/${id}/gallery`,
         {
           method: "DELETE",
           headers: {

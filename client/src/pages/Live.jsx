@@ -12,17 +12,14 @@ const Live = ({ darkMode }) => {
         setLoading(true);
         const token = Cookies.get("authtoken");
 
-        const response = await fetch(
-          "https://hobbiesclub-my9i.onrender.com/api/events",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch("http://localhost:4600/api/events", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        });
 
         if (!response.ok) {
           throw new Error(response.statusText);

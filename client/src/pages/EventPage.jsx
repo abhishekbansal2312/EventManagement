@@ -21,16 +21,13 @@ const EventPage = ({ darkMode }) => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch(
-          `https://hobbiesclub-my9i.onrender.com/api/tasks/${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`http://localhost:4600/api/tasks/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
 
         if (!response.ok) throw new Error("Error fetching tasks");
 
@@ -43,16 +40,13 @@ const EventPage = ({ darkMode }) => {
 
     const fetchEvent = async () => {
       try {
-        const response = await fetch(
-          `https://hobbiesclub-my9i.onrender.com/api/events/${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`http://localhost:4600/api/events/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
 
         if (!response.ok) throw new Error("Event not found");
 
@@ -86,7 +80,7 @@ const EventPage = ({ darkMode }) => {
     e.preventDefault();
     try {
       const response = await fetch(
-        `https://hobbiesclub-my9i.onrender.com/api/events/${id}/participants`,
+        `http://localhost:4600/api/events/${id}/participants`,
         {
           method: "POST",
           headers: {
@@ -111,7 +105,7 @@ const EventPage = ({ darkMode }) => {
   const handleRemoveParticipant = async (participantId) => {
     try {
       const response = await fetch(
-        `https://hobbiesclub-my9i.onrender.com/api/events/${id}/participants`,
+        `http://localhost:4600/api/events/${id}/participants`,
         {
           method: "DELETE",
           headers: {

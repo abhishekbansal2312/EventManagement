@@ -58,17 +58,14 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
         offlinePoster: offlinePosterUrl,
       };
 
-      const response = await fetch(
-        `https://hobbiesclub-my9i.onrender.com/api/events`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(newEvent),
-        }
-      );
+      const response = await fetch(`http://localhost:4600/api/events`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(newEvent),
+      });
 
       if (!response.ok) throw new Error("Error creating event");
 

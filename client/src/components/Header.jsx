@@ -32,7 +32,7 @@ const Navbar = ({ darkMode }) => {
 
   const handleLogout = () => {
     Cookies.remove("authtoken");
-    fetch("https://hobbiesclub-my9i.onrender.com/api/auth/logout", {
+    fetch("http://localhost:4600/api/auth/logout", {
       method: "DELETE",
       credentials: "include",
     })

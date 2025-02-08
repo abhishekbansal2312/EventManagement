@@ -90,7 +90,7 @@ const UpdateMember = ({ member, setMembers, onCancel }) => {
 
   const updateMemberData = async (pictureURL) => {
     const response = await fetch(
-      `https://hobbiesclub-my9i.onrender.com/api/members/${member._id}`,
+      `http://localhost:4600/api/members/${member._id}`,
       {
         method: "PUT",
         headers: {

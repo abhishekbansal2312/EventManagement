@@ -32,7 +32,7 @@ const EventCard = ({ event, darkMode, onDelete }) => {
     console.log("Delete button clicked for event:", event._id); // Debug log
     try {
       const response = await fetch(
-        `https://hobbiesclub-my9i.onrender.com/api/events/${event._id}`,
+        `http://localhost:4600/api/events/${event._id}`,
         {
           method: "DELETE",
           credentials: "include",

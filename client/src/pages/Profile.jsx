@@ -27,7 +27,7 @@ const Profile = () => {
     } else {
       try {
         const response = await fetch(
-          `https://hobbiesclub-my9i.onrender.com/api/users/${id}/participated-events`,
+          `http://localhost:4600/api/users/${id}/participated-events`,
           {
             method: "GET",
             headers: {
@@ -58,16 +58,13 @@ const Profile = () => {
       }
 
       try {
-        const response = await fetch(
-          `https://hobbiesclub-my9i.onrender.com/api/users/${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`http://localhost:4600/api/users/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) {
           throw new Error(`HTTP Error: ${response.status}`);
         }

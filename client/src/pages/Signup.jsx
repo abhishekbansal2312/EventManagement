@@ -12,7 +12,7 @@ const Signup = ({ darkMode }) => {
 
   function onSubmit(e) {
     e.preventDefault();
-    const url = "https://hobbiesclub-my9i.onrender.com/api/auth/register";
+    const url = "http://localhost:4600/api/auth/register";
 
     fetch(url, {
       method: "POST",

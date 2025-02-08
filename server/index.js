@@ -7,7 +7,6 @@ const cookieParser = require("cookie-parser");
 
 const app = express();
 
-// MongoDB connection
 const MongoDB = process.env.MONGO_URL;
 
 mongoose
@@ -22,7 +21,7 @@ mongoose
 
 // CORS options
 const corsOptions = {
-  origin: "https://mellow-moxie-f15ef2.netlify.app",
+  origin: true,
   credentials: true,
 };
 
@@ -61,13 +60,12 @@ app.use("/api/reviews", reviewRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error("Error occurred:", err); // Log the error for debugging
+  console.error("Error occurred:", err);
   res
     .status(500)
     .json({ message: "Internal Server Error", error: err.message });
 });
 
-// Start the server
 app.listen(4600, () => {
-  console.log("Server is running on https://hobbiesclub-my9i.onrender.com");
+  console.log("Server is running on http://localhost:4600");
 });

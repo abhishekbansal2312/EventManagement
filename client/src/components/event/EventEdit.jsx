@@ -69,7 +69,7 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
       };
 
       const response = await fetch(
-        `https://hobbiesclub-my9i.onrender.com/api/events/${event._id}`,
+        `http://localhost:4600/api/events/${event._id}`,
         {
           method: "PUT",
           headers: {

@@ -33,7 +33,7 @@ const FacultyCard = ({ faculty, darkMode, onDelete, onUpdate }) => {
     try {
       // Call the API to update faculty details using _id
       const response = await fetch(
-        `https://hobbiesclub-my9i.onrender.com/api/faculty/${updatedFaculty._id}`, // Use _id here
+        `http://localhost:4600/api/faculty/${updatedFaculty._id}`, // Use _id here
         {
           method: "PUT", // Use PUT method for updating
           headers: {

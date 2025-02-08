@@ -15,9 +15,7 @@ const AllMails = () => {
   useEffect(() => {
     const fetchMails = async () => {
       try {
-        const response = await fetch(
-          "https://hobbiesclub-my9i.onrender.com/api/contact"
-        );
+        const response = await fetch("http://localhost:4600/api/contact");
         const data = await response.json();
         setMails(data);
         setFilteredMails(data);

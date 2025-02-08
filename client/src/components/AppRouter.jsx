@@ -42,10 +42,8 @@ const AppRouter = () => {
             />
           )}
 
-        {/* Main content with routes */}
         <main className="flex-grow main-content">
           <Routes>
-            {/* Home page (public) */}
             <Route
               path="/"
               element={
@@ -71,15 +69,7 @@ const AppRouter = () => {
               element={<Register darkMode={darkMode} />}
             />
 
-            {/* Protected routes */}
-            <Route
-              path="/members"
-              element={
-                <ProtectedRoute>
-                  <Members darkMode={darkMode} />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/members" element={<Members darkMode={darkMode} />} />
             <Route
               path="/gallery"
               element={
@@ -109,11 +99,7 @@ const AppRouter = () => {
             />
             <Route
               path="/event/:id"
-              element={
-                <ProtectedRoute>
-                  <EventPage darkMode={darkMode} />
-                </ProtectedRoute>
-              }
+              element={<EventPage darkMode={darkMode} />}
             />
             <Route
               path="/event/:id/register"
@@ -124,14 +110,7 @@ const AppRouter = () => {
               }
             />
 
-            <Route
-              path="/users"
-              element={
-                <ProtectedRouteAdminOnly>
-                  <Users darkMode={darkMode} />
-                </ProtectedRouteAdminOnly>
-              }
-            />
+            <Route path="/users" element={<Users darkMode={darkMode} />} />
             <Route
               path="/reviews"
               element={
@@ -169,7 +148,6 @@ const AppRouter = () => {
           </Routes>
         </main>
 
-        {/* Dark mode toggle and footer */}
         <DarkMode darkMode={darkMode} setDarkMode={setDarkMode} />
         {isAuthenticated &&
           !noHeaderFooterRoutes.includes(location.pathname) && (

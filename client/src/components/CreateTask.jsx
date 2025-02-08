@@ -31,16 +31,13 @@ const CreateTask = ({ eventId, onClose, darkMode }) => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await fetch(
-          "https://hobbiesclub-my9i.onrender.com/api/members",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch("http://localhost:4600/api/members", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
 
         if (!response.ok) {
           throw new Error("Failed to fetch members");
@@ -102,7 +99,7 @@ const CreateTask = ({ eventId, onClose, darkMode }) => {
 
     try {
       const response = await fetch(
-        `https://hobbiesclub-my9i.onrender.com/api/tasks/${eventId}`,
+        `http://localhost:4600/api/tasks/${eventId}`,
         {
           method: "POST",
           headers: {
