@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { toast } from "react-hot-toast"; // Updated to use react-hot-toast
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode"; // Corrected to default import
+
 import EventTask from "../components/event/EventTask.jsx";
 import Participants from "../components/Participants.jsx";
 import { FaTrash } from "react-icons/fa"; // Import the trash icon
 import EventEdit from "../components/event/EventEdit.jsx";
 import Modal from "../components/Modal.jsx";
+import { useSelector } from "react-redux";
 
 const EventPage = ({ darkMode }) => {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [participantIds, setParticipantIds] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [showEditEvent, setShowEditEvent] = useState(false);
+  const { user } = useSelector((state) => state.user);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -59,17 +59,8 @@ const EventPage = ({ darkMode }) => {
       }
     };
 
-    const checkUserRole = () => {
-      const token = Cookies.get("authtoken");
-      if (token) {
-        const decodedToken = jwtDecode(token);
-        setIsAdmin(decodedToken.role === "admin");
-      }
-    };
-
     fetchTasks();
     fetchEvent();
-    checkUserRole();
   }, [id]);
 
   const handleParticipantChange = (e) => {
@@ -216,7 +207,7 @@ const EventPage = ({ darkMode }) => {
             </div>
           )}
 
-          {isAdmin && (
+          {user?.role === "admin" && (
             <div
               onClick={() => setShowEditEvent(true)}
               className="bg-blue-500 hover:bg-blue-700 text-[12px] sm:text-sm text-white font-normal py-2 px-4 rounded-md transition-colors duration-300"
@@ -239,8 +230,6 @@ const EventPage = ({ darkMode }) => {
           />
         </Modal>
 
-        {/* Right Side: Participants */}
-
         <div className="flex-1">
           <EventTask
             tasks={tasks}
@@ -256,7 +245,6 @@ const EventPage = ({ darkMode }) => {
             participants={sortedParticipants}
             handleAddParticipants={handleAddParticipants}
             handleRemoveParticipant={handleRemoveParticipant}
-            isAdmin={isAdmin}
             darkMode={darkMode}
           />
         </div>

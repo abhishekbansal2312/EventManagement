@@ -1,15 +1,11 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import Cookies from "js-cookie";
 
 const ProtectedRoute = ({ children }) => {
-  const token = Cookies.get("authtoken");
-  console.log("token", token);
+  const isLoggedIn = useSelector((state) => state.user?.isLoggedIn);
 
-  const isAuthenticated = Boolean(token);
-  console.log("isAuthenticated", isAuthenticated);
-
-  if (!isAuthenticated) {
+  if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
 

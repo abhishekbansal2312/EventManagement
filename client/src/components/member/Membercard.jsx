@@ -1,26 +1,20 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { FaTrash, FaEdit } from "react-icons/fa";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
+
 import Modal from "../Modal";
 import EditMember from "./UpdateMemberForm";
-import { toast } from 'react-hot-toast'; // Added import for toast
+import { toast } from "react-hot-toast"; // Added import for toast
+import { useSelector } from "react-redux";
 
-const MemberCard = ({ member, onDelete, setMembers }) => { // Removed setError
-  const [isAdmin, setIsAdmin] = useState(false);
+const MemberCard = ({ member, onDelete, setMembers }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [bgColor, setBgColor] = useState("#ffffff");
   const [hoverActive, setHoverActive] = useState(false);
   const [activateSection, setActivateSection] = useState(false);
+  const { user } = useSelector((state) => state.user);
 
   useEffect(() => {
-    const token = Cookies.get("authtoken");
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      setIsAdmin(decodedToken.role === "admin");
-    }
-
     const colors = [
       "#C70039",
       "#900C3F",
@@ -169,10 +163,7 @@ const MemberCard = ({ member, onDelete, setMembers }) => { // Removed setError
         </div>
       </div>
 
-      {/* Admin Controls */}
-      {isAdmin && <hr className="" />}
-
-      {isAdmin && (
+      {user?.role === "admin" && (
         <div className="grid grid-cols-2 gap-2 p-2 text-[12px] flex-grow-0">
           <button
             onClick={handleEditClick}

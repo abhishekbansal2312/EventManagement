@@ -3,38 +3,34 @@ import "../App.css";
 import Marquee from "react-marquee-slider";
 import { useAuth } from "../provider/AuthProvider";
 import { useNavigate } from "react-router-dom";
-import { FaGamepad, FaCalendarAlt, FaTrophy } from "react-icons/fa"; // Importing icons
-import Card from "./Card"; // Import the Card component
-import Cookies from "js-cookie";
+import { FaGamepad, FaCalendarAlt, FaTrophy } from "react-icons/fa";
+import Card from "./Card";
+import useAxios from "../utils/useAxios"; // Import useAxios
 
 const Home = ({ darkMode }) => {
   const [events, setEvents] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const makeRequest = useAxios(); // Initialize useAxios
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const token = Cookies.get("authtoken");
-        const response = await fetch("http://localhost:4600/api/events", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch events");
-        const data = await response.json();
+        const data = await makeRequest(
+          "http://localhost:4600/api/events",
+          "GET",
+          null,
+          true
+        );
         const sortedEvents = data.sort(
           (a, b) => new Date(b.date) - new Date(a.date)
         );
-        setEvents([...sortedEvents, ...sortedEvents]);
+        setEvents([...sortedEvents, ...sortedEvents]); // Duplicate for marquee effect
         setError(null);
       } catch (err) {
         setError(err.message);
@@ -47,33 +43,25 @@ const Home = ({ darkMode }) => {
     fetchEvents();
   }, []);
 
-  const [reviews, setReviews] = useState([]);
-
-  const fetchReviews = async () => {
-    try {
-      const response = await fetch("http://localhost:4600/api/reviews", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch reviews");
-
-      const data = await response.json();
-      console.log(data);
-
-      // Filter to get only reviews with a rating of 5 and a comment length greater than 50
-      const filteredReviews = data.filter((review) => review.rating === 5 || 4);
-      console.log(filteredReviews);
-
-      // Limit to the first 3 reviews
-      setReviews(filteredReviews.slice(0, 3));
-    } catch (error) {
-      console.error("Error fetching reviews:", error.message);
-      setError(error.message);
-    }
-  };
-
   useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const data = await makeRequest(
+          "http://localhost:4600/api/reviews",
+          "GET",
+          null,
+          true
+        );
+        const filteredReviews = data.filter(
+          (review) => review.rating === 5 || review.rating === 4
+        );
+        setReviews(filteredReviews.slice(0, 3)); // Limit to first 3 reviews
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+        setError(err.message);
+      }
+    };
+
     fetchReviews();
   }, []);
 
@@ -103,9 +91,9 @@ const Home = ({ darkMode }) => {
               ? "bg-gray-800 text-white hover:bg-gray-700"
               : "bg-white text-indigo-600 hover:bg-gray-100"
           }`}
-          onClick={() => {
-            isAuthenticated ? navigate("/events") : navigate("/login");
-          }}
+          onClick={() =>
+            isAuthenticated ? navigate("/events") : navigate("/login")
+          }
         >
           {isAuthenticated ? "Explore Events" : "Get Started"}
         </button>
@@ -117,39 +105,38 @@ const Home = ({ darkMode }) => {
           WHAT WE OFFER
         </h2>
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center transform transition duration-300 hover:shadow-lg flex flex-col items-center justify-center relative">
-            <div className="p-2 border rounded-full flex justify-center items-center w-16 h-16 md:w-20 md:h-20 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-150%] bg-indigo-600">
-              <FaGamepad className="text-2xl md:text-3xl text-white" />
+          {[
+            {
+              icon: <FaGamepad />,
+              title: "Exciting Games",
+              desc: "Engaging and mind-refreshing games and fun activities.",
+            },
+            {
+              icon: <FaCalendarAlt />,
+              title: "Events",
+              desc: "Monthly events and gatherings for students and fun lovers.",
+            },
+            {
+              icon: <FaTrophy />,
+              title: "Competitions",
+              desc: "Competitions related to various areas from dance to singing.",
+            },
+          ].map((service, index) => (
+            <div
+              key={index}
+              className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center transform transition duration-300 hover:shadow-lg flex flex-col items-center justify-center relative"
+            >
+              <div className="p-2 border rounded-full flex justify-center items-center w-16 h-16 md:w-20 md:h-20 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-150%] bg-indigo-600">
+                {service.icon}
+              </div>
+              <h3 className="text-md md:text-lg font-normal uppercase pt-8">
+                {service.title}
+              </h3>
+              <p className="text-[12px] md:text-[14px] text-slate-500 dark:text-gray-300 leading-relaxed">
+                {service.desc}
+              </p>
             </div>
-            <h3 className="text-md md:text-lg font-normal uppercase pt-8">
-              Exciting Games
-            </h3>
-            <p className="text-[12px] md:text-[14px] text-slate-500 dark:text-gray-300 leading-relaxed">
-              Engaging and mind-refreshing games and fun activities.
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center transform transition duration-300 hover:shadow-lg flex flex-col items-center justify-center relative">
-            <div className="p-2 border rounded-full flex justify-center items-center w-16 h-16 md:w-20 md:h-20 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-150%] bg-indigo-600">
-              <FaCalendarAlt className="text-2xl md:text-3xl text-white" />
-            </div>
-            <h3 className="text-md md:text-lg font-normal uppercase pt-8">
-              Events
-            </h3>
-            <p className="text-[12px] md:text-[14px] text-slate-500 dark:text-gray-300 leading-relaxed">
-              Monthly events and gatherings for students and fun lovers.
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md text-center transform transition duration-300 hover:shadow-lg flex flex-col items-center justify-center relative">
-            <div className="p-2 border rounded-full flex justify-center items-center w-16 h-16 md:w-20 md:h-20 absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-150%] bg-indigo-600">
-              <FaTrophy className="text-2xl md:text-3xl text-white" />
-            </div>
-            <h3 className="text-md md:text-lg font-normal uppercase pt-8">
-              Competitions
-            </h3>
-            <p className="text-[12px] md:text-[14px] text-slate-500 dark:text-gray-300 leading-relaxed">
-              Competitions related to various areas from dance to singing.
-            </p>
-          </div>
+          ))}
         </div>
       </div>
 
