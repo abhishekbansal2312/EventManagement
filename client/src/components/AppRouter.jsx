@@ -20,11 +20,13 @@ import Contact from "../pages/Contact";
 import Register from "../pages/Register";
 import AllMails from "./contact/AllMails";
 import Profile from "../pages/Profile";
+import useUserSession from "../utils/useUserSession";
 
 const AppRouter = () => {
   const { isAuthenticated, setIsAuthenticated, darkMode, setDarkMode } =
     useAuth();
   const location = useLocation();
+  useUserSession();
 
   // Pages where we don't want the Header and Footer
   const noHeaderFooterRoutes = ["/login"];
