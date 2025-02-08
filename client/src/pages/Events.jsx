@@ -1,82 +1,46 @@
 import React, { useEffect, useState } from "react";
 import EventCard from "../components/event/EventCard";
-import { Link } from "react-router-dom";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode"; // Correct import
-import Radio from "../components/Radio"; // Import Radio component
+import Radio from "../components/Radio";
 import Modal from "../components/Modal";
 import CreateEvent from "../components/event/CreateEvent";
-import { toast } from "react-hot-toast"; // Import toast from react-hot-toast
+import { toast } from "react-hot-toast";
+import useAxios from "../utils/useAxios";
+import { useSelector } from "react-redux";
 
 const Events = ({ darkMode }) => {
   const [events, setEvents] = useState([]);
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [filter, setFilter] = useState("all");
-  const [showAddEvent, setShowAddEvent] = useState(false); // Initialize showAddEvent state
+  const [showAddEvent, setShowAddEvent] = useState(false);
+  const makeRequest = useAxios();
+  const { user } = useSelector((state) => state.user);
+  console.log(user);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = Cookies.get("authtoken");
-        if (token) {
-          const decodedToken = jwtDecode(token);
-          setIsAdmin(decodedToken.role === "admin");
-          console.log(decodedToken.id);
-          const response = await fetch(
-            `http://localhost:4600/api/users/${decodedToken.id}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-              credentials: "include",
-            }
-          );
-
-          if (!response.ok) throw new Error("Failed to fetch user data");
-          const userData = await response.json();
-          setUser(userData);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        toast.error("Error fetching user data.");
-      }
-    };
-
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const token = Cookies.get("authtoken");
-        const response = await fetch("http://localhost:4600/api/events", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch events");
-        const data = await response.json();
+        const data = await makeRequest(
+          "http://localhost:4600/api/events",
+          "GET",
+          null,
+          true
+        );
         const sortedEvents = data.sort(
           (a, b) => new Date(b.date) - new Date(a.date)
         );
         setEvents(sortedEvents);
       } catch (err) {
         console.error("Error fetching events:", err);
-        toast.error("Error fetching events."); // Use toast for error
+        toast.error("Error fetching events.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserData();
     fetchEvents();
   }, []);
 
-  // Function to filter events based on the selected option
   const filteredEvents = () => {
     if (filter === "participated" && user) {
       return events.filter((event) =>
@@ -85,10 +49,9 @@ const Events = ({ darkMode }) => {
     } else if (filter === "live") {
       return events.filter((event) => event.isLive);
     }
-    return events; // Return all events if "all" is selected
+    return events;
   };
 
-  // Options for the radio buttons
   const radioOptions = [
     { value: "all", label: "All Events" },
     { value: "participated", label: "Participated Events" },
@@ -111,14 +74,14 @@ const Events = ({ darkMode }) => {
           selectedValue={filter}
           handleChange={setFilter}
         />
-        {isAdmin && (
+        {
           <button
             onClick={() => setShowAddEvent(true)}
             className="bg-blue-500 hover:bg-blue-700 text-[12px] sm:text-sm text-white font-normal py-2 px-4 rounded-md transition-colors duration-300"
           >
             Add Event
           </button>
-        )}
+        }
 
         <Modal
           isOpen={showAddEvent}

@@ -1,38 +1,28 @@
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
+import useAxios from "./useAxios";
 
 const Live = ({ darkMode }) => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const makeRequest = useAxios();
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const token = Cookies.get("authtoken");
-
-        const response = await fetch("http://localhost:4600/api/events", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-
-        const data = await response.json();
+        const data = await makeRequest(
+          "http://localhost:4600/api/events",
+          "GET",
+          null,
+          true
+        );
         const sortedEvents = data.sort(
           (a, b) => new Date(b.date) - new Date(a.date)
         );
         setEvents(sortedEvents);
-        setError(null);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Failed to fetch events");
       } finally {
         setLoading(false);
       }
@@ -51,20 +41,17 @@ const Live = ({ darkMode }) => {
     >
       <div className="container mx-auto px-4 md:px-8 lg:px-12 py-10">
         <h1 className="text-5xl font-bold text-center mb-8">Live Events</h1>
-
         {loading && (
           <div className="flex justify-center items-center mb-4">
             <div className="loader"></div>
           </div>
         )}
-
         {error && (
           <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
             <p className="font-bold text-lg">Error:</p>
             <p>{error}</p>
           </div>
         )}
-
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {liveEvents.length > 0 ? (
@@ -114,8 +101,7 @@ const Live = ({ darkMode }) => {
                         Register Here
                       </a>
                     )}
-
-                    {event.participants.length > 0 && !event.isLive && (
+                    {event.participants?.length > 0 && !event.isLive && (
                       <div className="mt-4">
                         <strong>Participants:</strong>
                         <ul className="list-disc list-inside text-gray-600">

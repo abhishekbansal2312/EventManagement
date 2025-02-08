@@ -2,43 +2,33 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { storage } from "../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
+import useAxios from "../utils/useAxios";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 const GalleryPage = ({ darkMode }) => {
   const { id } = useParams();
+  const makeRequest = useAxios();
   const [event, setEvent] = useState(null);
   const [images, setImages] = useState([]);
-  const [imageNames, setImageNames] = useState([]); // State to store names of selected images
+  const [imageNames, setImageNames] = useState([]);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const fetchEvent = async () => {
       setLoading(true);
       try {
-        const token = Cookies.get("authtoken");
-        if (token) {
-          const decodedToken = jwtDecode(token);
-          setIsAdmin(decodedToken.role === "admin");
-        }
-
-        const response = await fetch(`http://localhost:4600/api/events/${id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) throw new Error("Event not found");
-
-        const data = await response.json();
+        const data = await makeRequest(
+          `http://localhost:4600/api/events/${id}`,
+          "GET",
+          null,
+          true
+        );
         setEvent(data);
       } catch (error) {
         setErrorMessage(error.message);
@@ -46,13 +36,12 @@ const GalleryPage = ({ darkMode }) => {
         setLoading(false);
       }
     };
-
     fetchEvent();
-  }, [id]);
+  }, []);
 
   const validateFile = (file) => {
     const validTypes = ["image/jpeg", "image/png", "image/gif"];
-    return validTypes.includes(file.type) && file.size <= 5 * 1024 * 1024; // 5 MB
+    return validTypes.includes(file.type) && file.size <= 5 * 1024 * 1024;
   };
 
   const handleFileChange = (e) => {
@@ -68,14 +57,13 @@ const GalleryPage = ({ darkMode }) => {
     }
 
     setImages(validFiles);
-    setImageNames(validFiles.map((file) => file.name)); // Store the names of valid files
+    setImageNames(validFiles.map((file) => file.name));
   };
 
   const handleUpload = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const token = Cookies.get("authtoken");
       const imageUrls = await Promise.all(
         images.map(async (imageFile) => {
           const imageRef = ref(storage, `gallery/${id}/${imageFile.name}`);
@@ -84,25 +72,16 @@ const GalleryPage = ({ darkMode }) => {
         })
       );
 
-      const response = await fetch(
+      const data = await makeRequest(
         `http://localhost:4600/api/events/${id}/gallery`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ newImages: imageUrls }),
-        }
+        "PUT",
+        { newImages: imageUrls },
+        true
       );
 
-      if (!response.ok) throw new Error("Failed to update gallery");
-
-      const data = await response.json();
       setSuccessMessage(data.message);
       setImages([]);
-      setImageNames([]); // Clear image names after upload
+      setImageNames([]);
     } catch (error) {
       setErrorMessage(error.message);
     } finally {
@@ -113,25 +92,13 @@ const GalleryPage = ({ darkMode }) => {
   const handleDeleteImage = async (imageUrl) => {
     setLoading(true);
     try {
-      const token = Cookies.get("authtoken");
-      const response = await fetch(
+      const data = await makeRequest(
         `http://localhost:4600/api/events/${id}/gallery`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ imageUrl }),
-        }
+        "DELETE",
+        { imageUrl },
+        true
       );
-
-      if (!response.ok) throw new Error("Failed to delete image");
-
-      const data = await response.json();
       setSuccessMessage(data.message);
-
       setEvent((prevEvent) => ({
         ...prevEvent,
         gallery: prevEvent.gallery.filter((url) => url !== imageUrl),
@@ -177,7 +144,7 @@ const GalleryPage = ({ darkMode }) => {
               </p>
             )}
 
-            {isAdmin && (
+            {
               <form onSubmit={handleUpload} className="mb-4">
                 <label htmlFor="imageUpload" className="block text-gray-700">
                   Upload Images
@@ -199,7 +166,7 @@ const GalleryPage = ({ darkMode }) => {
                 </div>
                 <button
                   type="submit"
-                  className={`mt-4 w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ${
+                  className={`w-full px-4 py-2 bg-blue-500 text-white rounded ${
                     loading ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                   disabled={loading}
@@ -207,41 +174,37 @@ const GalleryPage = ({ darkMode }) => {
                   {loading ? "Uploading..." : "Upload"}
                 </button>
               </form>
-            )}
+            }
 
-            {/* Display names of selected images */}
             {imageNames.length > 0 && (
               <div className="mb-4">
                 <h2 className="text-lg font-semibold">Selected Images:</h2>
                 <ul className="list-disc pl-5">
                   {imageNames.map((name, index) => (
-                    <li key={index} className="text-gray-700">
-                      {name}
-                    </li>
+                    <li key={index}>{name}</li>
                   ))}
                 </ul>
               </div>
             )}
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {event?.gallery && event.gallery.length > 0 ? (
+              {event?.gallery?.length > 0 ? (
                 event.gallery.map((imageUrl, index) => (
                   <div key={index} className="relative">
                     <img
                       src={imageUrl}
                       alt={`Gallery Image ${index}`}
-                      className="w-full h-full object-cover rounded cursor-pointer aspect-square"
+                      className="w-full h-full object-cover rounded cursor-pointer"
                       onClick={() => handleImageClick(imageUrl)}
-                      style={{ aspectRatio: "1 / 1" }} // Ensuring square aspect ratio
                     />
-                    {isAdmin && (
+                    {
                       <button
                         onClick={() => handleDeleteImage(imageUrl)}
-                        className="absolute top-2 right-2 bg-red-600 text-white p-1 rounded hover:bg-red-700"
+                        className="absolute top-2 right-2 bg-red-600 text-white p-1 rounded"
                       >
                         <FontAwesomeIcon icon={faTrashAlt} />
                       </button>
-                    )}
+                    }
                   </div>
                 ))
               ) : (
@@ -251,7 +214,6 @@ const GalleryPage = ({ darkMode }) => {
               )}
             </div>
 
-            {/* Modal for displaying full image */}
             {selectedImage && (
               <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
                 <div className="relative">
