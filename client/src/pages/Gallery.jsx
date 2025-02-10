@@ -1,25 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import useAxios from "../utils/useAxios"; // Import the custom hook
 
 const Gallery = ({ darkMode }) => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const makeRequest = useAxios(); // Get the function from useAxios
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("http://localhost:4600/api/events", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) throw new Error(response.statusText);
-
-        const data = await response.json();
+        const data = await makeRequest(
+          "http://localhost:4600/api/events",
+          "GET"
+        );
         setEvents(data);
         setError(null);
       } catch (err) {
@@ -28,6 +23,7 @@ const Gallery = ({ darkMode }) => {
         setLoading(false);
       }
     };
+
     fetchEvents();
   }, []);
 
@@ -67,7 +63,7 @@ const Gallery = ({ darkMode }) => {
                   <img
                     src={
                       event.offlinePoster || "https://via.placeholder.com/3149"
-                    } // Placeholder if no poster is available
+                    }
                     className="animate-fade-in block h-full w-full object-cover object-center transition duration-300"
                     alt={event.title}
                   />
