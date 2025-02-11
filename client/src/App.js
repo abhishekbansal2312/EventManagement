@@ -3,16 +3,19 @@ import AppRouter from "./components/AppRouter";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
-import { store } from "./redux/store";
+import { store, persistor } from "./redux/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 const App = () => {
   return (
     <AuthProvider>
       <Provider store={store}>
-        <BrowserRouter>
-          <AppRouter />
-          <Toaster />
-        </BrowserRouter>
+        <PersistGate loading={null} persistor={persistor}>
+          <BrowserRouter>
+            <AppRouter />
+            <Toaster />
+          </BrowserRouter>
+        </PersistGate>
       </Provider>
     </AuthProvider>
   );
