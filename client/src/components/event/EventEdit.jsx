@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast"; // Updated import
 import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import useAxios from "../../utils/useAxios";
 
 const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
   const [loading, setLoading] = useState(false);
@@ -21,6 +22,7 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
   const [offlinePosterFile, setOfflinePosterFile] = useState(null);
   const [draggingOnline, setDraggingOnline] = useState(false);
   const [draggingOffline, setDraggingOffline] = useState(false);
+  const makeRequest = useAxios();
 
   useEffect(() => {
     if (event) {
@@ -44,7 +46,7 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading
+    setLoading(true);
 
     try {
       if (!event || !event._id) {
@@ -54,13 +56,11 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
       let onlinePosterUrl = formData.onlinePoster;
       let offlinePosterUrl = formData.offlinePoster;
 
-      if (onlinePosterFile) {
+      // Upload new images if provided
+      if (onlinePosterFile)
         onlinePosterUrl = await uploadImage(onlinePosterFile);
-      }
-
-      if (offlinePosterFile) {
+      if (offlinePosterFile)
         offlinePosterUrl = await uploadImage(offlinePosterFile);
-      }
 
       const updatedEvent = {
         ...formData,
@@ -68,23 +68,18 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
         offlinePoster: offlinePosterUrl,
       };
 
-      const response = await fetch(
+      // Using useAxios for cleaner API calls
+      await makeRequest(
         `http://localhost:4600/api/events/${event._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(updatedEvent),
-        }
+        "PUT",
+        updatedEvent,
+        true
       );
 
-      if (!response.ok) throw new Error("Error updating event");
+      toast.success("Event updated successfully!");
+      setEvent((prevEvent) => ({ ...prevEvent, ...updatedEvent })); // Dynamically update event state
 
-      toast.success("Event updated successfully!"); // Success toast
-      setEvent(updatedEvent); // Update event context
-      setLoading(false); // Stop loading
+      // Reset form after update
       setFormData({
         title: "",
         description: "",
@@ -95,11 +90,13 @@ const EditEventPage = ({ darkMode, event, setEvent, onClose }) => {
         onlinePoster: "",
         offlinePoster: "",
         isLive: false,
-      }); // Reset form
-      onClose();
-      // Optionally redirect
+      });
+
+      onClose(); // Close modal if applicable
     } catch (error) {
-      setLoading(false); // Stop loading in case of error
+      toast.error(error.response?.data?.message || "Error updating event");
+    } finally {
+      setLoading(false);
     }
   };
 

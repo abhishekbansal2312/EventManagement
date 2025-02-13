@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode"; // Ensure proper import here
 import ReviewItem from "../components/ReviewItem";
 import ReviewForm from "../components/ReviewForm";
+import { useSelector } from "react-redux";
 
 const Review = ({ darkMode }) => {
   // Destructure darkMode prop
@@ -18,17 +19,8 @@ const Review = ({ darkMode }) => {
     4: 0,
     5: 0,
   });
-  const [isAdmin, setIsAdmin] = useState(false);
 
-  const getStudentDetailsFromToken = () => {
-    const token = Cookies.get("authtoken");
-    if (token) {
-      const decoded = jwtDecode(token);
-      return decoded ? { id: decoded.id, name: decoded.name } : null; // Assuming the name is included in the token
-    }
-    return null;
-  };
-
+  const { user } = useSelector((state) => state.user);
   const fetchReviews = async () => {
     try {
       const response = await fetch("http://localhost:4600/api/reviews", {
@@ -50,9 +42,8 @@ const Review = ({ darkMode }) => {
   };
   const calculateAverageRating = (data) => {
     // Use approved reviews for calculation
-    const approvedReviews = isAdmin
-      ? data
-      : data.filter((review) => review.approved);
+    const approvedReviews =
+      user.role == "admin" ? data : data.filter((review) => review.approved);
     const totalRatings = approvedReviews.reduce(
       (acc, review) => acc + review.rating,
       0
@@ -225,16 +216,7 @@ const Review = ({ darkMode }) => {
   };
 
   useEffect(() => {
-    const studentDetailsFromToken = getStudentDetailsFromToken();
-    setStudentId(studentDetailsFromToken ? studentDetailsFromToken.id : "");
-    setStudentName(studentDetailsFromToken ? studentDetailsFromToken.name : ""); // Set student name
     fetchReviews();
-
-    const authtoken = Cookies.get("authtoken");
-    if (authtoken) {
-      const decodedToken = jwtDecode(authtoken);
-      setIsAdmin(decodedToken.role === "admin");
-    }
   }, []);
 
   return (
@@ -271,10 +253,10 @@ const Review = ({ darkMode }) => {
             <p
               className={`mt-2 ${darkMode ? "text-gray-400" : "text-gray-700"}`}
             >
-              {isAdmin
+              {user?.role === "admin"
                 ? reviews.length
                 : reviews.filter((r) => r.approved).length}{" "}
-              {isAdmin ? "Total Ratings" : "Ratings"}
+              {user?.role === "admin" ? "Total Ratings" : "Ratings"}
             </p>
           </div>
 
@@ -297,15 +279,17 @@ const Review = ({ darkMode }) => {
               }`}
             >
               {Object.entries(ratingCounts).map(([rating, count]) => {
-                const totalReviews = isAdmin
-                  ? reviews.length
-                  : reviews.filter((review) => review.approved).length;
-                const approvedCount = isAdmin
-                  ? count
-                  : reviews.filter(
-                      (review) =>
-                        review.rating === parseInt(rating) && review.approved
-                    ).length;
+                const totalReviews =
+                  user?.role === "admin"
+                    ? reviews.length
+                    : reviews.filter((review) => review.approved).length;
+                const approvedCount =
+                  user?.role === "admin"
+                    ? count
+                    : reviews.filter(
+                        (review) =>
+                          review.rating === parseInt(rating) && review.approved
+                      ).length;
 
                 return (
                   <div
@@ -361,20 +345,23 @@ const Review = ({ darkMode }) => {
         ) : (
           // Filter reviews based on user role
           reviews
-            .filter((review) => isAdmin || review.approved) // Show all reviews if admin, otherwise only approved
+            .filter((review) => user?.role === "admin" || review.approved) // Show all reviews if admin, otherwise only approved
             .map((review) => (
               <ReviewItem
                 key={review._id}
                 review={review}
-                isAdmin={isAdmin}
                 onDelete={() => handleDelete(review._id)}
                 onLike={() => handleLike(review._id)}
                 onDislike={() => handleDislike(review._id)}
                 onApprove={
-                  isAdmin ? () => handleApprove(review._id) : undefined
+                  user?.role === "admin"
+                    ? () => handleApprove(review._id)
+                    : undefined
                 } // Only allow approve if admin
                 onDisapprove={
-                  isAdmin ? () => handleDisapprove(review._id) : undefined
+                  user?.role === "admin"
+                    ? () => handleDisapprove(review._id)
+                    : undefined
                 } // Only allow disapprove if admin
                 darkMode={darkMode} // Pass darkMode to ReviewItem
               />
