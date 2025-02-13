@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FaInbox, FaRegPaperPlane, FaFolder, FaRegStar } from "react-icons/fa";
-import { motion } from "framer-motion"; // Importing Framer Motion for animations
+import { motion } from "framer-motion";
+import useAxios from "../../utils/useAxios";
 
 const AllMails = () => {
+  const makeRequest = useAxios();
   const [mails, setMails] = useState([]);
   const [filteredMails, setFilteredMails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,12 +13,10 @@ const AllMails = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [selectedMail, setSelectedMail] = useState(null);
 
-  // Fetching mails
   useEffect(() => {
     const fetchMails = async () => {
       try {
-        const response = await fetch("http://localhost:4600/api/contact");
-        const data = await response.json();
+        const data = await makeRequest("http://localhost:4600/api/contact");
         setMails(data);
         setFilteredMails(data);
       } catch (err) {
@@ -28,7 +28,6 @@ const AllMails = () => {
     fetchMails();
   }, []);
 
-  // Filtering mails based on status
   useEffect(() => {
     const filtered = mails.filter((mail) =>
       selectedStatus === "all" ? true : mail.status === selectedStatus
@@ -36,22 +35,21 @@ const AllMails = () => {
     setFilteredMails(filtered);
   }, [selectedStatus, mails]);
 
-  // Sorting mails by sent date
-  const handleSort = () => {
-    const sortedMails = [...filteredMails].sort((a, b) => {
-      return sortOrder === "asc"
-        ? new Date(a.sentAt) - new Date(b.sentAt)
-        : new Date(b.sentAt) - new Date(a.sentAt);
-    });
-    setFilteredMails(sortedMails);
-  };
+  useEffect(() => {
+    setFilteredMails((prevMails) =>
+      [...prevMails].sort((a, b) =>
+        sortOrder === "asc"
+          ? new Date(a.sentAt) - new Date(b.sentAt)
+          : new Date(b.sentAt) - new Date(a.sentAt)
+      )
+    );
+  }, [sortOrder]);
 
   if (loading) return <p className="text-center">Loading...</p>;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      {/* Sidebar */}
       <aside className="w-1/4 bg-white dark:bg-gray-800 p-6 flex flex-col shadow-lg border-r border-gray-200">
         <h3 className="text-xl font-semibold mb-4 dark:text-white">Labels</h3>
         <ul className="space-y-2">
@@ -74,32 +72,22 @@ const AllMails = () => {
             </li>
           ))}
         </ul>
-
-        {/* Sort */}
         <h3 className="text-xl font-semibold mb-4 dark:text-white">
           Sort by Date
         </h3>
         <button
-          onClick={() => {
-            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-            handleSort();
-          }}
-          className="w-full text-left p-3 rounded-lg bg-transparent text-gray-800 dark:text-gray-300 transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+          className="w-full p-3 rounded-lg bg-transparent text-gray-800 dark:text-gray-300 transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700"
         >
           Sort: {sortOrder === "asc" ? "Oldest First" : "Newest First"}
         </button>
       </aside>
-
-      {/* Main content */}
       <main className="w-3/4 p-0 overflow-hidden">
-        {" "}
-        {/* Set padding to 0 */}
         <section className="py-12 bg-white dark:bg-gray-900 rounded-lg shadow-lg h-full border border-gray-200">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-6">
               {selectedMail ? "Mail Details" : "All Mails"}
             </h2>
-
             {selectedMail ? (
               <motion.div
                 className="mail-details p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg"
@@ -155,9 +143,6 @@ const AllMails = () => {
                         key={mail._id}
                         className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300 cursor-pointer"
                         onClick={() => setSelectedMail(mail)}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
                       >
                         <td className="border px-4 py-3 dark:border-gray-600">
                           {mail.subject}

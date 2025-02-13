@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import { toast } from "react-hot-toast"; // Import from react-hot-toast
 import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import useAxios from "../../utils/useAxios";
 
 const CreateEventPage = ({ darkMode, setEvents }) => {
   const [loading, setLoading] = useState(false);
+  const makeRequest = useAxios();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -38,19 +40,17 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading
+    setLoading(true);
 
     try {
       let onlinePosterUrl = formData.onlinePoster;
       let offlinePosterUrl = formData.offlinePoster;
 
-      if (onlinePosterFile) {
+      // Upload images if new files are selected
+      if (onlinePosterFile)
         onlinePosterUrl = await uploadImage(onlinePosterFile);
-      }
-
-      if (offlinePosterFile) {
+      if (offlinePosterFile)
         offlinePosterUrl = await uploadImage(offlinePosterFile);
-      }
 
       const newEvent = {
         ...formData,
@@ -58,19 +58,14 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
         offlinePoster: offlinePosterUrl,
       };
 
-      const response = await fetch(`http://localhost:4600/api/events`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(newEvent),
-      });
+      const response = await makeRequest(
+        "http://localhost:4600/api/events",
+        "POST",
+        newEvent,
+        true
+      );
 
-      if (!response.ok) throw new Error("Error creating event");
-
-      toast.success("Event created successfully!"); // Success toast
-      setLoading(false); // Stop loading
+      toast.success("Event created successfully!");
       setFormData({
         title: "",
         description: "",
@@ -81,14 +76,13 @@ const CreateEventPage = ({ darkMode, setEvents }) => {
         onlinePoster: "",
         offlinePoster: "",
         isLive: false,
-      }); // Reset form
+      });
 
-      // Optionally redirect
-      setEvents(newEvent);
-      window.location.href = `/events`;
+      setEvents((prevEvents) => [...prevEvents, response]); // Update events dynamically
     } catch (error) {
-      toast.error("Error creating event"); // Error toast, simplified message
-      setLoading(false); // Stop loading in case of error
+      toast.error(error.response?.data?.message || "Error creating event");
+    } finally {
+      setLoading(false);
     }
   };
 
