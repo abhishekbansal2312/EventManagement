@@ -83,6 +83,7 @@ const MemberSection = ({ darkMode }) => {
               member={member}
               darkMode={darkMode}
               onDelete={() => handleDeleteMember(member._id)}
+              setMembers={setMembers}
             />
           ))
         )}

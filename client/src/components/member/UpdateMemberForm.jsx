@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase";
 import { toast } from "react-hot-toast"; // Import toast
+import useAxios from "../../utils/useAxios";
 
 const UpdateMember = ({ member, setMembers, onCancel }) => {
   const [updatedMember, setUpdatedMember] = useState({
@@ -15,6 +16,8 @@ const UpdateMember = ({ member, setMembers, onCancel }) => {
     isActive: member.isActive || true,
     joinDate: member.joinDate || "",
   });
+
+  const makeRequest = useAxios();
 
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -89,48 +92,37 @@ const UpdateMember = ({ member, setMembers, onCancel }) => {
   };
 
   const updateMemberData = async (pictureURL) => {
-    const response = await fetch(
-      `http://localhost:4600/api/members/${member._id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...updatedMember,
-          pictureURL,
-          joinDate: updatedMember.joinDate || new Date().toISOString(),
-        }),
-        credentials: "include",
-      }
-    );
+    try {
+      const updatedData = {
+        ...updatedMember,
+        pictureURL,
+        joinDate: updatedMember.joinDate || new Date().toISOString(),
+      };
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.log("Error response from server: ", errorData);
-      throw new Error(errorData.message || "Failed to update member");
+      const url = `http://localhost:4600/api/members/${member._id}`;
+      const response = await makeRequest(url, "PUT", updatedData, true);
+
+      setMembers((prevMembers) =>
+        prevMembers.map((m) => (m._id === member._id ? response : m))
+      );
+
+      console.log("Updated member data: ", response);
+      onCancel();
+
+      setUpdatedMember({
+        name: "",
+        email: "",
+        studentId: "",
+        pictureURL: null,
+        description: "",
+        hobbies: "",
+        phoneNumber: "",
+        isActive: true,
+        joinDate: member.joinDate || new Date().toISOString().split("T")[0],
+      });
+    } catch (error) {
+      toast.error(error.message || "Failed to update member");
     }
-
-    const data = await response.json();
-    console.log("Response from server: ", data); // This should show the updated member data
-
-    setMembers(
-      (prevMembers) => prevMembers.map((m) => (m._id === member._id ? data : m)) // Use the whole data object
-    );
-
-    console.log("Updated member data: ", data); // Now this should log the updated member object
-    onCancel();
-    setUpdatedMember({
-      name: "",
-      email: "",
-      studentId: "",
-      pictureURL: null,
-      description: "",
-      hobbies: "",
-      phoneNumber: "",
-      isActive: true,
-      joinDate: member.joinDate || new Date().toISOString().split("T")[0],
-    });
   };
 
   return (

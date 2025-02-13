@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; // Firebase storage functions
 import { storage } from "../../firebase"; // Firebase configuration
 import { toast } from "react-hot-toast"; // Importing toast
+import useAxios from "../../utils/useAxios";
 
 const CreateMember = ({ setMembers, darkMode, onSave, onCancel }) => {
   const [newMember, setNewMember] = useState({
@@ -19,12 +20,12 @@ const CreateMember = ({ setMembers, darkMode, onSave, onCancel }) => {
   const [uploading, setUploading] = useState(false); // Uploading state
   const [dragging, setDragging] = useState(false); // Drag state
   const [uploadError, setUploadError] = useState(""); // Error state
-
+  const makeRequest = useAxios();
   const handleAddMember = async (event) => {
     event.preventDefault();
 
     if (!newMember.pictureURL) {
-      toast.error("Please upload a picture."); // Using toast for error
+      toast.error("Please upload a picture.");
       return;
     }
 
@@ -40,54 +41,51 @@ const CreateMember = ({ setMembers, darkMode, onSave, onCancel }) => {
           console.error("Upload error: ", error);
           setUploadError(error.message);
           setUploading(false);
-          toast.error(error.message); // Using toast for upload error
+          toast.error(error.message);
         },
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
 
-          const response = await fetch("http://localhost:4600/api/members", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              ...newMember,
-              pictureURL: downloadURL,
-              joinDate: newMember.joinDate || new Date().toISOString(),
-            }),
-            credentials: "include",
-          });
+          try {
+            const data = await makeRequest(
+              "http://localhost:4600/api/members",
+              "POST",
+              {
+                ...newMember,
+                pictureURL: downloadURL,
+                joinDate: newMember.joinDate || new Date().toISOString(),
+              },
+              true // Auth required
+            );
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            setUploadError(errorData.message || "Failed to add member");
+            setMembers((prevMembers) => [...prevMembers, data.member]);
+
+            if (onSave) onSave(data.member);
+            setNewMember({
+              name: "",
+              email: "",
+              studentId: "",
+              pictureURL: null,
+              description: "",
+              hobbies: "",
+              phoneNumber: "",
+              isActive: true,
+              joinDate: "",
+            });
+
+            toast.success("Member added successfully!");
+          } catch (error) {
+            toast.error(
+              error.response?.data?.message || "Failed to add member"
+            );
+          } finally {
             setUploading(false);
-            toast.error(errorData.message || "Failed to add member"); // Using toast for API error
-            return;
           }
-
-          const data = await response.json();
-          setMembers((prevMembers) => [...prevMembers, data.member]);
-
-          if (onSave) onSave(data.member);
-          setNewMember({
-            name: "",
-            email: "",
-            studentId: "",
-            pictureURL: null,
-            description: "",
-            hobbies: "",
-            phoneNumber: "",
-            isActive: true,
-            joinDate: "", // Reset joinDate
-          });
-
-          setUploading(false);
-          toast.success("Member added successfully!"); // Success toast
         }
       );
     } catch (err) {
-      setUploadError(err.message);
+      toast.error(err.message);
       setUploading(false);
-      toast.error(err.message); // Using toast for catch error
     }
   };
 
