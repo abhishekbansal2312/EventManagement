@@ -51,6 +51,14 @@ const FacultySection = ({ darkMode }) => {
     }
   };
 
+  const handleUpdateFaculty = (updatedFaculty) => {
+    setFaculty((prevFaculty) =>
+      prevFaculty.map((faculty) =>
+        faculty._id === updatedFaculty._id ? updatedFaculty : faculty
+      )
+    );
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -81,6 +89,7 @@ const FacultySection = ({ darkMode }) => {
             faculty={facultyMember}
             darkMode={darkMode}
             onDelete={() => handleDeleteFaculty(facultyMember._id)}
+            onUpdate={handleUpdateFaculty}
           />
         ))}
       </div>
